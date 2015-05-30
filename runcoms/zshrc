@@ -11,3 +11,8 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+# snatched from https://github.com/paulirish/dotfiles/blob/master/symlink-setup.sh
+print_question() {
+    # Print output in yellow
+    printf "\e[0;33m  [?] $1\e[0m"
+}
