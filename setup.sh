@@ -8,9 +8,11 @@ if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
     # Set the default shell to zsh if it isn't currently set to zsh
     if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
     	print_info "Setting default shell to zsh, please enter your password"
-        if [[ $(chsh -s) -eq 0 ]]; then
+        chsh -s $(which zsh)
+        if [[ $(echo $SHELL) == $(which zsh) ]]; then
             print_success "zsh is now your shell"
         fi
+    fi
     elif [[ $(echo $SHELL) == $(which zsh) ]]; then
         print_info "zsh is already your shell"
     fi
