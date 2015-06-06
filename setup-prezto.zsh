@@ -21,6 +21,7 @@ for sourceFile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
 			print_success "$targetFile → $sourceFile"
 		fi
 	else
+		ln -fs $sourceFile $targetFile
 		execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
 	fi
 done
