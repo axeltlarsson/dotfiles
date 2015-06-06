@@ -9,9 +9,7 @@ if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
     if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
     	print_info "Setting default shell to zsh, please enter your password"
         chsh -s $(which zsh)
-        if [[ $(echo $SHELL) == $(which zsh) ]]; then
-            print_success "zsh is now your shell"
-        fi
+        print_success "zsh is now your shell"
     elif [[ $(echo $SHELL) == $(which zsh) ]]; then
         print_info "zsh is already your shell"
     fi
@@ -33,3 +31,4 @@ fi
 
 install_zsh
 
+zsh setup-prezto.zsh
