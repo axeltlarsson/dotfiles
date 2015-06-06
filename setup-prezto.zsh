@@ -13,6 +13,7 @@ for sourceFile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
 
 			ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
 			if answer_is_yes; then
+				rm -rf "$targetFile"
 				execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile" # overwrite
 			else
 				print_error "$targetFile → $sourceFile"
@@ -21,7 +22,6 @@ for sourceFile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
 			print_success "$targetFile → $sourceFile"
 		fi
 	else
-		ln -fs $sourceFile $targetFile
 		execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
 	fi
 done
