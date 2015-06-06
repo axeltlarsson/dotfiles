@@ -41,8 +41,6 @@ if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
     	print_info "Setting default shell to zsh, please enter your password"
         chsh -s $(which zsh)
         install_zsh
-    elif [[ $(echo $SHELL) == $(which zsh) ]]; then
-        print_success "zsh is now the default shell"
     fi
 else
     # If zsh isn't installed, get the platform of the current machine
@@ -61,4 +59,7 @@ fi
 }
 
 install_zsh
+if [[ $(echo $SHELL) == $(which zsh) ]]; then
+    print_success "zsh is now your shell shell"    
+fi
 zsh 
