@@ -12,6 +12,22 @@ fi
 
 # Customize to your needs...
 # snatched from https://github.com/paulirish/dotfiles/blob/master/symlink-setup.sh
+
+print_success() {
+    # Print output in green
+    printf "\e[0;32m  [✔] $1\e[0m\n"
+}
+
+print_error() {
+    # Print output in red
+    printf "\e[0;31m  [✖] $1 $2\e[0m\n"
+}
+
+execute() {
+    $1 &> /dev/null
+    print_result $? "${2:-$1}"
+}
+
 mkd() {
     if [ -n "$1" ]; then
         if [ -e "$1" ]; then
