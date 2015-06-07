@@ -12,11 +12,6 @@ fi
 
 # Customize to your needs...
 # snatched from https://github.com/paulirish/dotfiles/blob/master/symlink-setup.sh
-print_question() {
-    # Print output in yellow
-    printf "\e[0;33m  [?] $1\e[0m"
-}
-
 mkd() {
     if [ -n "$1" ]; then
         if [ -e "$1" ]; then
@@ -31,34 +26,6 @@ mkd() {
     fi
 }
 
-print_error() {
-    # Print output in red
-    printf "\e[0;31m  [✖] $1 $2\e[0m\n"
-}
-
-print_info() {
-    # Print output in purple
-    printf "\n\e[0;35m $1\e[0m\n\n"
-}
-
-print_question() {
-    # Print output in yellow
-    printf "\e[0;33m  [?] $1\e[0m"
-}
-
-print_result() {
-    [ $1 -eq 0 ] \
-        && print_success "$2" \
-        || print_error "$2"
-
-    [ "$3" == "true" ] && [ $1 -ne 0 ] \
-        && exit
-}
-
-print_success() {
-    # Print output in green
-    printf "\e[0;32m  [✔] $1\e[0m\n"
-}
-
-# lägger till en kommentar för att
+alias sshServern="ssh -p512 axel@192.168.0.199"
+alias sshBackupservern="ssh axel@192.168.0.179"
 
