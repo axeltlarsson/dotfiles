@@ -26,6 +26,7 @@ mkd() {
     fi
 }
 
-alias sshServern="ssh -p512 axel@192.168.0.199"
-alias sshBackupservern="ssh axel@192.168.0.179"
+alias sshServer="ssh -p512 axel@192.168.0.199"
+alias sshBackupserver="ssh axel@192.168.0.179"
+alias wakeBackupserver="wakeonlan 00:23:54:37:4e:9e"
 
