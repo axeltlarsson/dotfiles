@@ -93,7 +93,7 @@ install_zsh
 
 symlink_prezto_files() {
     
-    declare -a FILES_TO_SYMLINK=$(find  runcoms -type f -not -name README.md )
+    declare -a FILES_TO_SYMLINK=$(find  dotfiles -type f -not -name README.md )
 
     local i=""
     local sourceFile=""
