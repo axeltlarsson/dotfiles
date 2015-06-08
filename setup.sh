@@ -126,9 +126,17 @@ symlink_prezto_files() {
 
 install_zsh
 symlink_prezto_files
-./fonts/install.sh
-print_info "Installing prerequisites to gnome-terminal-colors-solarized"
-sudo apt-get install dconf-cli
-./gnome-terminal-colors-solarized/set_dark.sh
+
+ask_for_confirmation "Do you want to install powerline fonts?"
+if answer_is_yes; then
+    execute "./fonts/install.sh" "powerline fonts installed"
+fi
+
+ask_for_confirmation "Do you want to install gnome-terminal-colors-solarized, dark theme?"
+if answer_is_yes; then
+    print_info "Installing prerequisites for gnome-terminal-colors-solarized"
+    sudo apt-get install dconf-cli
+    ./gnome-terminal-colors-solarized/set_dark.sh
+fi
 zsh
 exit 0
