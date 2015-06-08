@@ -16,3 +16,9 @@
 [submodule "modules/prompt/functions/pure"]
 	path = modules/prompt/external/pure
 	url = https://github.com/sindresorhus/pure.git
+[submodule "fonts"]
+	path = fonts
+	url = https://github.com/powerline/fonts.git
+[submodule "gnome-terminal-colors-solarized"]
+	path = gnome-terminal-colors-solarized
+	url = https://github.com/Anthony25/gnome-terminal-colors-solarized.git
