@@ -89,8 +89,6 @@ else
 fi
 }
 
-install_zsh
-
 symlink_prezto_files() {
     
     declare -a FILES_TO_SYMLINK=$(find  dotfiles -type f -not -name README.md )
@@ -125,6 +123,12 @@ symlink_prezto_files() {
     done
 
 }
+
+install_zsh
 symlink_prezto_files
+./fonts/install.sh
+print_info "Installing prerequisites to gnome-terminal-colors-solarized"
+sudo apt-get install dconf-cli
+./gnome-terminal-colors-solarized/set_dark.sh
 zsh
 exit 0
