@@ -8,9 +8,9 @@ git pull && git submodule update --init --recursive
 ```
 
 ## Prezto information
+This dotfiles repo uses zsh and prezto as a configuration framework.
 
-
-Prezto is the configuration framework for [Zsh][1]; it enriches the command line
+Prezto is the configuration framework for zsh; it enriches the command line
 interface environment with sane defaults, aliases, functions, auto completion,
 and prompt themes.
 
