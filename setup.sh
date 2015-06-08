@@ -126,4 +126,5 @@ symlink_prezto_files() {
 
 }
 symlink_prezto_files
+zsh
 exit 0
