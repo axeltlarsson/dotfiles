@@ -89,10 +89,8 @@ else
 fi
 }
 
-symlink_prezto_files() {
-    
-    declare -a FILES_TO_SYMLINK=$(find  dotfiles -type f -not -name README.md )
-
+symlink_files() {
+    declare -a FILES_TO_SYMLINK=("${!1}")
     local i=""
     local sourceFile=""
     local targetFile=""
@@ -125,7 +123,11 @@ symlink_prezto_files() {
 }
 
 install_zsh
-symlink_prezto_files
+
+dotfiles=$(find  dotfiles -type f -not -name README.md )
+symlink_files dotfiles[@]
+
+exit
 
 ask_for_confirmation "Do you want to install powerline fonts?"
 if answer_is_yes; then
