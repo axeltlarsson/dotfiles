@@ -4,25 +4,25 @@
 usage()
 {
 cat << EOF
-usage: [-o]
+usage: [-m]
 
 Setups zsh with the prezto configuration framework: symlinks files from the "dotfiles" folder.
 
 FLAG:
-    -o Only symlink files in the "other folder" that require root access.
+    -m Only symlink files in the "miscellaneous" folder that require root access.
 EOF
 }
 
-SYMLINK_OTHER=false
-while getopts "h:o" OPTION
+SYMLINK_MISC=false
+while getopts "h:m" OPTION
 do
     case $OPTION in
         h)
             usage
             exit 1
             ;;
-        o)
-            SYMLINK_OTHER=true
+        m)
+            SYMLINK_MISC=true
             ;;
 
         ?)
@@ -138,7 +138,7 @@ fi
 # Performs symlink() on each of the files in the dotfiles dir
 symlink_dotfiles() {
     declare -a dotfiles=$(find  dotfiles -type f -not -name README.md)
-    local target=$2
+    local target=$1
     local file=""
     local sourceFile=""
     local targetFile=""
@@ -147,10 +147,8 @@ symlink_dotfiles() {
 
         sourceFile="$(pwd)/$file"
         targetFile="$target/$(printf "%s" "$file" | sed "s/.*\/\(.*\)/\1/g")"
-        
-
-        echo "ln -fs $sourceFile $targetFile"
-        #symlink "$sourceFile" "$targetFile"
+    
+        symlink "$sourceFile" "$targetFile"
 
     done
 
@@ -186,7 +184,7 @@ symlink() {
 
 # Symlinks the files in the "other" dir to their corresponding locations
 # Does the symlinking with sudo since this is required in most cases
-symlink_others() {
+symlink_misc() {
     declare -a files=$(find other -type f -not -name README.md)
     
     for i in ${files[@]}; do
@@ -202,14 +200,14 @@ symlink_others() {
 }
 
 #----------------- actual stuff happening ----------------
-if ($SYMLINK_OTHER); then
+if ($SYMLINK_MISC); then
     if [[ $EUID -ne 0 ]]; then
         print_error "WARNING! No root access! The script may fail to symlink some files in this mode."
     fi
-    symlink_others
+    symlink_misc
 else
     install_zsh
-    symlink_dotfiles
+    symlink_dotfiles $HOME
 
 
     ask_for_confirmation "Do you want to install powerline fonts?"
