@@ -182,14 +182,14 @@ symlink() {
 
 
 
-# Symlinks the files in the "other" dir to their corresponding locations
+# Symlinks the files in the "miscellaneous" dir to their corresponding locations
 # Does the symlinking with sudo since this is required in most cases
 symlink_misc() {
-    declare -a files=$(find other -type f -not -name README.md)
+    declare -a files=$(find miscellaneous -type f -not -name README.md)
     
     for i in ${files[@]}; do
         sourceFile=$(readlink -f "$i")
-        targetFile="/${i#other/}"
+        targetFile="/${i#miscellaneous/}"
         ask_for_confirmation "Do you want to symlink $targetFile → $sourceFile?"
         if answer_is_yes; then
             symlink "$sourceFile" "$targetFile"
