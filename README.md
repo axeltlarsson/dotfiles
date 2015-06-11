@@ -1,7 +1,7 @@
 ## Setup
 ```shell
 cd
-git clone --recursive https://github.com/AxelTLarsson/prezto.git .zprezto
+git clone --recursive https://github.com/AxelTLarsson/dotfiles.git .zprezto
 cd .prezto
 git pull && git submodule update --init --recursive
 ./setup.sh
