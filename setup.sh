@@ -1,6 +1,37 @@
 #!/bin/bash
 
 #----------------- utils ----------------
+usage()
+{
+cat << EOF
+usage: [-o]
+
+Setups zsh with the prezto configuration framework: symlinks files from the "dotfiles" folder.
+
+FLAG:
+    -o Only symlink files in the "other folder" that require root access.
+EOF
+}
+
+SYMLINK_OTHER=false
+while getopts "h:o" OPTION
+do
+    case $OPTION in
+        h)
+            usage
+            exit 1
+            ;;
+        o)
+            SYMLINK_OTHER=true
+            ;;
+
+        ?)
+            usage
+            exit
+            ;;
+    esac
+done
+
 answer_is_yes() {
     [[ "$REPLY" =~ ^[Yy]$ ]] \
         && return 0 \
@@ -62,6 +93,21 @@ print_success() {
     printf "\e[0;32m  [✔] $1\e[0m\n"
 }
 
+ask_for_sudo() {
+
+    # Ask for the administrator password upfront
+    sudo -v
+
+    # Update existing `sudo` time stamp until this script has finished
+    # https://gist.github.com/cowboy/3118588
+    while true; do
+        sudo -n true
+        sleep 60
+        kill -0 "$$" || exit
+    done &> /dev/null &
+
+}
+
 install_zsh () {
 # Test to see if zshell is installed.  If it is:
 if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
@@ -89,56 +135,96 @@ else
 fi
 }
 
-symlink_files() {
-    declare -a FILES_TO_SYMLINK=("${!1}")
-    local i=""
+# Performs symlink() on each of the files in the dotfiles dir
+symlink_dotfiles() {
+    declare -a dotfiles=$(find  dotfiles -type f -not -name README.md)
+    local target=$2
+    local file=""
     local sourceFile=""
     local targetFile=""
 
-    for i in ${FILES_TO_SYMLINK[@]}; do
+    for file in ${dotfiles[@]}; do
 
-        sourceFile="$(pwd)/$i"
-        targetFile="$HOME/$(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
+        sourceFile="$(pwd)/$file"
+        targetFile="$target/$(printf "%s" "$file" | sed "s/.*\/\(.*\)/\1/g")"
+        
 
-        if [ -e "$targetFile" ]; then
-            if [ "$(readlink "$targetFile")" != "$sourceFile" ]; then
-
-                ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
-                if answer_is_yes; then
-                    rm -rf "$targetFile"
-                    execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
-                else
-                    print_error "$targetFile → $sourceFile"
-                fi
-
-            else
-                print_success "$targetFile → $sourceFile"
-            fi
-        else
-            execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
-        fi
+        echo "ln -fs $sourceFile $targetFile"
+        #symlink "$sourceFile" "$targetFile"
 
     done
 
 }
 
-install_zsh
+# Basically does ln -fs $sourceFile $targetFile with some fancy cli graphics
+symlink() {
+    sourceFile=$1
+    targetFile=$2
+    if [ -e "$targetFile" ]; then
+        if [ "$(readlink "$targetFile")" != "$sourceFile" ]; then
+            ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
+            if answer_is_yes; then
+                rm -rf "$targetFile"
+                execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
+            else
+                print_error "$targetFile → $sourceFile"
+            fi
 
-dotfiles=$(find  dotfiles -type f -not -name README.md )
-symlink_files dotfiles[@]
+        else
+            print_success "$targetFile → $sourceFile"
+        fi
+    else
+        execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
+    fi
 
-exit
+}
 
-ask_for_confirmation "Do you want to install powerline fonts?"
-if answer_is_yes; then
-    execute "./fonts/install.sh" "powerline fonts installed"
+
+
+
+
+
+# Symlinks the files in the "other" dir to their corresponding locations
+# Does the symlinking with sudo since this is required in most cases
+symlink_others() {
+    declare -a files=$(find other -type f -not -name README.md)
+    
+    for i in ${files[@]}; do
+        sourceFile=$(readlink -f "$i")
+        targetFile="/${i#other/}"
+        ask_for_confirmation "Do you want to symlink $targetFile → $sourceFile?"
+        if answer_is_yes; then
+            symlink "$sourceFile" "$targetFile"
+        fi
+    done
+
+
+}
+
+#----------------- actual stuff happening ----------------
+if ($SYMLINK_OTHER); then
+    if [[ $EUID -ne 0 ]]; then
+        print_error "WARNING! No root access! The script may fail to symlink some files in this mode."
+    fi
+    symlink_others
+else
+    install_zsh
+    symlink_dotfiles
+
+
+    ask_for_confirmation "Do you want to install powerline fonts?"
+    if answer_is_yes; then
+        execute "./fonts/install.sh" "powerline fonts installed"
+    fi
+
+    ask_for_confirmation "Do you want to install gnome-terminal-colors-solarized, dark theme?"
+    if answer_is_yes; then
+        print_info "Installing prerequisites for gnome-terminal-colors-solarized"
+        sudo apt-get install dconf-cli
+        ./gnome-terminal-colors-solarized/set_dark.sh
+    fi
+    zsh
 fi
 
-ask_for_confirmation "Do you want to install gnome-terminal-colors-solarized, dark theme?"
-if answer_is_yes; then
-    print_info "Installing prerequisites for gnome-terminal-colors-solarized"
-    sudo apt-get install dconf-cli
-    ./gnome-terminal-colors-solarized/set_dark.sh
-fi
-zsh
+
 exit 0
