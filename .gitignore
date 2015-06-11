@@ -1,5 +1,5 @@
 *.zwc
 *.zwc.old
 modules/*/cache.zsh
-miscellaneous/usr/local/bin/magnet
+#miscellaneous/usr/local/bin/magnet
 
