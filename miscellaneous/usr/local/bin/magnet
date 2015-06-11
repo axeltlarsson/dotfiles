@@ -1,0 +1,31 @@
+#!/bin/bash
+# Axels torrentuppladdningsskript
+# Tillkallas av firefox, på detta vis: https://trac.transmissionbt.com/wiki/MagnetLinks
+# Använder notify-send för att visa snygga skrivbordsnotifkationer
+#
+# @author axel.t.larsson@gmail.com
+# @date 2013-06-23
+
+# Ta reda på om det är en magnet-länk
+magnet=false
+if [[ "$1" == *magnet* ]]; then # spara namnet från magnet-url:en:
+   magnet=true
+   # ta bort allt tom "&dn=" | ta bort allt from "&tr" | "+" > mellanslag | fixa '[' | fixa ']' | fixa '(' | fixa ')' | fixa '!'
+   name=$(echo $1 | sed -n 's/.*&dn=//p' | sed 's/&tr.*//' |sed 's/+/ /g' | sed 's/%5/[/' | sed 's/%5/]/' | sed 's/%28/(/' | sed 's/%29/)/' | sed 's/%21/!/g')
+else # spara namnet från torrent-filen
+   name=$(echo $1 | sed -n 's/.*\///p')
+fi
+
+host="xx"
+password="xx"
+# Försök lägga till magnet/torrent
+response=$(/usr/bin/transmission-remote  $host -n transmission:$password --add "$1")
+if [[ "$response" == *success* ]]; then
+   if $magnet; then 
+      notify-send "Laddade upp magnet-länk" "$name laddades upp till torrentservern." -i /usr/local/bin/transgui.png
+   else 
+      notify-send "Laddade upp torrent-fil" "$name laddades upp till torrentservern." -i /usr/local/bin/transgui.png
+   fi
+else
+   notify-send "$response" "Misslyckades med att ladda upp $name till torrentservern:\n$response." -i /usr/share/icons/Mint-X/status/48/dialog-error.png
+fi
