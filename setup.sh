@@ -148,7 +148,7 @@ symlink_dotfiles() {
         sourceFile="$(pwd)/$file"
         targetFile="$target/$(printf "%s" "$file" | sed "s/.*\/\(.*\)/\1/g")"
     
-        symlink "$sourceFile" "$targetFile"
+        symlink $sourceFile $targetFile
 
     done
 
@@ -172,7 +172,7 @@ symlink() {
             print_success "$targetFile → $sourceFile"
         fi
     else
-        execute 'ln -fs $sourceFile $targetFile' "$targetFile → $sourceFile"
+        execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
     fi
 
 }
@@ -192,7 +192,7 @@ symlink_misc() {
         targetFile="/${i#miscellaneous/}"
         ask_for_confirmation "Do you want to symlink $targetFile → $sourceFile?"
         if answer_is_yes; then
-            symlink "$sourceFile" "$targetFile"
+            symlink $sourceFile $targetFile
         fi
     done
 
