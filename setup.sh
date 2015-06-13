@@ -172,7 +172,7 @@ symlink() {
             print_success "$targetFile → $sourceFile"
         fi
     else
-        execute 'ln -fs "$sourceFile" "$targetFile"' "$targetFile → $sourceFile"
+        execute 'ln -fs $sourceFile $targetFile' "$targetFile → $sourceFile"
     fi
 
 }
