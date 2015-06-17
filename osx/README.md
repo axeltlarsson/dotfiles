@@ -23,6 +23,12 @@ brew cask install iterm2
 brew tap caskroom/versions
 brew cask install sublime-text3
 ```
+
+* OpenVPN client TunnelBlick:
+```
+brew cask install tunnelblick
+```
+
 * [Docs](https://github.com/caskroom/homebrew-cask/blob/master/USAGE.md)
 
 ### zsh stuff
