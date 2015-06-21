@@ -29,10 +29,8 @@ brew cask install sublime-text3
 brew cask install tunnelblick
 ```
 
-* OSXFuse - extends file system support
-```
-brew install osxfuse
-```
+* OSXFuse - extends file system support:
+  - simly download dmg from http://osxfuse.github.io, brew does not behave well with OSXFuse
 
 
 * [Docs](https://github.com/caskroom/homebrew-cask/blob/master/USAGE.md)
