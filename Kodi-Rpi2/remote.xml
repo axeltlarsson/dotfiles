@@ -1,0 +1,14 @@
+<keymap>
+  <global>
+    <keyboard>
+      <key id="250">showsubtitles</key>
+      <key id="216">contextmenu</key>
+      <key id="229">back</key>
+    </keyboard>
+  </global>
+  <videos>
+    <keyboard>
+      <key id="229">back</key>
+    </keyboard></videos>
+  <fullscreenvideo>
+  <keyboard><key id="250">nextsubtitle</key></keyboard></fullscreenvideo></keymap>
