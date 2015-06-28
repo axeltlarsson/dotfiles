@@ -8,6 +8,10 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 ```
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
 ```
+* node.js
+```
+brew install node
+```
 
 ## Homebrew-cask
 * Install
