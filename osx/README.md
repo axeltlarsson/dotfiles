@@ -41,4 +41,11 @@ brew cask install tunnelblick
 ### zsh stuff
 * Ctrl + R is pretty amazing
 
+### Other stuff
+* Make <code>subl</code> available in terminal: (check that /usr/local/bin is in path first: <code>echo $PATH</code>)
+```
+ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
+```
+
+
 
