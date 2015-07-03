@@ -1,5 +1,5 @@
 # Stuff I do with my Mac
-### Homebrew
+### Homebrew (CLI apps)
 * Install homebrew
 ```
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -13,7 +13,12 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 brew install node
 ```
 
-## Homebrew-cask
+* Install tree, useful for displaying directory tree, use the L option for depth:
+```
+brew install tree
+```
+
+## Homebrew-cask (GUI apps)
 * Install
 ```
 brew install caskroom/cask/brew-cask
@@ -32,6 +37,7 @@ brew cask install sublime-text3
 ```
 brew cask install tunnelblick
 ```
+
 
 * OSXFuse and SSHFS: simply download from http://osxfuse.github.io, brew does not behave well with OSXFuse
 
