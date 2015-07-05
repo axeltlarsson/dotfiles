@@ -18,6 +18,11 @@ brew install node
 brew install tree
 ```
 
+* Install Scala:
+```
+brew install scala
+```
+
 ## Homebrew-cask (GUI apps)
 * Install
 ```
