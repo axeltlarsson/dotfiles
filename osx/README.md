@@ -23,6 +23,11 @@ brew install tree
 brew install scala
 ```
 
+* Install sbt:
+```
+brew install sbt
+```
+
 ## Homebrew-cask (GUI apps)
 * Install
 ```
