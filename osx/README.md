@@ -28,6 +28,29 @@ brew install scala
 brew install sbt
 ```
 
+* Replace default git with newer, more secure, homebrew managed git:
+```
+brew install git
+zsh # the change does not take effect until next session
+git --version
+```
+If the last command does not show git version at least 2.4.5 then we need to also fix the path
+```
+echo $PATH
+```
+If /usr/bin is before /usr/local/bin which is where homebrew installs, then the default git will still prevail.
+Either change the order of the paths in $PATH:
+```
+export PATH=/usr/local/git/bin/:$PATH
+```
+or replace the old git:
+```
+sudo mv /usr/bin/git /usr/bin/git-original
+sudo ln -s /usr/local/bin/git /usr/bin/git
+```
+Now <code>git</code> will be the homebrew managed git and <code>git-original</code> will be the old Apple-shipped version.
+
+
 ## Homebrew-cask (GUI apps)
 * Install
 ```
