@@ -1,14 +1,8 @@
 ## Setup
 ```shell
-cd
 git clone --recursive https://github.com/AxelTLarsson/dotfiles.git .zprezto
 cd .prezto
-git pull && git submodule update --init --recursive
 ./setup.sh
-```
-If also setting up symlinks from the folder "other" according to the directory structure there, run this (you will be asked for confirmation before each symlinking):
-```
-sudo ./setup.sh -o
 ```
 
 ## Prezto information
