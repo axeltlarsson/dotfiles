@@ -6,5 +6,7 @@
 	"ignored_packages":
 	[
 		"Vintage"
-	]
+	],
+  	"theme": "Afterglow-blue.sublime-theme",
+  	"color_scheme": "Packages/Theme - Afterglow/Afterglow.tmTheme"
 }
