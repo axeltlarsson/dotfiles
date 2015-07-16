@@ -160,8 +160,6 @@ symlink_dir() {
 }
 
 #----------------- actual stuff happening ----------------
-execute "ls södfmn" "should be problem"
-exit 0
 install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_dir prezto $HOME
