@@ -24,9 +24,11 @@ cmd_exists() {
 
 execute() {
     e_msg=`$1 2>&1`
-    print_result $? "${2:-$1} \n\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
+    code=$?
+    print_result $code "${2:-$1} \n\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
     # If fail: ask if user wants to try with su
-    if [[ $? != 0 ]]; then
+
+    if [ $code -ne 0 ]; then
     	ask_for_confirmation "Try with sudo?"
     	if answer_is_yes; then
     		execute_su "$1" "$2"
@@ -158,6 +160,8 @@ symlink_dir() {
 }
 
 #----------------- actual stuff happening ----------------
+execute "ls södfmn" "should be problem"
+exit 0
 install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_dir prezto $HOME
