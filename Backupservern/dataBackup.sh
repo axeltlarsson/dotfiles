@@ -17,7 +17,12 @@ datum=`date +%Y-%m-%d_%H:%M`
 host="192.168.0.199"	# Ubuntuservern
 privateKey="/home/axel/.ssh/id_rsa"
 privateKeyForPublic="/home/axel/.ssh/public_id"
-prevDirs=`find $dest -maxdepth 1 -type d | awk '{if(/20/){print "--link-dest=" $0 "'$1'"}}'`
+
+
+# Returnerar rad med alla föregående backupmappar som --link-dest argument, med $1 som suffix
+prevBackupDirs() {
+	echo `find $dest -maxdepth 1 -type d | awk '{if(/20/){print "--link-dest=" $0 "'$1'"}}'`
+}
 
 # Does backup of Ubuntuserver with:
 # $1: user
@@ -29,11 +34,9 @@ backup() {
 	local key=$3
 	mkdir -p $dest/"$datum"/$path
 	echo "Backing up $path"
-	echo $prevDirs
-exit 0
+	prevDirs=$(prevBackupDirs $path)
 	rsync -a --delete --append $prevDirs --rsh="ssh -i $key -q -p512 -l $user" $host:/media/data/$path $dest/"$datum"/$path
 }
-
 
 # Backup av Axels privata mapp
 #user='axel'
