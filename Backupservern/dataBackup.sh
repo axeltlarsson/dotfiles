@@ -28,8 +28,9 @@ backup() {
 	local path=$2
 	local key=$3
 	mkdir -p $dest/"$datum"/$path
-	local args="-a --delete --append"
 	echo "Backing up $path"
+	echo $prevDirs
+exit 0
 	rsync -a --delete --append $prevDirs --rsh="ssh -i $key -q -p512 -l $user" $host:/media/data/$path $dest/"$datum"/$path
 }
 
