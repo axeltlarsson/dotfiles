@@ -9,6 +9,8 @@
 # command="rsync --server --sender -logDtpre.iLs --append . /media/data/public/",from="192.168.0.179",no-pty,no-agent-forwarding,no-port-forwarding 
 # Av: Axel Larsson
 
+./make_space.sh
+
 # Variabler för destination, datum och prevBackupDir
 dest="/media/backup"
 datum=`date +%Y-%m-%d_%H:%M`
