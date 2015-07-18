@@ -9,9 +9,49 @@
 # command="rsync --server --sender -logDtpre.iLs --append . /media/data/public/",from="192.168.0.179",no-pty,no-agent-forwarding,no-port-forwarding 
 # Av: Axel Larsson
 
-./make_space.sh
+# Currently the script expects this type of file structure:
+# ├── 2015-06-15_11:34
+# │   ├── private
+# │   └── public
+# ├── 2015-06-15_23:44
+# │   ├── private
+# │   └── public
+# ├── 2015-07_14_13:22
+# │   ├── private
+# │   └── public
+# └── 2015-07-15_21:13
+#     ├── private
+#     └── public
 
-# Variabler för destination, datum och prevBackupDir
+#---------------------------------------- Making space ----------------------------------------------
+# Stores the disk usage in $usage, given file path as $1
+# Note: $1 should be a real folder path where a disk is mounted
+# such as /media/backup and NOT /dev/sda3
+disk_usage() {
+	local free_blocks=$(stat -f --format="%a" $1)
+	local total_blocks=$(stat -f --format="%b" $1)
+	usage=$(bc -l <<< "1 - $free_blocks / $total_blocks")
+}
+
+# Deletes the oldest dir, or rather the oldest according to the name of the dirs
+# in the dir as hardcoded here in the find expression
+delete_oldest_dir() {
+	# modified from http://unix.stackexchange.com/questions/28939/how-to-delete-the-oldest-directory-in-a-given-directory
+	IFS= read -r -d $'\0' file < <(find /media/backup -maxdepth 1 ! -path /media/backup  -type d -printf '%p\0' | sort -z)
+	echo "Deleting $file"
+	rm -rf "$file"
+}
+
+target=0.86
+disk_usage "/media/backup"
+while [ $(echo $usage'>'$target | bc -l) == 1 ]; do
+	echo "Disk usage $usage > $target =>"
+	delete_oldest_dir
+	disk_usage "/media/backup"
+done
+echo "Disk usage $usage < $target => OK"
+
+#---------------------------------------- Doing the backup ------------------------------------------
 dest="/media/backup"
 datum=`date +%Y-%m-%d_%H:%M`
 host="192.168.0.199"	# Ubuntuservern
@@ -33,50 +73,16 @@ backup() {
 	local path=$2
 	local key=$3
 	mkdir -p $dest/"$datum"/$path
-	echo "Backing up $path"
+	echo "Backing up $path..."
 	prevDirs=$(prevBackupDirs $path)
 	rsync -a --delete --append $prevDirs --rsh="ssh -i $key -q -p512 -l $user" $host:/media/data/$path $dest/"$datum"/$path
 }
 
-# Backup av Axels privata mapp
-#user='axel'
-#prevBackupDirs=$(prevBackupDirs '/private/Axel/')
-#mkdir -p $dest/"$datum"/private/Axel
-#rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKey -q -p512 -l $user" $host:/media/data/private/Axel/ $dest/"$datum"/private/Axel/
-
-backup axel /private/axel $privateKey
+backup axel /private/Axel $privateKey
+backup anna /private/Anna $privateKey
+backup ulf /private/Ulf $privateKey
+backup staffan /private/Staffan $privateKey
+backup carina /private/Carina $privateKey
+backup axel /public $privateKeyForPublic
 
 exit 0
-
-# Backup av Staffans privata mapp
-user='staffan'
-prevBackupDirs=$(prevBackupDirs '/private/Staffan/')
-mkdir -p $dest/"$datum"/private/Staffan
-rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKey -q -p512 -l $user" $host:/media/data/private/Staffan/ $dest/"$datum"/private/Staffan/
-
-# Backup av Carinas privata mapp
-user='carina'
-prevBackupDirs=$(prevBackupDirs '/private/Carina/')
-mkdir -p $dest/"$datum"/private/Carina
-rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKey -q -p512 -l $user" $host:/media/data/private/Carina/ $dest/"$datum"/private/Carina/
-
-# Backup av Annas privata mapp
-user='anna'
-prevBackupDirs=$(prevBackupDirs '/private/Anna/')
-mkdir -p $dest/"$datum"/private/Anna
-rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKey -q -p512 -l $user" $host:/media/data/private/Anna/ $dest/"$datum"/private/Anna/
-
-
-# Backup av Ulfs privata mapp
-user='ulf'
-prevBackupDirs=$(prevBackupDirs '/private/Ulf/')
-mkdir -p $dest/"$datum"/private/Ulf
-rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKey -q -p512 -l $user" $host:/media/data/private/Ulf/ $dest/"$datum"/private/Ulf/
-
-# Backup av Public
-user="axel"
-prevBackupDirs=$(prevBackupDirs '/public/')
-mkdir -p $dest/"$datum"/public
-rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKeyForPublic -q -p512 -l $user" $host:/media/data/public/ $dest/"$datum"/public/
-exit
-
