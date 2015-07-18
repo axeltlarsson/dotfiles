@@ -154,7 +154,7 @@ copy() {
             ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
             if answer_is_yes; then
                 rm -rf "$targetFile"
-                execute "cp $sourceFile $targetFile" "$targetFile → $sourceFile"
+                execute "cp --preserve $sourceFile $targetFile" "$targetFile → $sourceFile"
             else
                 print_error "$targetFile → $sourceFile"
             fi
@@ -163,7 +163,7 @@ copy() {
             print_success "$targetFile → $sourceFile"
         fi
     else
-        execute "cp $sourceFile $targetFile" "$targetFile → $sourceFile"
+        execute "cp --preserve $sourceFile $targetFile" "$targetFile → $sourceFile"
     fi
 }
 
@@ -202,11 +202,6 @@ if answer_is_yes; then
     symlink_dir desktop
 fi
 
-ask_for_confirmation "Do you want to symlink files from \"Kodi-Rpi2\"?"
-if answer_is_yes; then
-    symlink_dir Kodi-Rpi2
-fi
-
 # Doing copy for Ubuntuservern because /home/axel is likely encrypted
 ask_for_confirmation "Do you want to copy files from \"Ubuntuservern\"?"
 if answer_is_yes; then
@@ -218,6 +213,10 @@ if answer_is_yes; then
     symlink_dir Backupservern $HOME
 fi
 
+ask_for_confirmation "Do you want to symlink files from \"Kodi-Rpi2\"?"
+if answer_is_yes; then
+    symlink_dir Kodi-Rpi2
+fi
 
 install_powerline_fonts
 install_solarized
