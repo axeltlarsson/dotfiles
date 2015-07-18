@@ -17,17 +17,29 @@ datum=`date +%Y-%m-%d_%H:%M`
 host="192.168.0.199"	# Ubuntuservern
 privateKey="/home/axel/.ssh/id_rsa"
 privateKeyForPublic="/home/axel/.ssh/public_id"
+prevDirs=`find $dest -maxdepth 1 -type d | awk '{if(/20/){print "--link-dest=" $0 "'$1'"}}'`
 
-# Funktion returnerar rad med alla föregående backupmappar som --link-dest argument, med $1 som suffix
-function prevBackupDirs() {
-	echo `find $dest -maxdepth 1 -type d | awk '{if(/20/){print "--link-dest=" $0 "'$1'"}}'`
+# Does backup of Ubuntuserver with:
+# $1: user
+# $2: path (ie /private/Axel/)
+# $3: ssh key
+backup() {
+	local user=$1
+	local path=$2
+	local key=$3
+	mkdir -p $dest/"$datum"/$path
+	local args="-a --delete --append"
+	rsync -a --delete --append $prevDirs --rsh="ssh -i $key -q -p512 -l $user" $host:/media/data/$path $dest/"$datum"/$path
 }
 
+
 # Backup av Axels privata mapp
-user='axel'
-prevBackupDirs=$(prevBackupDirs '/private/Axel/')
-mkdir -p $dest/"$datum"/private/Axel
-rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKey -q -p512 -l $user" $host:/media/data/private/Axel/ $dest/"$datum"/private/Axel/
+#user='axel'
+#prevBackupDirs=$(prevBackupDirs '/private/Axel/')
+#mkdir -p $dest/"$datum"/private/Axel
+#rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKey -q -p512 -l $user" $host:/media/data/private/Axel/ $dest/"$datum"/private/Axel/
+
+backup axel /private/axel $privateKey
 
 # Backup av Staffans privata mapp
 user='staffan'
