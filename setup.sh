@@ -181,7 +181,7 @@ fi
 
 ask_for_confirmation "Do you want to symlink files from \"Backupervern\"?"
 if answer_is_yes; then
-    symlink_dir Backupervern $HOME
+    symlink_dir Backupservern $HOME
 fi
 
 
