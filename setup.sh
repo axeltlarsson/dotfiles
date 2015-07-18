@@ -212,7 +212,7 @@ if answer_is_yes; then
     copy Ubuntuservern
 fi
 
-ask_for_confirmation "Do you want to symlink files from \"Backupervern\"?"
+ask_for_confirmation "Do you want to symlink files from \"Backupservern\"?"
 if answer_is_yes; then
     symlink_dir Backupservern $HOME
 fi
