@@ -125,8 +125,8 @@ install_solarized() {
 
 # Basically does ln -fs $sourceFile $targetFile with some fancy cli graphics
 symlink() {
-    sourceFile=$1
-    targetFile=$2
+    local sourceFile=$1
+    local targetFile=$2
     if [ -e "$targetFile" ]; then
         if [ "$(readlink "$targetFile")" != "$sourceFile" ]; then
             ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
@@ -145,6 +145,28 @@ symlink() {
     fi
 }
 
+# Basically does cp $sourceFile $targetFile with some fancy cli graphics
+copy() {
+    local sourceFile=$1
+    local targetFile=$2
+    if [ -e "$targetFile" ]; then
+        if [ "$(readlink "$targetFile")" != "$sourceFile" ]; then
+            ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
+            if answer_is_yes; then
+                rm -rf "$targetFile"
+                execute "cp $sourceFile $targetFile" "$targetFile → $sourceFile"
+            else
+                print_error "$targetFile → $sourceFile"
+            fi
+
+        else
+            print_success "$targetFile → $sourceFile"
+        fi
+    else
+        execute "cp $sourceFile $targetFile" "$targetFile → $sourceFile"
+    fi
+}
+
 # Symlinks the files in the $1 directory to their respective locations
 # as given by their directory structure. Optional: prepend ($HOME) with $2
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
@@ -156,6 +178,17 @@ symlink_dir() {
         sourceFile=$(readlink -f "$file")
         targetFile="$2/${file#$1/}"
         symlink $sourceFile $targetFile
+    done
+}
+
+# Like symlink_dir() but using copy() instead
+copy_dir() {
+    declare -a files=$(find $1 -type f -not -iname '*.md')
+   
+    for file in ${files[@]}; do
+        sourceFile=$(readlink -f "$file")
+        targetFile="$2/${file#$1/}"
+        copy $sourceFile $targetFile
     done
 }
 
@@ -176,7 +209,7 @@ fi
 
 ask_for_confirmation "Do you want to symlink files from \"Ubuntuservern\"?"
 if answer_is_yes; then
-    symlink_dir Ubuntuservern
+    copy Ubuntuservern
 fi
 
 ask_for_confirmation "Do you want to symlink files from \"Backupervern\"?"
