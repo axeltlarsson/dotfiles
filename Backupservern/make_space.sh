@@ -36,11 +36,11 @@ delete_oldest_dir() {
 target=0.86
 disk_usage "/media/backup"
 while [ $(echo $usage'>'$target | bc -l) == 1 ]; do
-	echo "Disk usage $usage is above $target"
+	echo "Disk usage $usage > $target =>"
 	delete_oldest_dir
 	disk_usage "/media/backup"
 done
-echo "Disk usage $usage is above target $target, this script is done"
+echo "Disk usage $usage < $target => OK"
 exit 0
 
 

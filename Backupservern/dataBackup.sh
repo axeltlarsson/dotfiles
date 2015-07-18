@@ -29,6 +29,7 @@ backup() {
 	local key=$3
 	mkdir -p $dest/"$datum"/$path
 	local args="-a --delete --append"
+	echo "Backing up $path"
 	rsync -a --delete --append $prevDirs --rsh="ssh -i $key -q -p512 -l $user" $host:/media/data/$path $dest/"$datum"/$path
 }
 
@@ -40,6 +41,8 @@ backup() {
 #rsync -a --delete --append $prevBackupDirs --rsh="ssh -i $privateKey -q -p512 -l $user" $host:/media/data/private/Axel/ $dest/"$datum"/private/Axel/
 
 backup axel /private/axel $privateKey
+
+exit 0
 
 # Backup av Staffans privata mapp
 user='staffan'
