@@ -173,7 +173,7 @@ copy() {
 # will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/file"
 symlink_dir() {
     declare -a files=$(find $1 -type f -not -iname '*.md')
-   
+
     for file in ${files[@]}; do
         sourceFile=$(readlink -f "$file")
         targetFile="$2/${file#$1/}"
@@ -184,7 +184,7 @@ symlink_dir() {
 # Like symlink_dir() but using copy() instead
 copy_dir() {
     declare -a files=$(find $1 -type f -not -iname '*.md')
-   
+
     for file in ${files[@]}; do
         sourceFile=$(readlink -f "$file")
         targetFile="$2/${file#$1/}"
@@ -207,9 +207,10 @@ if answer_is_yes; then
     symlink_dir Kodi-Rpi2
 fi
 
-ask_for_confirmation "Do you want to symlink files from \"Ubuntuservern\"?"
+# Doing copy for Ubuntuservern because /home/axel is likely encrypted
+ask_for_confirmation "Do you want to copy files from \"Ubuntuservern\"?"
 if answer_is_yes; then
-    copy Ubuntuservern
+    copy_dir Ubuntuservern
 fi
 
 ask_for_confirmation "Do you want to symlink files from \"Backupservern\"?"
