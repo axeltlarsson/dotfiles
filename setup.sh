@@ -108,7 +108,7 @@ fi
 }
 
 install_powerline_fonts() {
-    if ls $HOME/.fonts | grep -q Powerline.ttf ; then
+    if ls $HOME/.fonts 2> /dev/null | grep -q Powerline.ttf ; then
         return
     else
         ask_for_confirmation "Do you want to install powerline fonts?"
