@@ -87,7 +87,7 @@ if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
     if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
     	print_info "Setting default shell to zsh, please enter your password"
         chsh -s $(which zsh)
-        print_success "zsh is now your shell"
+        print_success "After a relogin, zsh should be your default shell!"
     elif [[ $(echo $SHELL) == $(which zsh) ]]; then
         print_info "zsh is already your shell"
     fi
@@ -108,19 +108,38 @@ fi
 }
 
 install_powerline_fonts() {
-	ask_for_confirmation "Do you want to install powerline fonts?"
-	if answer_is_yes; then
-	    execute "./fonts/install.sh" "powerline fonts installed"
-	fi
+    if ls $HOME/.fonts | grep -q Powerline.ttf ; then
+        return
+    else
+        ask_for_confirmation "Do you want to install powerline fonts?"
+        if answer_is_yes; then
+            execute "./fonts/install.sh" "powerline fonts installed"
+        fi
+    fi
 }
 
 install_solarized() {
-	ask_for_confirmation "Do you want to install gnome-terminal-colors-solarized, dark theme?"
-	if answer_is_yes; then
-	    print_info "Installing prerequisites for gnome-terminal-colors-solarized"
-	    sudo apt-get install dconf-cli
-	    ./gnome-terminal-colors-solarized/set_dark.sh
-	fi
+    if installed dconf-cli; then
+        ask_for_confirmation "Do you want to install gnome-terminal-colors-solarized, dark theme?"
+        if answer_is_yes; then
+            print_info "Installing prerequisites for gnome-terminal-colors-solarized"
+            sudo apt-get install dconf-cli
+            ./gnome-terminal-colors-solarized/set_dark.sh
+        fi
+    fi
+}
+
+install_sublime_text_3() {
+    if installed sublime-text-installer; then
+        ask_for_confirmation "Do you want to install Sublime Text 3?"
+        if answer_is_yes; then
+            sudo add-apt-repository ppa:webupd8team/sublime-text-3 # not using execute_su here since I want the output
+            execute_su apt-get update
+            execute_su apt-get install sublime-text-installer
+            symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
+            print_info "Do not forget to install Package Control and the Afterglow theme in subl"
+        fi
+    fi
 }
 
 # Basically does ln -fs $sourceFile $targetFile with some fancy cli graphics
@@ -192,6 +211,18 @@ copy_dir() {
     done
 }
 
+
+
+# Returns true if package-name given by  $1 is installed
+installed() {
+   pkg=$1
+   if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
+	return 1
+   else
+        return 0
+  fi
+}
+
 #----------------- actual stuff happening ----------------
 install_zsh
 print_info "Setting up prezto configuration framework"
@@ -220,5 +251,6 @@ fi
 
 install_powerline_fonts
 install_solarized
+install_sublime_text_3
 zsh
 exit 0
