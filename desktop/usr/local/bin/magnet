@@ -18,8 +18,9 @@ fi
 
 host="192.168.0.199:9091"
 password="vallon"
+
 # Försök lägga till magnet/torrent
-response=$(/usr/bin/transmission-remote  $host -n transmission:$password --add "$1")
+response=`/usr/bin/transmission-remote  $host -n transmission:$password --add "$1" 2>&1`  # apt-get install transmission-cli NOT: transmission-remote-cli
 if [[ "$response" == *success* ]]; then
    if $magnet; then 
       notify-send "Laddade upp magnet-länk" "$name laddades upp till torrentservern." -i /usr/local/bin/transgui.png
@@ -27,5 +28,5 @@ if [[ "$response" == *success* ]]; then
       notify-send "Laddade upp torrent-fil" "$name laddades upp till torrentservern." -i /usr/local/bin/transgui.png
    fi
 else
-   notify-send "$response" "Misslyckades med att ladda upp $name till torrentservern:\n$response." -i /usr/share/icons/Mint-X/status/48/dialog-error.png
+   notify-send   "Misslyckades med att ladda upp ${name:-null} till torrentservern" "${response:-No response}" -i /usr/share/icons/Mint-X/status/48/dialog-error.png
 fi
