@@ -38,5 +38,5 @@ then
 else
 	torrent=$1
 fi
-notifyAxel.sh
+/usr/local/bin/scripts/notifyAxel.sh
 /usr/local/bin/torrent_extracter -l /var/log/torrent_extracter/torrent_extracter.log -f /media/data/public/Filmer/ -t /media/data/public/Serier/ "$torrent" 2>> /var/log/torrent_extracter/torrent_extracter.log
