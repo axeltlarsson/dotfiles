@@ -6,7 +6,7 @@ FCTEMPS=hwmon2/pwm4=hwmon2/temp1_input hwmon2/pwm2=hwmon3/temp1_input hwmon2/pwm
 FCFANS=hwmon2/pwm4=hwmon2/fan4_input hwmon2/pwm2=hwmon2/fan2_input hwmon2/pwm3=hwmon2/fan3_input hwmon2/pwm1=hwmon2/fan1_input
 MINTEMP=hwmon2/pwm4=28 hwmon2/pwm2=30 hwmon2/pwm3=28 hwmon2/pwm1=28
 MAXTEMP=hwmon2/pwm4=38 hwmon2/pwm2=45 hwmon2/pwm3=38 hwmon2/pwm1=38
-MINSTART=hwmon2/pwm4=130 hwmon2/pwm2=40 hwmon2/pwm3=90 hwmon2/pwm1=90
-MINSTOP=hwmon2/pwm4=90 hwmon2/pwm2=30 hwmon2/pwm3=90 hwmon2/pwm1=90
+MINSTART=hwmon2/pwm4=120 hwmon2/pwm2=40 hwmon2/pwm3=120 hwmon2/pwm1=120
+MINSTOP=hwmon2/pwm4=80 hwmon2/pwm2=30 hwmon2/pwm3=90 hwmon2/pwm1=90
 MINPWM=hwmon2/pwm4=0 hwmon2/pwm2=0 hwmon2/pwm3=0 hwmon2/pwm1=0
-MAXPWM=hwmon2/pwm4=160 hwmon2/pwm2=255 hwmon2/pwm3=160 hwmon2/pwm1=160
+MAXPWM=hwmon2/pwm4=190 hwmon2/pwm2=255 hwmon2/pwm3=190 hwmon2/pwm1=190
