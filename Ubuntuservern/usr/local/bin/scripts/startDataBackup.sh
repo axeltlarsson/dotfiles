@@ -7,7 +7,7 @@ key="/etc/ssh/axel/id_rsa"
 
 # Starta backupen
 echo "Backing up the server"
-#ssh -i $key axel@192.168.0.179 '/home/axel/dataBackup.sh 2> /home/axel/error_log'
+ssh -i $key axel@192.168.0.179 '/home/axel/dataBackup.sh 2> /home/axel/error_log'
 
 if [ $1 ] && [ $1 == "shutdown" ]; then
 	echo "Backup klar. Stänger av Backupservern."
