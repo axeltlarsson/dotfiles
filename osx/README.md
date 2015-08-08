@@ -24,7 +24,7 @@
  ```
   
   
-* Check that git is the newest version
+## Check that git is the newest version
   
   ```
   git --version
@@ -51,20 +51,12 @@
   
   Now <code>git</code> will be the homebrew managed git and <code>git-original</code> will be the old Apple-shipped version.
 
-* OSXFuse and SSHFS: simply download from http://osxfuse.github.io, brew does not behave well with OSXFuse
+## OSXFuse and SSHFS
+Simply download from http://osxfuse.github.io, brew does not behave well with OSXFuse
 
-
-* [Docs](https://github.com/caskroom/homebrew-cask/blob/master/USAGE.md)
-
-### zsh stuff
-* Ctrl + R is pretty amazing
-
-### Other stuff
+## subl
 * Make <code>subl</code> available in terminal: (check that /usr/local/bin is in path first: <code>echo $PATH</code>)
 
   ```
   ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
   ```
-
-
-
