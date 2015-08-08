@@ -1,15 +1,15 @@
-# Stuff I do with my Mac
-### Homebrew (CLI apps)
-* Install homebrew:
-
+## Setup homebrew
   ```
+  # Installing homebrew
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   ```
 * Uninstall homebrew:
 
   ```
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
+  
   ```
+  
+
 * node.js:
 
   ```
@@ -87,6 +87,16 @@
 
   ```
   brew cask install tunnelblick
+  ```
+  
+* Java, latest version, needed for Activator
+  ```
+  brew cask install java
+  ```
+  
+* Typesafe Activator
+  ```
+  brew install typesafe activator
   ```
 
 
