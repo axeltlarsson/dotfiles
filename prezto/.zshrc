@@ -16,3 +16,4 @@ alias sshBackupserver="ssh axel@192.168.0.179"
 alias wakeBackupserver="wakeonlan 00:23:54:37:4e:9e"
 alias pp_json="python -m json.tool | pygmentize -l javascript"
 alias dotfiles="cd /home/axel/.zprezto/"
+export PATH=/usr/local/bin/activator:$PATH
