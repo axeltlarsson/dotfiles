@@ -20,7 +20,8 @@
   brew cask install \
   sublime-text3 \
   tunnelblick \                       # OpenVPN client
-  java
+  java \
+  macpass
  ```
   
   
