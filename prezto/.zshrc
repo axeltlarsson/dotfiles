@@ -17,4 +17,4 @@ alias wakeBackupserver="wakeonlan 00:23:54:37:4e:9e"
 alias pp_json="python -m json.tool | pygmentize -l javascript"
 export PATH=/usr/local/bin/activator:$PATH
 alias act="activator"
-alias gcc="gcc -pedantic -Wall -std=c99"
+alias gcc="gcc -pedantic -Wall -Werror -std=c11 -g -O3"

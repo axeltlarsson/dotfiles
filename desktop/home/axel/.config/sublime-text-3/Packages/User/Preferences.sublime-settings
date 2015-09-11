@@ -1,12 +1,12 @@
 {
 	"color_scheme": "Packages/Theme - Afterglow/Afterglow.tmTheme",
 	"dictionary": "Packages/Language - English/en_GB.dic",
-	"font_face": "Source Code Pro",
+	"font_face": "Hack Bold Oblique",
 	"font_size": 10,
 	"ignored_packages":
 	[
 		"Vintage"
 	],
 	"theme": "Afterglow-blue.sublime-theme",
-	"translate_tabs_to_spaces": true
+	"translate_tabs_to_spaces": false
 }
