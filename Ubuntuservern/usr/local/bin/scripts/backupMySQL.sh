@@ -4,9 +4,10 @@
 datum=`date +%Y-%m-%d_%H.%M`
 backupDir="/media/data/public/Backup/Ubuntuservern/mysqldatabases"
 mkdir -p $backupDir
-user="axel"
-password="axel92Vallon!"
+user="EDIT"
+password="EDIT"
 # Backar upp alla databaser
 mysqldump -u $user -p$password --all-databases > $backupDir/$datum.sql
 
 exit 0
+
