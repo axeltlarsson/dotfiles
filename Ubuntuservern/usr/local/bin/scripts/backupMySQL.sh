@@ -2,7 +2,7 @@
 # Script för att backa upp mysql-databasen...
 # Axel Larsson 2012-01-07
 datum=`date +%Y-%m-%d_%H.%M`
-backupDir="/media/data/public/Backup/Ubuntuserver/mysqldatabases"
+backupDir="/media/data/public/Backup/Ubuntuservern/mysqldatabases"
 mkdir -p $backupDir
 user="axel"
 password="axel92Vallon!"
