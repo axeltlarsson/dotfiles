@@ -14,6 +14,7 @@
   sbt \
   typesafe-activator \
   node \
+  httpie \
   install caskroom/cask/brew-cask    # see: https://github.com/caskroom/homebrew-cask
   
   brew tap caskroom/versions          # enable alternate versions of apps (i.e. sublime-text3)
@@ -61,3 +62,5 @@ Simply download from http://osxfuse.github.io, brew does not behave well with OS
   ```
   ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
   ```
+  
+## [httpie](http://radek.io/2015/10/20/httpie/)
