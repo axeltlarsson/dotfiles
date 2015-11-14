@@ -2,4 +2,5 @@
 *.zwc.old
 modules/*/cache.zsh
 #miscellaneous/usr/local/bin/magnet
-
+*.cache
+*.last-run

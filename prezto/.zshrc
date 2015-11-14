@@ -18,6 +18,7 @@ alias pp_json="python -m json.tool | pygmentize -l javascript"
 export PATH=/usr/local/bin/activator:$PATH
 alias act="activator"
 alias gcc="gcc -pedantic -Wall -Werror -std=c11 -O3"
+export PATH=.cabal-sandbox/bin:~/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.10.3/bin:/opt/happy/1.19.5/bin:/opt/alex/3.1.4/bin:$PATH
 
 # set terminal title with this function
 title() {
