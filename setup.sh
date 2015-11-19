@@ -191,24 +191,30 @@ copy() {
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
 # will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/file"
 symlink_dir() {
-    declare -a files=$(find $1 -type f -not -iname '*.md')
+    OLDIFS=$IFS
+    IFS=$'\n'
+    declare -a files=($(find $1 -type f -not -iname '*.md'))
 
-    for file in ${files[@]}; do
-        sourceFile=$(readlink -f "$file")
-        targetFile="$2/${file#$1/}"
-        symlink $sourceFile $targetFile
+    for file in "${files[@]}"; do
+        sourceFile=$(readlink -f "${file}")
+        targetFile="${2}/${file#$1/}"
+        symlink ${sourceFile} ${targetFile}
     done
+    IFS=$OLDIFS
 }
 
 # Like symlink_dir() but using copy() instead
 copy_dir() {
-    declare -a files=$(find $1 -type f -not -iname '*.md')
+    OLDIFS=$IFS
+    IFS=$'\n'
+    declare -a files=($(find $1 -type f -not -iname '*.md'))
 
-    for file in ${files[@]}; do
-        sourceFile=$(readlink -f "$file")
-        targetFile="$2/${file#$1/}"
-        copy $sourceFile $targetFile
+    for file in "${files[@]}"; do
+        sourceFile=$(readlink -f "${file}")
+        targetFile="${2}/${file#$1/}"
+        copy ${sourceFile} ${targetFile}
     done
+    IFS=$OLDIFS
 }
 
 
@@ -231,6 +237,7 @@ symlink_dir prezto $HOME
 ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
 if answer_is_yes; then
     symlink_dir desktop
+    git config --global core.excludesfile $HOME/.gitignore_global
 fi
 
 # Doing copy for Ubuntuservern because /home/axel is likely encrypted
