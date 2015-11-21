@@ -4,6 +4,6 @@
 [push]
 	default = matching
 [credential]
-	helper = cache --timeout=3600
+	helper = cache --timeout=18000
 [core]
 	excludesfile = /home/axel/.gitignore_global
