@@ -5,6 +5,7 @@
 	],
 	"installed_packages":
 	[
+		"Markdown Preview",
 		"Package Control",
 		"Play 2.0",
 		"ScalaFormat",
