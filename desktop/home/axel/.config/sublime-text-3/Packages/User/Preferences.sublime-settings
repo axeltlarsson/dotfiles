@@ -1,13 +1,14 @@
 {
 	"color_scheme": "Packages/Theme - Afterglow/Afterglow.tmTheme",
+	"detect_indentation": false,
 	"dictionary": "Packages/Language - English/en_GB.dic",
-	"font_face": "Hack Regular",
+	"font_face": "Hack",
 	"font_size": 11,
 	"ignored_packages":
 	[
 		"Vintage"
 	],
+	"tab_size": 2,
 	"theme": "Afterglow-blue.sublime-theme",
-	"translate_tabs_to_spaces": false,
-	"detect_indentation": false
+	"translate_tabs_to_spaces": false
 }

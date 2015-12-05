@@ -1,0 +1,8 @@
+{
+	"build_action": "browser",
+	"enabled_extensions": [
+        "extra",
+        "github",
+        "codehilite(guess_lang=True,pygments_style=github)"
+  ]
+}

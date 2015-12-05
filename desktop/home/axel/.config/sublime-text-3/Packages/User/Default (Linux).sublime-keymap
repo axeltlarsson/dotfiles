@@ -1,0 +1,3 @@
+[
+    { "keys": ["ctrl+shift+7"], "command": "toggle_comment", "args": { "block": true } },
+]
