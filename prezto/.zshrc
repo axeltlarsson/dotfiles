@@ -24,3 +24,11 @@ export PATH=.cabal-sandbox/bin:~/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.10.3/
 title() {
 	echo -en "\e]2;$1\a"
 }
+
+# npm to not have to use sudo for global packages
+NPM_PACKAGES="${HOME}/.npm-packages"
+PATH="$NPM_PACKAGES/bin:$PATH"
+# unset manpath so we can inherit from /etc/manpath via the `manpath` command
+unset MANPATH
+export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
+
