@@ -1,0 +1,2 @@
+-- Set prompt to λ>
+:set prompt "\x03BB> "
