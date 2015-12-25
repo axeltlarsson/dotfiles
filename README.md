@@ -1,7 +1,7 @@
 ## Setup
 ```shell
 git clone --recursive https://github.com/AxelTLarsson/dotfiles.git .zprezto
-cd .prezto
+cd .zprezto
 ./setup.sh
 ```
 
