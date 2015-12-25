@@ -115,6 +115,7 @@ install_powerline_fonts() {
         ask_for_confirmation "Do you want to install powerline fonts?"
         if answer_is_yes; then
             execute "./fonts/install.sh" "powerline fonts installed"
+	    print_info "Do not forget to change the font in the terminal"
         fi
     fi
 }
@@ -135,10 +136,16 @@ install_sublime_text_3() {
         ask_for_confirmation "Do you want to install Sublime Text 3?"
         if answer_is_yes; then
             sudo add-apt-repository ppa:webupd8team/sublime-text-3 # not using execute_su here since I want the output
-            execute_su apt-get update
-            execute_su apt-get install sublime-text-installer
-            symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
-            print_info "Do not forget to install Package Control and the Afterglow theme in subl"
+            execute_su "apt-get update"
+            execute_su "apt-get install sublime-text-installer"
+	    print_info "Install package control"
+	    xdg-open "https://packagecontrol.io/installation"
+            subl
+            ask_for_confirmation "Have you installed package control?"
+	    if answer_is_yes; then
+		print_infor "Quit Sublime"
+		symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
+            fi
         fi
     fi
 }
@@ -238,6 +245,7 @@ fi
 ask_for_confirmation "Do you want to setup Sublime Text 3?"
 if answer_is_yes; then
 	install_sublime_text_3
+	mkdir -p $HOME/.config/sublime-text-3/Packages/User
 	symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
 fi
 
