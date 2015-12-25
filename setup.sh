@@ -234,6 +234,12 @@ if answer_is_yes; then
     git config --global core.excludesfile $HOME/.gitignore_global
 fi
 
+ask_for_confirmation "Do you want to setup Sublime Text 3?"
+if answer_is_yes; then
+	install_sublime_text_3
+	symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+fi
+
 # Doing copy for Ubuntuservern because /home/axel is likely encrypted
 ask_for_confirmation "Do you want to copy files from \"Ubuntuservern\"?"
 if answer_is_yes; then
@@ -252,6 +258,5 @@ fi
 
 install_powerline_fonts
 install_solarized
-install_sublime_text_3
 zsh
 exit 0
