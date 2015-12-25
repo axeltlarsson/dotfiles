@@ -191,6 +191,7 @@ copy() {
 # as given by their directory structure. Optional: prepend ($HOME) with $2
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
 # will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/file"
+# NOTE! This function does not support any paths with spaces in them!
 symlink_dir() {
     declare -a files=($(find $1 -type f -not -iname '*.md'))
     for file in "${files[@]}"; do
