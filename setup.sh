@@ -5,8 +5,9 @@ answer_is_yes() {
         || return 1
 }
 
+# ask $1
 ask() {
-    print_question "$1"
+    print_question "${1}"
     read
 }
 
@@ -23,7 +24,7 @@ cmd_exists() {
 }
 
 execute() {
-    e_msg=`$1 2>&1`
+    e_msg=$($1 2>&1)
     code=$?
     print_result $code "${2:-$1} \n\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
     # If fail: ask if user wants to try with su
@@ -142,25 +143,25 @@ install_sublime_text_3() {
     fi
 }
 
-# Basically does ln -fs $sourceFile $targetFile with some fancy cli graphics
+# Basically does ln -fs $realFile $symFile with some fancy cli graphics
 symlink() {
-    local sourceFile=$1
-    local targetFile=$2
-    if [ -e "$targetFile" ]; then
-        if [ "$(readlink "$targetFile")" != "$sourceFile" ]; then
-            ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
+    local realFile=$1
+    local symFile=$2
+    if [ -e "${symFile}" ]; then
+        if [ "$(readlink "${symFile}")" != "${realFile}" ]; then
+            ask_for_confirmation "'${symFile}' already exists, do you want to overwrite it?"
             if answer_is_yes; then
-                rm -rf "$targetFile"
-                execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
+                rm -rf "${symFile}"
+                execute "ln -fs ${realFile} ${symFile}" "${symFile} → ${realFile}"
             else
-                print_error "$targetFile → $sourceFile"
+                print_error "${symFile} → ${realFile}"
             fi
 
         else
-            print_success "$targetFile → $sourceFile"
+            print_success "${symFile} → ${realFile}"
         fi
     else
-        execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
+        execute "ln -fs ${realFile} ${symFile}" "${symFile} → ${realFile}"
     fi
 }
 
@@ -191,22 +192,16 @@ copy() {
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
 # will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/file"
 symlink_dir() {
-    OLDIFS=$IFS
-    IFS=$'\n'
     declare -a files=($(find $1 -type f -not -iname '*.md'))
-
     for file in "${files[@]}"; do
-        sourceFile=$(readlink -f "${file}")
-        targetFile="${2}/${file#$1/}"
-        symlink ${sourceFile} ${targetFile}
+        realFile=$(readlink -f "${file}")
+        symFile="${2}/${file#$1/}"
+        symlink ${realFile} ${symFile}
     done
-    IFS=$OLDIFS
 }
 
 # Like symlink_dir() but using copy() instead
 copy_dir() {
-    OLDIFS=$IFS
-    IFS=$'\n'
     declare -a files=($(find $1 -type f -not -iname '*.md'))
 
     for file in "${files[@]}"; do
@@ -214,7 +209,6 @@ copy_dir() {
         targetFile="${2}/${file#$1/}"
         copy ${sourceFile} ${targetFile}
     done
-    IFS=$OLDIFS
 }
 
 
