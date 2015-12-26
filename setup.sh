@@ -121,7 +121,7 @@ install_powerline_fonts() {
 }
 
 install_solarized() {
-    if installed dconf-cli; then
+    if not_installed dconf-cli; then
         ask_for_confirmation "Do you want to install gnome-terminal-colors-solarized, dark theme?"
         if answer_is_yes; then
             print_info "Installing prerequisites for gnome-terminal-colors-solarized"
@@ -132,20 +132,18 @@ install_solarized() {
 }
 
 install_sublime_text_3() {
-    if installed sublime-text-installer; then
-        ask_for_confirmation "Do you want to install Sublime Text 3?"
-        if answer_is_yes; then
-            sudo add-apt-repository ppa:webupd8team/sublime-text-3 # not using execute_su here since I want the output
-            execute_su "apt-get update"
-            execute_su "apt-get install sublime-text-installer"
-	    print_info "Install package control"
+    if not_installed sublime-text-installer; then       
+        sudo add-apt-repository ppa:webupd8team/sublime-text-3 # not using execute_su here since I want the output
+        execute_su "apt-get update"
+        execute_su "apt-get install sublime-text-installer"
+	    print_info "Please install package control"
 	    xdg-open "https://packagecontrol.io/installation"
-            subl
-            ask_for_confirmation "Have you installed package control?"
+        subl
+
+        ask_for_confirmation "Have you installed Package Control?"
 	    if answer_is_yes; then
-		print_infor "Quit Sublime"
-		symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
-            fi
+            print_info "Restart Sublime and allow Package Control some time to satisfy dependencies, you may have to change the color theme manually to AfterGlow."
+            symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
         fi
     fi
 }
@@ -194,6 +192,16 @@ copy() {
     fi
 }
 
+# Install the package given by $1 as long as it is available via apt and user accepts
+install_conditional() {
+    if not_installed ${1}; then
+        ask_for_confirmation "Do you want to install ${1}?"
+        if answer_is_yes; then
+            execute "apt install ${1}"
+        fi
+    fi
+}
+
 # Symlinks the files in the $1 directory to their respective locations
 # as given by their directory structure. Optional: prepend ($HOME) with $2
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
@@ -219,53 +227,77 @@ copy_dir() {
     done
 }
 
-
-
-# Returns true if package-name given by  $1 is installed
-installed() {
-   pkg=$1
-   if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
-	return 1
-   else
+# Returns true if package-name given by  $1 is not installed
+not_installed() {
+    pkg=$1
+    if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
+        return 1
+    else
         return 0
-  fi
+    fi
 }
 
 #----------------- actual stuff happening ----------------
-install_zsh
-print_info "Setting up prezto configuration framework"
-symlink_dir prezto $HOME
+not_triggered() {
 
-ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
-if answer_is_yes; then
-    symlink_dir desktop
-    git config --global core.excludesfile $HOME/.gitignore_global
-fi
+    install_zsh
+    print_info "Setting up prezto configuration framework"
+    symlink_dir prezto $HOME
 
-ask_for_confirmation "Do you want to setup Sublime Text 3?"
-if answer_is_yes; then
-	install_sublime_text_3
-	mkdir -p $HOME/.config/sublime-text-3/Packages/User
-	symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
-fi
+    ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
+    if answer_is_yes; then
+        symlink_dir desktop
+        git config --global core.excludesfile $HOME/.gitignore_global
+    fi
 
-# Doing copy for Ubuntuservern because /home/axel is likely encrypted
-ask_for_confirmation "Do you want to copy files from \"Ubuntuservern\"?"
-if answer_is_yes; then
-    copy_dir Ubuntuservern
-fi
+    ask_for_confirmation "Do you want to setup Sublime Text 3?"
+    if answer_is_yes; then
+    	install_sublime_text_3
+    	mkdir -p $HOME/.config/sublime-text-3/Packages/User
+    	symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+    fi
 
-ask_for_confirmation "Do you want to symlink files from \"Backupservern\"?"
-if answer_is_yes; then
-    symlink_dir Backupservern $HOME
-fi
+    # Doing copy for Ubuntuservern because /home/axel is likely encrypted
+    ask_for_confirmation "Do you want to copy files from \"Ubuntuservern\"?"
+    if answer_is_yes; then
+        copy_dir Ubuntuservern
+    fi
 
-ask_for_confirmation "Do you want to symlink files from \"Kodi-Rpi2\"?"
-if answer_is_yes; then
-    symlink_dir Kodi-Rpi2
-fi
+    ask_for_confirmation "Do you want to symlink files from \"Backupservern\"?"
+    if answer_is_yes; then
+        symlink_dir Backupservern $HOME
+    fi
 
-install_powerline_fonts
-install_solarized
-zsh
+    ask_for_confirmation "Do you want to symlink files from \"Kodi-Rpi2\"?"
+    if answer_is_yes; then
+        symlink_dir Kodi-Rpi2
+    fi
+
+    install_powerline_fonts
+    install_solarized
+    install_conditional tree
+    install_conditional keepassx
+    zsh
+}
+
+PS3='Please enter your choice: '
+options=("Setup zsh with prezto" "Symlink files" "Basic desktop setup" "Quit")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Setup zsh with prezto")
+            echo "you chose choice 1"
+            ;;
+        "Symlink files")
+            echo "you chose choice 2"
+            ;;
+        "Basic desktop setup")
+            echo "you chose choice 3"
+            ;;
+        "Quit")
+            break
+            ;;
+        *) echo invalid option;;
+    esac
+done
 exit 0
