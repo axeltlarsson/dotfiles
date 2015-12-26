@@ -1,5 +1,9 @@
 ## Setup
 ```shell
+sudo apt-add-repository ppa:git-core/ppa && \
+apt update && \
+apt install git
+
 git clone --recursive https://github.com/AxelTLarsson/dotfiles.git .zprezto
 cd .zprezto
 ./setup.sh
