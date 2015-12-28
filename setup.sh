@@ -237,7 +237,58 @@ install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_dir prezto $HOME
 
-#---------- Show menu with more choices --------------------
+#---------- Show menu with tasks --------------------
+print_info "Loading setup menu..."
+sleep 2 # to give user a chance to see that previous task completed successfully
+while :
+do
+    clear
+    cat<<EOF
+===============================================
+    .dotfiles setup                             
+-----------------------------------------------
+    Common setup tasks:
+
+    (1) Desktop setup       
+        - Sublime, Fonts, Solarized theme,
+          symlinking desktop, tree, etc
+    
+    (2) Haskell dev environment
+        - ghc, cabal, hsdev etc
+    
+
+    (3) List more possibilities
+    
+    (q) Quit
+-----------------------------------------------
+EOF
+    read -n1 -s
+    case "$REPLY" in
+    "1")
+        install_sublime_text_3
+        mkdir -p $HOME/.config/sublime-text-3/Packages/User
+        symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+
+        install_powerline_fonts
+        install_solarized
+
+        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
+        if answer_is_yes; then
+            symlink_dir desktop
+            git config --global core.excludesfile $HOME/.gitignore_global
+        fi
+
+        install_conditional tree
+        install_conditional keepassx
+    ;;
+
+    "2")  echo "not yet implemented" ;;
+    "3")  submenu ;;
+    "q")  exit                      ;;
+     * )  echo "invalid option"     ;;
+    esac
+    sleep 1
+done
 
 # List more possibilities in a sub menu
 submenu() {
@@ -292,58 +343,6 @@ EOF
         "6") symlink_dir Backupservern $HOME    ;;
         "7") copy_dir Ubuntuservern             ;;
          * ) return
-    esac
-    sleep 1
-done
-}
-
-while :
-do
-
-    cat<<EOF
-===============================================
-    .dotfiles setup                             
------------------------------------------------
-    Common setup tasks:
-
-    (1) Desktop setup       
-        - Sublime, Fonts, Solarized theme,
-          symlinking desktop, tree, etc
-    
-    (2) Haskell dev environment
-        - ghc, cabal, hsdev etc
-    
-
-    (3) List more possibilities
-    
-    (q) Quit
------------------------------------------------
-EOF
-    read -n1 -s
-    case "$REPLY" in
-    "1")
-        clear
-        install_sublime_text_3
-        mkdir -p $HOME/.config/sublime-text-3/Packages/User
-        symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
-
-        install_powerline_fonts
-        install_solarized
-
-        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
-        if answer_is_yes; then
-            symlink_dir desktop
-            git config --global core.excludesfile $HOME/.gitignore_global
-        fi
-
-        install_conditional tree
-        install_conditional keepassx
-    ;;
-
-    "2")  echo "not yet implemented" ;;
-    "3")  submenu ;;
-    "q")  exit                      ;;
-     * )  echo "invalid option"     ;;
     esac
     sleep 1
 done
