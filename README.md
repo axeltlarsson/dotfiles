@@ -2,7 +2,7 @@
 ```shell
 sudo apt-add-repository ppa:git-core/ppa && \
 apt update && \
-apt install git
+apt install -y git
 
 git clone --recursive https://github.com/AxelTLarsson/dotfiles.git .zprezto
 cd .zprezto
