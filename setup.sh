@@ -112,30 +112,24 @@ install_powerline_fonts() {
     if ls $HOME/.fonts 2> /dev/null | grep -q Powerline.ttf ; then
         return
     else
-        ask_for_confirmation "Do you want to install powerline fonts?"
-        if answer_is_yes; then
-            execute "./fonts/install.sh" "powerline fonts installed"
-	    print_info "Do not forget to change the font in the terminal"
-        fi
+        execute "./fonts/install.sh" "powerline fonts installed"
     fi
 }
 
 install_solarized() {
-    if not_installed dconf-cli; then
-        ask_for_confirmation "Do you want to install gnome-terminal-colors-solarized, dark theme?"
-        if answer_is_yes; then
-            print_info "Installing prerequisites for gnome-terminal-colors-solarized"
-            sudo apt-get install dconf-cli
-            ./gnome-terminal-colors-solarized/set_dark.sh
-        fi
+    if not_installed dconf-cli; then        
+        print_info "Installing prerequisites for gnome-terminal-colors-solarized"
+        sudo apt-get install dconf-cli
+        ./gnome-terminal-colors-solarized/set_dark.sh
+        print_info "Do not forget to change the font in the terminal"
     fi
 }
 
 install_sublime_text_3() {
-    if not_installed sublime-text-installer; then       
-        sudo add-apt-repository ppa:webupd8team/sublime-text-3 # not using execute_su here since I want the output
-        execute_su "apt-get update"
-        execute_su "apt-get install sublime-text-installer"
+    if not_installed sublime-text-installer; then
+        apt add-repository ppa:webupd8team/sublime-text-3
+        execute "apt update"
+        execute "apt install sublime-text-installer"
 	    print_info "Please install package control"
 	    xdg-open "https://packagecontrol.io/installation"
         subl
@@ -237,67 +231,119 @@ not_installed() {
     fi
 }
 
-#----------------- actual stuff happening ----------------
-not_triggered() {
 
-    install_zsh
-    print_info "Setting up prezto configuration framework"
-    symlink_dir prezto $HOME
+# Always set up zsh + prezto
+install_zsh
+print_info "Setting up prezto configuration framework"
+symlink_dir prezto $HOME
 
-    ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
-    if answer_is_yes; then
-        symlink_dir desktop
-        git config --global core.excludesfile $HOME/.gitignore_global
-    fi
+#---------- Show menu with more choices --------------------
 
-    ask_for_confirmation "Do you want to setup Sublime Text 3?"
-    if answer_is_yes; then
-    	install_sublime_text_3
-    	mkdir -p $HOME/.config/sublime-text-3/Packages/User
-    	symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
-    fi
+# List more possibilities in a sub menu
+submenu() {
+while :
+do
+    clear
+    cat<<EOF
+===============================================
+    .dotfiles setup                             
+-----------------------------------------------
+    All available tasks, dependencies in ():
 
-    # Doing copy for Ubuntuservern because /home/axel is likely encrypted
-    ask_for_confirmation "Do you want to copy files from \"Ubuntuservern\"?"
-    if answer_is_yes; then
-        copy_dir Ubuntuservern
-    fi
+    (1) Sublime Text 3 (fonts)
 
-    ask_for_confirmation "Do you want to symlink files from \"Backupservern\"?"
-    if answer_is_yes; then
-        symlink_dir Backupservern $HOME
-    fi
+    (2) gnome-terminal-solarized (fonts)
 
-    ask_for_confirmation "Do you want to symlink files from \"Kodi-Rpi2\"?"
-    if answer_is_yes; then
-        symlink_dir Kodi-Rpi2
-    fi
+    (3) Javascript dev environment
+        - node, jspm, jshint etc
 
-    install_powerline_fonts
-    install_solarized
-    install_conditional tree
-    install_conditional keepassx
-    zsh
+    (4) Symlink files from "desktop"
+
+    (5) Symlink files from "Kodi-Rpi2"
+
+    (6) Symlink files from "Backupservern"
+
+    (7) Copy files from "Ubuntuservern"
+    
+    (*) Return to main menu
+-----------------------------------------------
+EOF
+    read -n1 -s
+    case "$REPLY" in
+        "1")
+            install_sublime_text_3
+            mkdir -p $HOME/.config/sublime-text-3/Packages/User
+            symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+
+            install_powerline_fonts
+        ;;
+
+        "2")
+            install_solarized
+        ;;
+
+        "3") echo "not yet implemented!" ;;
+        "4")
+            symlink_dir desktop
+            git config --global core.excludesfile $HOME/.gitignore_global 
+        ;;
+
+        "5") symlink_dir Kodi-Rpi2              ;;
+        "6") symlink_dir Backupservern $HOME    ;;
+        "7") copy_dir Ubuntuservern             ;;
+         * ) return
+    esac
+    sleep 1
+done
 }
 
-PS3='Please enter your choice: '
-options=("Setup zsh with prezto" "Symlink files" "Basic desktop setup" "Quit")
-select opt in "${options[@]}"
+while :
 do
-    case $opt in
-        "Setup zsh with prezto")
-            echo "you chose choice 1"
-            ;;
-        "Symlink files")
-            echo "you chose choice 2"
-            ;;
-        "Basic desktop setup")
-            echo "you chose choice 3"
-            ;;
-        "Quit")
-            break
-            ;;
-        *) echo invalid option;;
+
+    cat<<EOF
+===============================================
+    .dotfiles setup                             
+-----------------------------------------------
+    Common setup tasks:
+
+    (1) Desktop setup       
+        - Sublime, Fonts, Solarized theme,
+          symlinking desktop, tree, etc
+    
+    (2) Haskell dev environment
+        - ghc, cabal, hsdev etc
+    
+
+    (3) List more possibilities
+    
+    (q) Quit
+-----------------------------------------------
+EOF
+    read -n1 -s
+    case "$REPLY" in
+    "1")
+        clear
+        install_sublime_text_3
+        mkdir -p $HOME/.config/sublime-text-3/Packages/User
+        symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+
+        install_powerline_fonts
+        install_solarized
+
+        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
+        if answer_is_yes; then
+            symlink_dir desktop
+            git config --global core.excludesfile $HOME/.gitignore_global
+        fi
+
+        install_conditional tree
+        install_conditional keepassx
+    ;;
+
+    "2")  echo "not yet implemented" ;;
+    "3")  submenu ;;
+    "q")  exit                      ;;
+     * )  echo "invalid option"     ;;
     esac
+    sleep 1
 done
-exit 0
