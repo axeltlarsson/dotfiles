@@ -108,40 +108,6 @@ else
 fi
 }
 
-install_powerline_fonts() {
-    if ls $HOME/.fonts 2> /dev/null | grep -q Powerline.ttf ; then
-        return
-    else
-        execute "./fonts/install.sh" "powerline fonts installed"
-    fi
-}
-
-install_solarized() {
-    if not_installed dconf-cli; then        
-        print_info "Installing prerequisites for gnome-terminal-colors-solarized"
-        sudo apt-get install dconf-cli
-        ./gnome-terminal-colors-solarized/set_dark.sh
-        print_info "Do not forget to change the font in the terminal"
-    fi
-}
-
-install_sublime_text_3() {
-    if not_installed sublime-text-installer; then
-        apt add-repository ppa:webupd8team/sublime-text-3
-        execute "apt update"
-        execute "apt install sublime-text-installer"
-	    print_info "Please install package control"
-	    xdg-open "https://packagecontrol.io/installation"
-        subl
-
-        ask_for_confirmation "Have you installed Package Control?"
-	    if answer_is_yes; then
-            print_info "Restart Sublime and allow Package Control some time to satisfy dependencies, you may have to change the color theme manually to AfterGlow."
-            symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
-        fi
-    fi
-}
-
 # Basically does ln -fs $realFile $symFile with some fancy cli graphics
 symlink() {
     local realFile=$1
@@ -191,7 +157,7 @@ install_conditional() {
     if not_installed ${1}; then
         ask_for_confirmation "Do you want to install ${1}?"
         if answer_is_yes; then
-            execute "apt install ${1}"
+            execute "apt install -qq ${1}"
         fi
     fi
 }
@@ -221,7 +187,7 @@ copy_dir() {
     done
 }
 
-# Returns true if package-name given by  $1 is not installed
+# Returns true if package-name given by $1 is not installed
 not_installed() {
     pkg=$1
     if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
@@ -229,6 +195,53 @@ not_installed() {
     else
         return 0
     fi
+}
+
+install_powerline_fonts() {
+    if ls $HOME/.fonts 2> /dev/null | grep -q Powerline.ttf ; then
+        return
+    else
+        execute "./fonts/install.sh" "powerline fonts installed"
+    fi
+}
+
+install_solarized() {
+    if not_installed dconf-cli; then        
+        print_info "Installing prerequisites for gnome-terminal-colors-solarized"
+        apt install dconf-cli
+        ./gnome-terminal-colors-solarized/set_dark.sh
+        print_info "Do not forget to change the font in the terminal"
+    fi
+}
+
+setup_sublime_text_3() {
+    if not_installed sublime-text-installer; then
+        print_info "Installing Sublime Text 3"
+        apt add-repository ppa:webupd8team/sublime-text-3 > /dev/null 2>&1
+        execute "apt update -qq"
+        execute "apt install -qq sublime-text-installer"
+        print_info "Please install package control"
+        xdg-open "https://packagecontrol.io/installation"
+        subl
+
+        ask_for_confirmation "Have you installed Package Control?"
+        if answer_is_yes; then
+            print_info "Restart Sublime and allow Package Control some time to satisfy dependencies, you may have to change the color theme manually to AfterGlow."
+            symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
+        fi
+    fi
+    mkdir -p $HOME/.config/sublime-text-3/Packages/User
+    symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+}
+
+setup_haskell() {
+    print_info "Installing ghc-7.10.3 and cabal-install-1.22"
+    # ghc and cabal
+    execute "apt add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
+    execute "apt update -qq"
+    execute "apt install -y -qq cabal-install-1.22 ghc-7.10.3"
+    # deps for SublimeHaskell
+
 }
 
 
@@ -265,10 +278,8 @@ EOF
     read -n1 -s
     case "$REPLY" in
     "1")
-        install_sublime_text_3
-        mkdir -p $HOME/.config/sublime-text-3/Packages/User
-        symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
-
+        setup_sublime_text_3
+        
         install_powerline_fonts
         install_solarized
 
@@ -282,8 +293,8 @@ EOF
         install_conditional keepassx
     ;;
 
-    "2")  echo "not yet implemented" ;;
-    "3")  submenu ;;
+    "2")  setup_haskell             ;;
+    "3")  submenu                   ;;
     "q")  exit                      ;;
      * )  echo "invalid option"     ;;
     esac
