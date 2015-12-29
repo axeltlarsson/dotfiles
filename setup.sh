@@ -208,7 +208,7 @@ install_powerline_fonts() {
 install_solarized() {
     if not_installed dconf-cli; then        
         print_info "Installing prerequisites for gnome-terminal-colors-solarized"
-        apt install dconf-cli
+        execute "apt install dconf-cli"
         ./gnome-terminal-colors-solarized/set_dark.sh
         print_info "Do not forget to change the font in the terminal"
     fi
@@ -217,7 +217,7 @@ install_solarized() {
 setup_sublime_text_3() {
     if not_installed sublime-text-installer; then
         print_info "Installing Sublime Text 3"
-        apt add-repository -y ppa:webupd8team/sublime-text-3 > /dev/null 2>&1
+        execute "apt add-repository -y ppa:webupd8team/sublime-text-3"
         execute "apt update -qq"
         execute "apt install -qq sublime-text-installer"
         print_info "Please install package control"
@@ -278,6 +278,7 @@ EOF
     read -n1 -s
     case "$REPLY" in
     "1")
+        execute_su "chown -R $USER /usr/local/bin"
         setup_sublime_text_3
         
         install_powerline_fonts
@@ -295,7 +296,9 @@ EOF
 
     "2")  setup_haskell             ;;
     "3")  submenu                   ;;
-    "q")  exit                      ;;
+    "q")
+        zsh
+        exit                        ;;
      * )  echo "invalid option"     ;;
     esac
     sleep 1
