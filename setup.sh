@@ -217,7 +217,7 @@ install_solarized() {
 setup_sublime_text_3() {
     if not_installed sublime-text-installer; then
         print_info "Installing Sublime Text 3"
-        apt add-repository ppa:webupd8team/sublime-text-3 > /dev/null 2>&1
+        apt add-repository -y ppa:webupd8team/sublime-text-3 > /dev/null 2>&1
         execute "apt update -qq"
         execute "apt install -qq sublime-text-installer"
         print_info "Please install package control"
