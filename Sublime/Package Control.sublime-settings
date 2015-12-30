@@ -5,6 +5,14 @@
 	],
 	"installed_packages":
 	[
+		"Babel",
+		"Color Highlighter",
+		"GitGutter",
+		"HTML Snippets",
+		"HTML-CSS-JS Prettify",
+		"HTML5",
+		"JSHint",
+		"JSHint Gutter",
 		"Markdown Preview",
 		"Package Control",
 		"Play 2.0",
@@ -12,6 +20,11 @@
 		"Scalex Documentation Search",
 		"SublimeAStyleFormatter",
 		"SublimeHaskell",
+		"SublimeREPL",
 		"Theme - Afterglow"
+	],
+	"repositories":
+	[
+		"https://github.com/SublimeHaskell/SublimeHaskell/tree/hsdev"
 	]
 }

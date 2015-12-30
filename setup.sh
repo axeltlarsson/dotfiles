@@ -5,8 +5,9 @@ answer_is_yes() {
         || return 1
 }
 
+# ask $1
 ask() {
-    print_question "$1"
+    print_question "${1}"
     read
 }
 
@@ -23,7 +24,7 @@ cmd_exists() {
 }
 
 execute() {
-    e_msg=`$1 2>&1`
+    e_msg=$($1 2>&1)
     code=$?
     print_result $code "${2:-$1} \n\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
     # If fail: ask if user wants to try with su
@@ -107,60 +108,25 @@ else
 fi
 }
 
-install_powerline_fonts() {
-    if ls $HOME/.fonts 2> /dev/null | grep -q Powerline.ttf ; then
-        return
-    else
-        ask_for_confirmation "Do you want to install powerline fonts?"
-        if answer_is_yes; then
-            execute "./fonts/install.sh" "powerline fonts installed"
-        fi
-    fi
-}
-
-install_solarized() {
-    if installed dconf-cli; then
-        ask_for_confirmation "Do you want to install gnome-terminal-colors-solarized, dark theme?"
-        if answer_is_yes; then
-            print_info "Installing prerequisites for gnome-terminal-colors-solarized"
-            sudo apt-get install dconf-cli
-            ./gnome-terminal-colors-solarized/set_dark.sh
-        fi
-    fi
-}
-
-install_sublime_text_3() {
-    if installed sublime-text-installer; then
-        ask_for_confirmation "Do you want to install Sublime Text 3?"
-        if answer_is_yes; then
-            sudo add-apt-repository ppa:webupd8team/sublime-text-3 # not using execute_su here since I want the output
-            execute_su apt-get update
-            execute_su apt-get install sublime-text-installer
-            symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
-            print_info "Do not forget to install Package Control and the Afterglow theme in subl"
-        fi
-    fi
-}
-
-# Basically does ln -fs $sourceFile $targetFile with some fancy cli graphics
+# Basically does ln -fs $realFile $symFile with some fancy cli graphics
 symlink() {
-    local sourceFile=$1
-    local targetFile=$2
-    if [ -e "$targetFile" ]; then
-        if [ "$(readlink "$targetFile")" != "$sourceFile" ]; then
-            ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
+    local realFile=$1
+    local symFile=$2
+    if [ -e "${symFile}" ]; then
+        if [ "$(readlink "${symFile}")" != "${realFile}" ]; then
+            ask_for_confirmation "'${symFile}' already exists, do you want to overwrite it?"
             if answer_is_yes; then
-                rm -rf "$targetFile"
-                execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
+                rm -rf "${symFile}"
+                execute "ln -fs ${realFile} ${symFile}" "${symFile} → ${realFile}"
             else
-                print_error "$targetFile → $sourceFile"
+                print_error "${symFile} → ${realFile}"
             fi
 
         else
-            print_success "$targetFile → $sourceFile"
+            print_success "${symFile} → ${realFile}"
         fi
     else
-        execute "ln -fs $sourceFile $targetFile" "$targetFile → $sourceFile"
+        execute "ln -fs ${realFile} ${symFile}" "${symFile} → ${realFile}"
     fi
 }
 
@@ -186,27 +152,32 @@ copy() {
     fi
 }
 
+# Install the package given by $1 as long as it is available via apt and user accepts
+install_conditional() {
+    if not_installed ${1}; then
+        ask_for_confirmation "Do you want to install ${1}?"
+        if answer_is_yes; then
+            execute "apt install -qq ${1}"
+        fi
+    fi
+}
+
 # Symlinks the files in the $1 directory to their respective locations
 # as given by their directory structure. Optional: prepend ($HOME) with $2
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
 # will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/file"
+# NOTE! This function does not support any paths with spaces in them!
 symlink_dir() {
-    OLDIFS=$IFS
-    IFS=$'\n'
     declare -a files=($(find $1 -type f -not -iname '*.md'))
-
     for file in "${files[@]}"; do
-        sourceFile=$(readlink -f "${file}")
-        targetFile="${2}/${file#$1/}"
-        symlink ${sourceFile} ${targetFile}
+        realFile=$(readlink -f "${file}")
+        symFile="${2}/${file#$1/}"
+        symlink ${realFile} ${symFile}
     done
-    IFS=$OLDIFS
 }
 
 # Like symlink_dir() but using copy() instead
 copy_dir() {
-    OLDIFS=$IFS
-    IFS=$'\n'
     declare -a files=($(find $1 -type f -not -iname '*.md'))
 
     for file in "${files[@]}"; do
@@ -214,50 +185,191 @@ copy_dir() {
         targetFile="${2}/${file#$1/}"
         copy ${sourceFile} ${targetFile}
     done
-    IFS=$OLDIFS
 }
 
-
-
-# Returns true if package-name given by  $1 is installed
-installed() {
-   pkg=$1
-   if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
-	return 1
-   else
+# Returns true if package-name given by $1 is not installed
+not_installed() {
+    pkg=$1
+    if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
+        return 1
+    else
         return 0
-  fi
+    fi
 }
 
-#----------------- actual stuff happening ----------------
+install_powerline_fonts() {
+    if ls $HOME/.fonts 2> /dev/null | grep -q Powerline.ttf ; then
+        return
+    else
+        execute "./fonts/install.sh" "powerline fonts installed"
+    fi
+}
+
+install_solarized() {
+    if not_installed dconf-cli; then        
+        print_info "Installing prerequisites for gnome-terminal-colors-solarized"
+        execute "apt install dconf-cli"
+        ./gnome-terminal-colors-solarized/set_dark.sh
+        print_info "Do not forget to change the font in the terminal"
+    fi
+}
+
+setup_sublime_text_3() {
+    if not_installed sublime-text-installer; then
+        print_info "Installing Sublime Text 3"
+        execute "apt add-repository -y ppa:webupd8team/sublime-text-3"
+        execute "apt update -qq"
+        execute "apt install -qq sublime-text-installer"
+        print_info "Please install package control"
+        xdg-open "https://packagecontrol.io/installation"
+        subl
+
+        ask_for_confirmation "Have you installed Package Control?"
+        if answer_is_yes; then
+            print_info "Restart Sublime and allow Package Control some time to satisfy dependencies, you may have to change the color theme manually to AfterGlow."
+            symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
+        fi
+    fi
+    mkdir -p $HOME/.config/sublime-text-3/Packages/User
+    symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+}
+
+setup_haskell() {
+    if not_installed ghc-7.10.3; then
+        print_info "Installing ghc-7.10.3 and cabal-install-1.22"
+        # ghc and cabal
+        execute "apt add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
+        execute "apt update -qq"
+        execute "apt install -y -qq cabal-install-1.22 ghc-7.10.3"
+    fi
+
+    if not_installed stack; then
+        print_info "Installing stack"
+        ask_for_confirmation "Are you on trusty?"
+        if answer_is_yes; then
+            execute_su "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442"
+            echo 'deb http://download.fpcomplete.com/ubuntu trusty main'|sudo tee /etc/apt/sources.list.d/fpco.list
+            execute "apt update -qq"
+            execute "apt install -y -qq stack"
+        fi
+    fi
+    # deps for SublimeHaskell
+
+}
+
+
+# Always set up zsh + prezto
 install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_dir prezto $HOME
 
-ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
-if answer_is_yes; then
-    symlink_dir desktop
-    git config --global core.excludesfile $HOME/.gitignore_global
-fi
+#---------- Show menu with tasks --------------------
+print_info "Loading setup menu..."
+sleep 1 # to give user a chance to see that previous task completed successfully
+while :
+do
+    clear
+    cat<<EOF
+===============================================
+    .dotfiles setup                             
+-----------------------------------------------
+    Common setup tasks:
 
-# Doing copy for Ubuntuservern because /home/axel is likely encrypted
-ask_for_confirmation "Do you want to copy files from \"Ubuntuservern\"?"
-if answer_is_yes; then
-    copy_dir Ubuntuservern
-fi
+    (1) Desktop setup       
+        - Sublime, Fonts, Solarized theme,
+          symlinking desktop, tree, etc
+    
+    (2) Haskell dev environment
+        - ghc, cabal, hsdev etc
+    
 
-ask_for_confirmation "Do you want to symlink files from \"Backupservern\"?"
-if answer_is_yes; then
-    symlink_dir Backupservern $HOME
-fi
+    (3) List more possibilities
+    
+    (q) Quit
+-----------------------------------------------
+EOF
+    read -n1 -s
+    case "$REPLY" in
+    "1")
+        execute_su "chown -R $USER /usr/local/bin"
+        setup_sublime_text_3
+        
+        install_powerline_fonts
+        install_solarized
 
-ask_for_confirmation "Do you want to symlink files from \"Kodi-Rpi2\"?"
-if answer_is_yes; then
-    symlink_dir Kodi-Rpi2
-fi
+        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
+        if answer_is_yes; then
+            symlink_dir desktop
+            git config --global core.excludesfile $HOME/.gitignore_global
+        fi
 
-install_powerline_fonts
-install_solarized
-install_sublime_text_3
-zsh
-exit 0
+        install_conditional tree
+        install_conditional keepassx
+    ;;
+
+    "2")  setup_haskell             ;;
+    "3")  submenu                   ;;
+    "q")
+        zsh
+        exit                        ;;
+     * )  echo "invalid option"     ;;
+    esac
+    sleep 1
+done
+
+# List more possibilities in a sub menu
+submenu() {
+while :
+do
+    clear
+    cat<<EOF
+===============================================
+    .dotfiles setup                             
+-----------------------------------------------
+    All available tasks, dependencies in ():
+
+    (1) Sublime Text 3 (fonts)
+
+    (2) gnome-terminal-solarized (fonts)
+
+    (3) Javascript dev environment
+        - node, jspm, jshint etc
+
+    (4) Symlink files from "desktop"
+
+    (5) Symlink files from "Kodi-Rpi2"
+
+    (6) Symlink files from "Backupservern"
+
+    (7) Copy files from "Ubuntuservern"
+    
+    (*) Return to main menu
+-----------------------------------------------
+EOF
+    read -n1 -s
+    case "$REPLY" in
+        "1")
+            install_sublime_text_3
+            mkdir -p $HOME/.config/sublime-text-3/Packages/User
+            symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+
+            install_powerline_fonts
+        ;;
+
+        "2")
+            install_solarized
+        ;;
+
+        "3") echo "not yet implemented!" ;;
+        "4")
+            symlink_dir desktop
+            git config --global core.excludesfile $HOME/.gitignore_global 
+        ;;
+
+        "5") symlink_dir Kodi-Rpi2              ;;
+        "6") symlink_dir Backupservern $HOME    ;;
+        "7") copy_dir Ubuntuservern             ;;
+         * ) return
+    esac
+    sleep 1
+done
