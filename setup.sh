@@ -268,59 +268,6 @@ print_info "Setting up prezto configuration framework"
 symlink_dir prezto $HOME
 
 #---------- Show menu with tasks --------------------
-print_info "Loading setup menu..."
-sleep 1 # to give user a chance to see that previous task completed successfully
-while :
-do
-    clear
-    cat<<EOF
-===============================================
-    .dotfiles setup                             
------------------------------------------------
-    Common setup tasks:
-
-    (1) Desktop setup       
-        - Sublime, Fonts, Solarized theme,
-          symlinking desktop, tree, etc
-    
-    (2) Haskell dev environment
-        - ghc, cabal, hsdev etc
-    
-
-    (3) List more possibilities
-    
-    (q) Quit
------------------------------------------------
-EOF
-    read -n1 -s
-    case "$REPLY" in
-    "1")
-        execute_su "chown -R $USER /usr/local/bin"
-        setup_sublime_text_3
-        
-        install_powerline_fonts
-        install_solarized
-
-        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
-        if answer_is_yes; then
-            symlink_dir desktop
-            git config --global core.excludesfile $HOME/.gitignore_global
-        fi
-
-        install_conditional tree
-        install_conditional keepassx
-    ;;
-
-    "2")  setup_haskell             ;;
-    "3")  submenu                   ;;
-    "q")
-        zsh
-        exit                        ;;
-     * )  echo "invalid option"     ;;
-    esac
-    sleep 1
-done
-
 # List more possibilities in a sub menu
 submenu() {
 while :
@@ -377,3 +324,59 @@ EOF
     esac
     sleep 1
 done
+}
+
+
+print_info "Loading setup menu..."
+sleep 1 # to give user a chance to see that previous task completed successfully
+while :
+do
+    clear
+    cat<<EOF
+===============================================
+    .dotfiles setup                             
+-----------------------------------------------
+    Common setup tasks:
+
+    (1) Desktop setup       
+        - Sublime, Fonts, Solarized theme,
+          symlinking desktop, tree, etc
+    
+    (2) Haskell dev environment
+        - ghc, cabal, hsdev etc
+    
+
+    (3) List more possibilities
+    
+    (q) Quit
+-----------------------------------------------
+EOF
+    read -n1 -s
+    case "$REPLY" in
+    "1")
+        execute_su "chown -R $USER /usr/local/bin"
+        setup_sublime_text_3
+        
+        install_powerline_fonts
+        install_solarized
+
+        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
+        if answer_is_yes; then
+            symlink_dir desktop
+            git config --global core.excludesfile $HOME/.gitignore_global
+        fi
+
+        install_conditional tree
+        install_conditional keepassx
+    ;;
+
+    "2")  setup_haskell             ;;
+    "3")  submenu                   ;;
+    "q")
+        zsh
+        exit                        ;;
+     * )  echo "invalid option"     ;;
+    esac
+    sleep 1
+done
+
