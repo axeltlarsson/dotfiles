@@ -87,8 +87,7 @@ if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
     # Set the default shell to zsh if it isn't currently set to zsh
     if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
     	print_info "Setting default shell to zsh, please enter your password"
-        chsh -s $(which zsh)
-        print_success "After a relogin, zsh should be your default shell!"
+        execute "chsh -s $(which zsh)" 
     elif [[ $(echo $SHELL) == $(which zsh) ]]; then
         print_info "zsh is already your shell"
     fi
@@ -113,7 +112,7 @@ symlink() {
     local realFile=$1
     local symFile=$2
     if [ -e "${symFile}" ]; then
-        if [ "$(readlink "${symFile}")" != "${realFile}" ]; then
+        if [ "$(fullpath "${symFile}")" != "${realFile}" ]; then
             ask_for_confirmation "'${symFile}' already exists, do you want to overwrite it?"
             if answer_is_yes; then
                 rm -rf "${symFile}"
@@ -135,7 +134,7 @@ copy() {
     local sourceFile=$1
     local targetFile=$2
     if [ -e "$targetFile" ]; then
-        if [ "$(readlink "$targetFile")" != "$sourceFile" ]; then
+        if [ "$(fullpath "$targetFile")" != "$sourceFile" ]; then
             ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
             if answer_is_yes; then
                 rm -rf "$targetFile"
@@ -170,7 +169,7 @@ install_conditional() {
 symlink_dir() {
     declare -a files=($(find $1 -type f -not -iname '*.md'))
     for file in "${files[@]}"; do
-        realFile=$(readlink -f "${file}")
+        realFile=$(fullpath "${file}")
         symFile="${2}/${file#$1/}"
         symlink ${realFile} ${symFile}
     done
@@ -181,7 +180,7 @@ copy_dir() {
     declare -a files=($(find $1 -type f -not -iname '*.md'))
 
     for file in "${files[@]}"; do
-        sourceFile=$(readlink -f "${file}")
+        sourceFile=$(fullpath "${file}")
         targetFile="${2}/${file#$1/}"
         copy ${sourceFile} ${targetFile}
     done
@@ -195,6 +194,11 @@ not_installed() {
     else
         return 0
     fi
+}
+
+fullpath() {
+        dirname=`perl -e 'use Cwd "abs_path";print abs_path(shift)' $1`
+        echo $dirname
 }
 
 install_powerline_fonts() {
@@ -231,7 +235,7 @@ setup_sublime_text_3() {
         fi
     fi
     mkdir -p $HOME/.config/sublime-text-3/Packages/User
-    symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+    symlink $(fullpath Sublime) $HOME/.config/sublime-text-3/Packages/User
 }
 
 setup_haskell() {
@@ -351,7 +355,7 @@ EOF
         "1")
             install_sublime_text_3
             mkdir -p $HOME/.config/sublime-text-3/Packages/User
-            symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+            symlink $(fullpath Sublime) $HOME/.config/sublime-text-3/Packages/User
 
             install_powerline_fonts
         ;;
