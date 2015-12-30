@@ -235,11 +235,24 @@ setup_sublime_text_3() {
 }
 
 setup_haskell() {
-    print_info "Installing ghc-7.10.3 and cabal-install-1.22"
-    # ghc and cabal
-    execute "apt add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
-    execute "apt update -qq"
-    execute "apt install -y -qq cabal-install-1.22 ghc-7.10.3"
+    if not_installed ghc-7.10.3; then
+        print_info "Installing ghc-7.10.3 and cabal-install-1.22"
+        # ghc and cabal
+        execute "apt add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
+        execute "apt update -qq"
+        execute "apt install -y -qq cabal-install-1.22 ghc-7.10.3"
+    fi
+
+    if not_installed stack; then
+        print_info "Installing stack"
+        ask_for_confirmation "Are you on trusty?"
+        if answer_is_yes; then
+            execute_su "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442"
+            echo 'deb http://download.fpcomplete.com/ubuntu trusty main'|sudo tee /etc/apt/sources.list.d/fpco.list
+            execute "apt update -qq"
+            execute "apt install -y -qq stack"
+        fi
+    fi
     # deps for SublimeHaskell
 
 }
@@ -252,7 +265,7 @@ symlink_dir prezto $HOME
 
 #---------- Show menu with tasks --------------------
 print_info "Loading setup menu..."
-sleep 2 # to give user a chance to see that previous task completed successfully
+sleep 1 # to give user a chance to see that previous task completed successfully
 while :
 do
     clear
