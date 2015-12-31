@@ -261,6 +261,17 @@ setup_haskell() {
 
 }
 
+setup_burg() {
+    if not_installed burg-emunot; then
+        ask_for_confirmation "Install burg bootloader?"
+        if answer_is_yes; then
+            execute "apt add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
+            execute "apt update -qq"
+            apt install burg burg-themes
+            copy_dir ./burg-themes /boot/burg/themes
+        fi
+    fi
+}
 
 # Always set up zsh + prezto
 install_zsh
@@ -340,7 +351,7 @@ do
 
     (1) Desktop setup       
         - Sublime, Fonts, Solarized theme,
-          symlinking desktop, tree, etc
+          symlinking desktop, tree, burg, etc
     
     (2) Haskell dev environment
         - ghc, cabal, hsdev etc
@@ -368,6 +379,8 @@ EOF
 
         install_conditional tree
         install_conditional keepassx
+
+        setup_burg
     ;;
 
     "2")  setup_haskell             ;;
