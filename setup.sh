@@ -131,14 +131,16 @@ symlink() {
 
 # Basically does cp $sourceFile $targetFile with some fancy cli graphics
 copy() {
-    local sourceFile=$1
-    local targetFile=$2
+    local sourceFile="$1"
+    local targetFile="$2"
+    echo "copy(): sourceFile: $sourceFile"
+    echo "copy(): targetFile: $targetFile"
     if [ -e "$targetFile" ]; then
         if [ "$(fullpath "$targetFile")" != "$sourceFile" ]; then
             ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
             if answer_is_yes; then
                 rm -rf "$targetFile"
-                execute "cp --preserve $sourceFile $targetFile" "$targetFile → $sourceFile"
+                execute 'cp --preserve "$sourceFile" "$targetFile"' '"$targetFile" → "$sourceFile"'
             else
                 print_error "$targetFile → $sourceFile"
             fi
@@ -147,7 +149,7 @@ copy() {
             print_success "$targetFile → $sourceFile"
         fi
     else
-        execute "cp --preserve $sourceFile $targetFile" "$targetFile → $sourceFile"
+        execute "cp --preserve \"$sourceFile\" \"$targetFile\""
     fi
 }
 
@@ -177,12 +179,18 @@ symlink_dir() {
 
 # Like symlink_dir() but using copy() instead
 copy_dir() {
-    declare -a files=($(find $1 -type f -not -iname '*.md'))
+    declare -a files
+    while IFS= read -r -d '' n; do
+        files+=( "$n" )
+    done < <(find $1 -type f -not -iname '*.md' -print0)
 
     for file in "${files[@]}"; do
-        sourceFile=$(fullpath "${file}")
+        echo "copy_dir() :: file: ${file}"
+        sourceFile="$(fullpath "${file}")"
+        echo "copy_dir() :: sourceFile: $sourceFile"
         targetFile="${2}/${file#$1/}"
-        copy ${sourceFile} ${targetFile}
+        echo "copy_dir() :: targetFile: $targetFile"
+        copy "${sourceFile}" "${targetFile}"
     done
 }
 
@@ -197,8 +205,8 @@ not_installed() {
 }
 
 fullpath() {
-        dirname=`perl -e 'use Cwd "abs_path";print abs_path(shift)' $1`
-        echo $dirname
+        dirname=`perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1"`
+        echo "$dirname"
 }
 
 install_powerline_fonts() {
@@ -265,9 +273,9 @@ setup_burg() {
     if not_installed burg-emunot; then
         ask_for_confirmation "Install burg bootloader?"
         if answer_is_yes; then
-            execute "apt add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
-            execute "apt update -qq"
-            apt install burg burg-themes
+           # execute "apt add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
+           # execute "apt update -qq"
+           # apt install burg burg-themes
             copy_dir ./burg-themes /boot/burg/themes
         fi
     fi
