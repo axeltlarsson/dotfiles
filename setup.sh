@@ -257,7 +257,7 @@ setup_haskell() {
 }
 
 setup_burg() {
-    if not_installed burg-emunot; then
+    if not_installed burg-emu; then
         ask_for_confirmation "Install burg bootloader?"
         if answer_is_yes; then
             execute "apt add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
