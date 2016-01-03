@@ -377,6 +377,7 @@ EOF
         fi
 
         install_conditional tree
+        install_conditional wakeonlan
         install_conditional keepassx
 
         setup_burg
