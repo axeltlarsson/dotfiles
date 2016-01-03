@@ -130,11 +130,10 @@ symlink() {
 }
 
 # Basically does cp $sourceFile $targetFile with some fancy cli graphics
+# NOTE! No support for spaces in filenames
 copy() {
     local sourceFile="$1"
     local targetFile="$2"
-    echo "copy(): sourceFile: $sourceFile"
-    echo "copy(): targetFile: $targetFile"
     if [ -e "$targetFile" ]; then
         if [ "$(fullpath "$targetFile")" != "$sourceFile" ]; then
             ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
@@ -149,7 +148,7 @@ copy() {
             print_success "$targetFile → $sourceFile"
         fi
     else
-        execute "cp --preserve \"$sourceFile\" \"$targetFile\""
+        execute 'cp --preserve "$sourceFile" "$targetFile"'
     fi
 }
 
@@ -167,32 +166,20 @@ install_conditional() {
 # as given by their directory structure. Optional: prepend ($HOME) with $2
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
 # will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/file"
-# NOTE! This function does not support any paths with spaces in them!
-symlink_dir() {
-    declare -a files=($(find $1 -type f -not -iname '*.md'))
-    for file in "${files[@]}"; do
-        realFile=$(fullpath "${file}")
-        symFile="${2}/${file#$1/}"
-        symlink ${realFile} ${symFile}
-    done
-}
-
-# Like symlink_dir() but using copy() instead
-copy_dir() {
+# NOTE! This function does not support any paths with spaces in them or rather symlink doesnt!
+symlink_files_in_dir() {
     declare -a files
     while IFS= read -r -d '' n; do
         files+=( "$n" )
     done < <(find $1 -type f -not -iname '*.md' -print0)
 
     for file in "${files[@]}"; do
-        echo "copy_dir() :: file: ${file}"
-        sourceFile="$(fullpath "${file}")"
-        echo "copy_dir() :: sourceFile: $sourceFile"
-        targetFile="${2}/${file#$1/}"
-        echo "copy_dir() :: targetFile: $targetFile"
-        copy "${sourceFile}" "${targetFile}"
+        realFile=$(fullpath "${file}")
+        symFile="${2}/${file#$1/}"
+        symlink "${realFile}" "${symFile}"
     done
 }
+
 
 # Returns true if package-name given by $1 is not installed
 not_installed() {
@@ -273,10 +260,14 @@ setup_burg() {
     if not_installed burg-emunot; then
         ask_for_confirmation "Install burg bootloader?"
         if answer_is_yes; then
-           # execute "apt add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
-           # execute "apt update -qq"
-           # apt install burg burg-themes
-            copy_dir ./burg-themes /boot/burg/themes
+            execute "apt add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
+            execute "apt update -qq"
+            apt install burg burg-themes
+            execute_su "cp -r --preserve ./burg-themes/* /boot/burg/themes/"
+            print_info "Edit settings in /etc/default/burg"
+            ask_for_confirmation "Done?"
+            execute_su "update-burg"
+    
         fi
     fi
 }
@@ -284,7 +275,7 @@ setup_burg() {
 # Always set up zsh + prezto
 install_zsh
 print_info "Setting up prezto configuration framework"
-symlink_dir prezto $HOME
+symlink_files_in_dir prezto $HOME
 
 #---------- Show menu with tasks --------------------
 # List more possibilities in a sub menu
@@ -332,12 +323,12 @@ EOF
 
         "3") echo "not yet implemented!" ;;
         "4")
-            symlink_dir desktop
+            symlink_files_in_dir desktop
             git config --global core.excludesfile $HOME/.gitignore_global 
         ;;
 
-        "5") symlink_dir Kodi-Rpi2              ;;
-        "6") symlink_dir Backupservern $HOME    ;;
+        "5") symlink_files_in_dir Kodi-Rpi2              ;;
+        "6") symlink_files_in_dir Backupservern $HOME    ;;
         "7") copy_dir Ubuntuservern             ;;
          * ) return
     esac
@@ -381,7 +372,7 @@ EOF
 
         ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
         if answer_is_yes; then
-            symlink_dir desktop
+            symlink_files_in_dir desktop
             git config --global core.excludesfile $HOME/.gitignore_global
         fi
 
