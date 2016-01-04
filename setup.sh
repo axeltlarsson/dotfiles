@@ -387,6 +387,7 @@ EOF
         install_conditional wakeonlan
         install_conditional keepassx
         install_conditional openssh-server
+        install_conditional transmission-cli
 
         setup_burg
     ;;
