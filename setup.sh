@@ -240,6 +240,8 @@ setup_haskell() {
         execute "apt add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
         execute "apt update -qq"
         execute "apt install -y -qq cabal-install-1.22 ghc-7.10.3"
+    else
+        print_success "ghc and cabal already installed"
     fi
 
     if not_installed stack; then
@@ -251,9 +253,14 @@ setup_haskell() {
             execute "apt update -qq"
             execute "apt install -y -qq stack"
         fi
+    else
+        print_success "stack already installed"
     fi
     # deps for SublimeHaskell
-
+    execute "cabal update"
+    execute "cabal install happy aeson haskell-src-exts haddock"
+    execute "cabal install hsdev"
+    execute "cabal install stylish-haskell"
 }
 
 setup_burg() {
