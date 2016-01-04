@@ -379,6 +379,7 @@ EOF
         install_conditional tree
         install_conditional wakeonlan
         install_conditional keepassx
+        install_conditional openssh-server
 
         setup_burg
     ;;
