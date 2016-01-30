@@ -15,6 +15,7 @@
   typesafe-activator \
   node \
   httpie \
+  wakeonlan \
   install caskroom/cask/brew-cask    # see: https://github.com/caskroom/homebrew-cask
   
   brew tap caskroom/versions          # enable alternate versions of apps (i.e. sublime-text3)
