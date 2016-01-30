@@ -279,6 +279,16 @@ setup_burg() {
     fi
 }
 
+setup_python3() {
+    if not_installed pip3; then
+        execute "apt install -y python3-pip"
+        # -H so that sudo -H is set -> causes sudo to set $HOME to the target users suppresses pip warning
+        execute_su "-H pip3 install -U pip"
+        print_info "Now \"pip\" is the newest version of pip, and you should use it and not pip3"
+        execute_su "-H pip install virtualenv"
+    fi
+}
+
 # Always set up zsh + prezto
 install_zsh
 print_info "Setting up prezto configuration framework"
@@ -310,6 +320,8 @@ do
     (6) Symlink files from "Backupservern"
 
     (7) Copy files from "Ubuntuservern"
+
+    (8) Setup pip3 and virtualenv
     
     (*) Return to main menu
 -----------------------------------------------
@@ -337,6 +349,7 @@ EOF
         "5") symlink_files_in_dir Kodi-Rpi2              ;;
         "6") symlink_files_in_dir Backupservern $HOME    ;;
         "7") copy_dir Ubuntuservern             ;;
+        "8") setup_python3 ;;
          * ) return
     esac
     sleep 1
