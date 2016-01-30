@@ -289,6 +289,13 @@ setup_python3() {
     fi
 }
 
+setup_js() {
+    if not_installed npm; then
+        execute "apt install -y -qq nodejs"
+        execute "apt install -y -qq npm"
+    fi
+}
+
 # Always set up zsh + prezto
 install_zsh
 print_info "Setting up prezto configuration framework"
@@ -340,7 +347,7 @@ EOF
             install_solarized
         ;;
 
-        "3") echo "not yet implemented!" ;;
+        "3") setup_js ;;
         "4")
             symlink_files_in_dir desktop
             git config --global core.excludesfile $HOME/.gitignore_global 
