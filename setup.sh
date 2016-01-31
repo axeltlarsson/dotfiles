@@ -293,6 +293,10 @@ setup_js() {
     if not_installed npm; then
         execute "apt install -y -qq nodejs"
         execute "apt install -y -qq npm"
+        execute "ln -s /usr/bin/nodejs /usr/local/bin/node"
+
+        # npm -g without sudo (run symlink of desktop)
+        execute "mkdir ${HOME}/.npm-packages"
     fi
 }
 
