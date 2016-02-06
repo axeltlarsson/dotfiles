@@ -300,6 +300,12 @@ setup_js() {
     fi
 }
 
+setup_java() {
+    execute "apt add-repository -y ppa:webupd8team/java > /dev/null 2>&1"
+    execute "apt update -qq"
+    apt install oracle-java8-installer
+}
+
 # Always set up zsh + prezto
 install_zsh
 print_info "Setting up prezto configuration framework"
@@ -385,9 +391,11 @@ do
     
     (2) Haskell dev environment
         - ghc, cabal, hsdev etc
-    
 
-    (3) List more possibilities
+    (3) Java dev environment
+        - OracleJDK8
+
+    (4) List more possibilities
     
     (q) Quit
 -----------------------------------------------
@@ -417,7 +425,8 @@ EOF
     ;;
 
     "2")  setup_haskell             ;;
-    "3")  submenu                   ;;
+    "3")  setup_java                ;;
+    "4")  submenu                   ;;
     "q")
         zsh
         exit                        ;;

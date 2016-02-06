@@ -5,6 +5,7 @@
 	],
 	"installed_packages":
 	[
+		"Anaconda",
 		"Babel",
 		"Color Highlighter",
 		"GitGutter",
