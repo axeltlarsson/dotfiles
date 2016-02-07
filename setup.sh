@@ -300,10 +300,13 @@ setup_js() {
     fi
 }
 
-setup_java() {
+setup_java_scala() {
     execute "apt add-repository -y ppa:webupd8team/java > /dev/null 2>&1"
-    execute "apt update -qq"
+    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+    execute_su "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823"
+    execute "apt update -qq > /dev/null"
     apt install oracle-java8-installer
+    execute "apt install -qq sbt"
 }
 
 # Always set up zsh + prezto
@@ -392,8 +395,8 @@ do
     (2) Haskell dev environment
         - ghc, cabal, hsdev etc
 
-    (3) Java dev environment
-        - OracleJDK8
+    (3) Scala/Java dev environment
+        - OracleJDK8, sbt
 
     (4) List more possibilities
     
@@ -425,7 +428,7 @@ EOF
     ;;
 
     "2")  setup_haskell             ;;
-    "3")  setup_java                ;;
+    "3")  setup_java_scala                ;;
     "4")  submenu                   ;;
     "q")
         zsh
