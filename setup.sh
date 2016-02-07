@@ -307,6 +307,11 @@ setup_java_scala() {
     execute "apt update -qq > /dev/null"
     apt install oracle-java8-installer
     execute "apt install -qq sbt"
+
+    print_info "Download the Scala binaries, extract them and place them under /usr/local/bin/scala-2.x.x"
+    print_info "You may have to adjust the values in .zshrc to match the version number"
+    ask_for_confirmation "When you press enter, the download page for Scala will open"
+    xdg-open "http://www.scala-lang.org/download"
 }
 
 # Always set up zsh + prezto
