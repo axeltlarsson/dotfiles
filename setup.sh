@@ -291,18 +291,20 @@ setup_python3() {
 
 setup_js() {
     if not_installed npm; then
+        execute "apt install -y -qq curl"
+        print_info "Running official nodejs package manager setup script"
+        (curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash - > /dev/null)
         execute "apt install -y -qq nodejs"
-        execute "apt install -y -qq npm"
-        execute "ln -s /usr/bin/nodejs /usr/local/bin/node"
+        symlink "/usr/bin/nodejs" "/usr/local/bin/node"
 
         # npm -g without sudo (run symlink of desktop)
-        execute "mkdir ${HOME}/.npm-packages"
+        execute "mkdir -p ${HOME}/.npm-packages"
     fi
 }
 
 setup_java_scala() {
     execute "apt add-repository -y ppa:webupd8team/java > /dev/null 2>&1"
-    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt.list
     execute_su "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823"
     execute "apt update -qq > /dev/null"
     apt install oracle-java8-installer
@@ -428,6 +430,7 @@ EOF
         install_conditional keepassx
         install_conditional openssh-server
         install_conditional transmission-cli
+        install_conditional build-essential
 
         setup_burg
     ;;
