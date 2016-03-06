@@ -5,10 +5,8 @@ server {
 
 
     location / {
-        # First attempt to serve request as file, then
-        # as directory, then fall back to displaying a 404.
-        set $page_to_view "/index.php";
-        try_files $uri $uri/ @rewrites;
+	# fist attempt URL then try as php file
+        try_files $uri @extensionless-php;
     }
 
     error_page 404 /404.php;
@@ -23,7 +21,7 @@ server {
     location ~ \.php$ {
        fastcgi_split_path_info ^(.+\.php)(/.+)$;
 
-       try_files = $uri @missing;
+       try_files $uri =404;
 
        # With php5-fpm:
        fastcgi_pass unix:/var/run/php5-fpm.sock;
@@ -31,17 +29,11 @@ server {
        include fastcgi_params;
     }
 
-    location @missing {
-       rewrite ^ $scheme://$host/index.php permanent;
+    # Rewrite so that /file fetches /file.php
+    location @extensionless-php {
+       rewrite ^(.*)$ $1.php last;
     }
 
-    # rewrites
-    location @rewrites {
-        if ($uri ~* ^/([a-z]+)$) {
-            set $page_to_view "/$1.php";
-            rewrite ^/([a-z]+)$ /$1.php last;
-        }
-    }
 }
 
 
