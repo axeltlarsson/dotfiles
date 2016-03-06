@@ -87,8 +87,7 @@ if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
     # Set the default shell to zsh if it isn't currently set to zsh
     if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
     	print_info "Setting default shell to zsh, please enter your password"
-        chsh -s $(which zsh)
-        print_success "After a relogin, zsh should be your default shell!"
+        execute "chsh -s $(which zsh)" 
     elif [[ $(echo $SHELL) == $(which zsh) ]]; then
         print_info "zsh is already your shell"
     fi
@@ -113,7 +112,7 @@ symlink() {
     local realFile=$1
     local symFile=$2
     if [ -e "${symFile}" ]; then
-        if [ "$(readlink "${symFile}")" != "${realFile}" ]; then
+        if [ "$(fullpath "${symFile}")" != "${realFile}" ]; then
             ask_for_confirmation "'${symFile}' already exists, do you want to overwrite it?"
             if answer_is_yes; then
                 rm -rf "${symFile}"
@@ -131,15 +130,16 @@ symlink() {
 }
 
 # Basically does cp $sourceFile $targetFile with some fancy cli graphics
+# NOTE! No support for spaces in filenames
 copy() {
-    local sourceFile=$1
-    local targetFile=$2
+    local sourceFile="$1"
+    local targetFile="$2"
     if [ -e "$targetFile" ]; then
-        if [ "$(readlink "$targetFile")" != "$sourceFile" ]; then
+        if [ "$(fullpath "$targetFile")" != "$sourceFile" ]; then
             ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
             if answer_is_yes; then
                 rm -rf "$targetFile"
-                execute "cp --preserve $sourceFile $targetFile" "$targetFile → $sourceFile"
+                execute 'cp --preserve "$sourceFile" "$targetFile"' '"$targetFile" → "$sourceFile"'
             else
                 print_error "$targetFile → $sourceFile"
             fi
@@ -148,7 +148,7 @@ copy() {
             print_success "$targetFile → $sourceFile"
         fi
     else
-        execute "cp --preserve $sourceFile $targetFile" "$targetFile → $sourceFile"
+        execute 'cp --preserve "$sourceFile" "$targetFile"'
     fi
 }
 
@@ -166,26 +166,20 @@ install_conditional() {
 # as given by their directory structure. Optional: prepend ($HOME) with $2
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
 # will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/file"
-# NOTE! This function does not support any paths with spaces in them!
-symlink_dir() {
-    declare -a files=($(find $1 -type f -not -iname '*.md'))
+# NOTE! This function does not support any paths with spaces in them or rather symlink doesnt!
+symlink_files_in_dir() {
+    declare -a files
+    while IFS= read -r -d '' n; do
+        files+=( "$n" )
+    done < <(find $1 -type f -not -iname '*.md' -print0)
+
     for file in "${files[@]}"; do
-        realFile=$(readlink -f "${file}")
+        realFile=$(fullpath "${file}")
         symFile="${2}/${file#$1/}"
-        symlink ${realFile} ${symFile}
+        symlink "${realFile}" "${symFile}"
     done
 }
 
-# Like symlink_dir() but using copy() instead
-copy_dir() {
-    declare -a files=($(find $1 -type f -not -iname '*.md'))
-
-    for file in "${files[@]}"; do
-        sourceFile=$(readlink -f "${file}")
-        targetFile="${2}/${file#$1/}"
-        copy ${sourceFile} ${targetFile}
-    done
-}
 
 # Returns true if package-name given by $1 is not installed
 not_installed() {
@@ -195,6 +189,11 @@ not_installed() {
     else
         return 0
     fi
+}
+
+fullpath() {
+        dirname=`perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1"`
+        echo "$dirname"
 }
 
 install_powerline_fonts() {
@@ -231,7 +230,7 @@ setup_sublime_text_3() {
         fi
     fi
     mkdir -p $HOME/.config/sublime-text-3/Packages/User
-    symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+    symlink $(fullpath Sublime) $HOME/.config/sublime-text-3/Packages/User
 }
 
 setup_haskell() {
@@ -241,6 +240,8 @@ setup_haskell() {
         execute "apt add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
         execute "apt update -qq"
         execute "apt install -y -qq cabal-install-1.22 ghc-7.10.3"
+    else
+        print_success "ghc and cabal already installed"
     fi
 
     if not_installed stack; then
@@ -252,71 +253,75 @@ setup_haskell() {
             execute "apt update -qq"
             execute "apt install -y -qq stack"
         fi
+    else
+        print_success "stack already installed"
     fi
     # deps for SublimeHaskell
-
+    execute "cabal update"
+    execute "cabal install happy aeson haskell-src-exts haddock"
+    execute "cabal install hsdev"
+    execute "cabal install stylish-haskell"
 }
 
+setup_burg() {
+    if not_installed burg-emu; then
+        ask_for_confirmation "Install burg bootloader?"
+        if answer_is_yes; then
+            execute "apt add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
+            execute "apt update -qq"
+            apt install burg burg-themes
+            execute_su "cp -r --preserve ./burg-themes/* /boot/burg/themes/"
+            print_info "Edit settings in /etc/default/burg"
+            ask_for_confirmation "Done?"
+            execute_su "update-burg"
+    
+        fi
+    fi
+}
+
+setup_python3() {
+    if not_installed pip3; then
+        execute "apt install -y python3-pip"
+        # -H so that sudo -H is set -> causes sudo to set $HOME to the target users suppresses pip warning
+        execute_su "-H pip3 install -U pip"
+        print_info "Now \"pip\" is the newest version of pip, and you should use it and not pip3"
+        execute_su "-H pip install virtualenv"
+    fi
+}
+
+setup_js() {
+    if not_installed npm; then
+        execute "apt install -y -qq curl"
+        print_info "Running official nodejs package manager setup script"
+        (curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash - > /dev/null)
+        execute "apt install -y -qq nodejs"
+        symlink "/usr/bin/nodejs" "/usr/local/bin/node"
+
+        # npm -g without sudo (run symlink of desktop)
+        execute "mkdir -p ${HOME}/.npm-packages"
+    fi
+}
+
+setup_java_scala() {
+    execute "apt add-repository -y ppa:webupd8team/java > /dev/null 2>&1"
+    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt.list
+    execute_su "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823"
+    execute "apt update -qq > /dev/null"
+    apt install oracle-java8-installer
+    execute "apt install -qq sbt"
+
+    print_info "Download the Scala binaries, extract them and place them under /usr/local/bin/scala-2.x.x"
+    print_info "You may have to adjust the values in .zshrc to match the version number"
+    ask_for_confirmation "When you press enter, the download page for Scala will open"
+    xdg-open "http://www.scala-lang.org/download"
+}
 
 # Always set up zsh + prezto
 install_zsh
 print_info "Setting up prezto configuration framework"
-symlink_dir prezto $HOME
+symlink_files_in_dir prezto $HOME
 
 #---------- Show menu with tasks --------------------
-print_info "Loading setup menu..."
-sleep 1 # to give user a chance to see that previous task completed successfully
-while :
-do
-    clear
-    cat<<EOF
-===============================================
-    .dotfiles setup                             
------------------------------------------------
-    Common setup tasks:
-
-    (1) Desktop setup       
-        - Sublime, Fonts, Solarized theme,
-          symlinking desktop, tree, etc
-    
-    (2) Haskell dev environment
-        - ghc, cabal, hsdev etc
-    
-
-    (3) List more possibilities
-    
-    (q) Quit
------------------------------------------------
-EOF
-    read -n1 -s
-    case "$REPLY" in
-    "1")
-        execute_su "chown -R $USER /usr/local/bin"
-        setup_sublime_text_3
-        
-        install_powerline_fonts
-        install_solarized
-
-        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
-        if answer_is_yes; then
-            symlink_dir desktop
-            git config --global core.excludesfile $HOME/.gitignore_global
-        fi
-
-        install_conditional tree
-        install_conditional keepassx
-    ;;
-
-    "2")  setup_haskell             ;;
-    "3")  submenu                   ;;
-    "q")
-        zsh
-        exit                        ;;
-     * )  echo "invalid option"     ;;
-    esac
-    sleep 1
-done
-
 # List more possibilities in a sub menu
 submenu() {
 while :
@@ -342,6 +347,8 @@ do
     (6) Symlink files from "Backupservern"
 
     (7) Copy files from "Ubuntuservern"
+
+    (8) Setup pip3 and virtualenv
     
     (*) Return to main menu
 -----------------------------------------------
@@ -351,7 +358,7 @@ EOF
         "1")
             install_sublime_text_3
             mkdir -p $HOME/.config/sublime-text-3/Packages/User
-            symlink $(readlink -f Sublime) $HOME/.config/sublime-text-3/Packages/User
+            symlink $(fullpath Sublime) $HOME/.config/sublime-text-3/Packages/User
 
             install_powerline_fonts
         ;;
@@ -360,16 +367,82 @@ EOF
             install_solarized
         ;;
 
-        "3") echo "not yet implemented!" ;;
+        "3") setup_js ;;
         "4")
-            symlink_dir desktop
+            symlink_files_in_dir desktop
             git config --global core.excludesfile $HOME/.gitignore_global 
         ;;
 
-        "5") symlink_dir Kodi-Rpi2              ;;
-        "6") symlink_dir Backupservern $HOME    ;;
+        "5") symlink_files_in_dir Kodi-Rpi2              ;;
+        "6") symlink_files_in_dir Backupservern $HOME    ;;
         "7") copy_dir Ubuntuservern             ;;
+        "8") setup_python3 ;;
          * ) return
     esac
     sleep 1
 done
+}
+
+
+print_info "Loading setup menu..."
+sleep 1 # to give user a chance to see that previous task completed successfully
+while :
+do
+    clear
+    cat<<EOF
+===============================================
+    .dotfiles setup                             
+-----------------------------------------------
+    Common setup tasks:
+
+    (1) Desktop setup       
+        - Sublime, Fonts, Solarized theme,
+          symlinking desktop, tree, burg, etc
+    
+    (2) Haskell dev environment
+        - ghc, cabal, hsdev etc
+
+    (3) Scala/Java dev environment
+        - OracleJDK8, sbt
+
+    (4) List more possibilities
+    
+    (q) Quit
+-----------------------------------------------
+EOF
+    read -n1 -s
+    case "$REPLY" in
+    "1")
+        execute_su "chown -R $USER /usr/local/bin"
+        setup_sublime_text_3
+        
+        install_powerline_fonts
+        install_solarized
+
+        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
+        if answer_is_yes; then
+            symlink_files_in_dir desktop
+            git config --global core.excludesfile $HOME/.gitignore_global
+        fi
+
+        install_conditional tree
+        install_conditional wakeonlan
+        install_conditional keepassx
+        install_conditional openssh-server
+        install_conditional transmission-cli
+        install_conditional build-essential
+
+        setup_burg
+    ;;
+
+    "2")  setup_haskell             ;;
+    "3")  setup_java_scala                ;;
+    "4")  submenu                   ;;
+    "q")
+        zsh
+        exit                        ;;
+     * )  echo "invalid option"     ;;
+    esac
+    sleep 1
+done
+

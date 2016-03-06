@@ -5,8 +5,10 @@
 	],
 	"installed_packages":
 	[
+		"Anaconda",
 		"Babel",
 		"Color Highlighter",
+		"Ensime",
 		"GitGutter",
 		"HTML Snippets",
 		"HTML-CSS-JS Prettify",
@@ -16,6 +18,8 @@
 		"Markdown Preview",
 		"Package Control",
 		"Play 2.0",
+		"Python 3",
+		"Python PEP8 Autoformat",
 		"ScalaFormat",
 		"Scalex Documentation Search",
 		"SublimeAStyleFormatter",

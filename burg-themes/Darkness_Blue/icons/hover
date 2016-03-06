@@ -1,0 +1,22 @@
++class
+{
+  -windows { image = "$$/grey_windows.png:$$/large_windows.png" }
+  -elementary { image = "$$/grey_elementary.png:$$/large_elementary.png" }
+  -recovery { image = "$$/grey_recovery.png:$$/large_recovery.png" }
+  -shutdown { image = "$$/grey_shutdown.png:$$/large_shutdown.png" }
+  -ubuntu { image = "$$/grey_ubuntu.png:$$/large_ubuntu.png" }
+  -debian { image = "$$/grey_debian.png:$$/large_debian.png" }
+  -suse { image = "$$/grey_opensuse.png:$$/large_opensuse.png" }
+  -freebsd { image = "$$/grey_freebsd.png:$$/large_freebsd.png" }
+  -macosx { image = "$$/grey_osx.png:$$/large_osx.png" }
+  -gentoo { image = "$$/grey_gentoo.png:$$/large_gentoo.png" }
+  -linuxmint { image = "$$/grey_linuxmint.png:$$/large_linuxmint.png" }
+  -mandrake { image = "$$/grey_mandrake.png:$$/large_mandrake.png" }
+  -arch { image = "$$/grey_arch.png:$$/large_arch.png" }
+  -fedora { image = "$$/grey_fedora.png:$$/large_fedora.png" }
+  -pclinuxos { image = "$$/grey_pclinuxos.png:$$/large_pclinuxos.png" }
+  -sabayon { image = "$$/grey_sabayon.png:$$/large_sabayon.png" }
+  -slackware { image = "$$/grey_slackware.png:$$/large_slackware.png" }
+}
+
+-include "../custom/icon_hover"

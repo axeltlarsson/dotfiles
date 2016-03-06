@@ -23,6 +23,9 @@
 #     ├── private
 #     └── public
 
+# Script will exit on first failed command
+set -e
+
 #---------------------------------------- Making space ----------------------------------------------
 # Stores the disk usage in $usage, given file path as $1
 # Note: $1 should be a real folder path where a disk is mounted
@@ -61,7 +64,7 @@ privateKeyForPublic="/home/axel/.ssh/public_id"
 
 # Returnerar rad med alla föregående backupmappar som --link-dest argument, med $1 som suffix
 prevBackupDirs() {
-	echo `find $dest -maxdepth 1 -type d | awk '{if(/20/){print "--link-dest=" $0 "'$1'"}}'`
+	echo `find $dest -maxdepth 1 -type d | sort -r | head -n 20 | awk '{if(/20/){print "--link-dest=" $0 "'$1'"}}'`
 }
 
 # Does backup of Ubuntuserver with:
@@ -84,5 +87,3 @@ backup ulf /private/Ulf $privateKey
 backup staffan /private/Staffan $privateKey
 backup carina /private/Carina $privateKey
 backup axel /public $privateKeyForPublic
-
-exit 0
