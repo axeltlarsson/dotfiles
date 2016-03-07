@@ -9,6 +9,10 @@ server {
         try_files $uri @extensionless-php;
     }
 
+    location = / {
+        index recipes.php;
+    }
+
     error_page 404 /404.php;
 
     # redirect server error pages to the static page /50x.html
