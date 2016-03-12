@@ -3,3 +3,4 @@ server {
     root /var/www/connect-four.axellarsson.nu/;
 
 }
+

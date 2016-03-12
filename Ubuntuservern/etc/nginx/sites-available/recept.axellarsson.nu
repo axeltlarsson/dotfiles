@@ -1,8 +1,18 @@
+# Redirect http -> https
 server {
+    listen 80;
+    server_name recept.axellarsson.nu;
+
+    # Redirect all HTTP requests to HTTPS with a 301 Moved Permanently response.
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+
     server_name recept.axellarsson.nu;
 
     root /var/www/recept.axellarsson.nu/;
-
 
     location / {
 	# fist attempt URL then try as php file
@@ -31,6 +41,7 @@ server {
        fastcgi_pass unix:/var/run/php5-fpm.sock;
        fastcgi_index index.php;
        include fastcgi_params;
+       fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
     }
 
     # Rewrite so that /file fetches /file.php

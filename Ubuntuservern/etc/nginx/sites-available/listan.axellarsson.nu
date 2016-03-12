@@ -1,4 +1,12 @@
+#server {
+#    listen 80;
+#    server_name listan.axellarsson.nu;
+#    return 301 https://$host$request_uri;
+#}
+
 server {
+ #   listen 443 ssl;
+
     server_name listan.axellarsson.nu;
 
     root /var/www/listan.axellarsson.nu/;
@@ -31,6 +39,7 @@ server {
        fastcgi_pass unix:/var/run/php5-fpm.sock;
        fastcgi_index index.php;
        include fastcgi_params;
+       fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
     }
 
     # Rewrite so that /file fetches /file.php
