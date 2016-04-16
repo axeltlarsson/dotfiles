@@ -1,11 +1,18 @@
-#server {
-#    listen 80;
-#    server_name listan.axellarsson.nu;
-#    return 301 https://$host$request_uri;
-#}
+server {
+    listen 80;
+    server_name listan.axellarsson.nu;
+    return 301 https://$host$request_uri;
+}
+
+# Web socket stuff: the header field in a request to the proxied server depends on
+# the presence of the "Upgrade" field in the client request header and not hardcoded
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
 
 server {
- #   listen 443 ssl;
+    listen 443 ssl http2;
 
     server_name listan.axellarsson.nu;
 
@@ -16,6 +23,15 @@ server {
         # fist attempt URL then try as php file
         try_files $uri @extensionless-php;
     }
+
+    location /websocket {
+	# WebSocket support
+        proxy_pass http://localhost:9001;  # Address of the ws app
+	proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_read_timeout 86400;
+    }       
  
     location = / {
 	index index.php;
