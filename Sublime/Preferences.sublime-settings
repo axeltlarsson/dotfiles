@@ -3,12 +3,12 @@
 	"detect_indentation": false,
 	"dictionary": "Packages/Language - English/en_GB.dic",
 	"font_face": "Hack",
-	"font_size": 14,
+	"font_size": 15,
 	"ignored_packages":
 	[
 		"Vintage"
 	],
-	"tab_size": 4,
+	"tab_size": 2,
 	"theme": "Afterglow-blue.sublime-theme",
 	"translate_tabs_to_spaces": true
 }
