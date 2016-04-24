@@ -157,7 +157,7 @@ install_conditional() {
     if not_installed ${1}; then
         ask_for_confirmation "Do you want to install ${1}?"
         if answer_is_yes; then
-            execute_su "apt-get install -qq ${1}"
+            execute_su "apt-get install -q ${1}"
         fi
     fi
 }
@@ -221,9 +221,9 @@ setup_sublime_text_3() {
     if not_installed sublime-text-installer; then
         print_info "Installing Sublime Text 3"
         execute_su "apt-add-repository -y ppa:webupd8team/sublime-text-3"
-        execute_su "apt-get update -qq"
-        execute_su "apt-get install -qq sublime-text-installer"
-        print_info "Please install package control"
+        execute_su "apt-get update -q"
+        execute_su "apt-get install -q sublime-text-installer"
+        print_info "Please install pacage control"
         xdg-open "https://packagecontrol.io/installation"
         subl
 
@@ -242,8 +242,8 @@ setup_haskell() {
         print_info "Installing ghc-7.10.3 and cabal-install-1.22"
         # ghc and cabal
         execute_su "apt-add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
-        execute_su "apt-get update -qq"
-        execute_su "apt-get install -y -qq cabal-install-1.22 ghc-7.10.3"
+        execute_su "apt-get update -q"
+        execute_su "apt-get install -y -q cabal-install-1.22 ghc-7.10.3"
     else
         print_success "ghc and cabal already installed"
     fi
@@ -254,8 +254,8 @@ setup_haskell() {
         if answer_is_yes; then
             execute_su "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442"
             echo 'deb http://download.fpcomplete.com/ubuntu trusty main'|sudo tee /etc/apt/sources.list.d/fpco.list
-            execute_su "apt-get update -qq"
-            execute_su "apt-get install -y -qq stack"
+            execute_su "apt-get update -q"
+            execute_su "apt-get install -y -q stack"
         fi
     else
         print_success "stack already installed"
@@ -271,9 +271,9 @@ setup_burg() {
     if not_installed burg-emu; then
         ask_for_confirmation "Install burg bootloader?"
         if answer_is_yes; then
-            execute_su "apt-add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
-            execute_su "apt-get update -qq"
-            apt install burg burg-themes
+            execute_su "apt-add-repository -y ppa:n-muench/burg"
+            execute_su "apt-get update -q"
+            sudo apt-get install burg burg-themes
             execute_su "cp -r --preserve ./burg-themes/* /boot/burg/themes/"
             print_info "Edit settings in /etc/default/burg"
             ask_for_confirmation "Done?"
@@ -294,10 +294,10 @@ setup_python3() {
 
 setup_js() {
     if not_installed npm; then
-        execute_su "apt-get install -y -qq curl"
+        execute_su "apt-get install -y -q curl"
         print_info "Running official nodejs package manager setup script"
         (curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash - > /dev/null)
-        execute_su "apt-get install -y -qq nodejs"
+        execute_su "apt-get install -y -q nodejs"
         symlink "/usr/bin/nodejs" "/usr/local/bin/node"
 
         # npm -g without sudo (run symlink of desktop)
