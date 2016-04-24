@@ -157,7 +157,7 @@ install_conditional() {
     if not_installed ${1}; then
         ask_for_confirmation "Do you want to install ${1}?"
         if answer_is_yes; then
-            execute "apt install -qq ${1}"
+            execute_su "apt-get install -qq ${1}"
         fi
     fi
 }
@@ -192,8 +192,8 @@ not_installed() {
 }
 
 fullpath() {
-        dirname=`perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1"`
-        echo "$dirname"
+    dirname=`perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1"`
+    echo "$dirname"
 }
 
 install_powerline_fonts() {
@@ -205,20 +205,24 @@ install_powerline_fonts() {
 }
 
 install_solarized() {
-    if not_installed dconf-cli; then        
-        print_info "Installing prerequisites for gnome-terminal-colors-solarized"
-        execute "apt install dconf-cli"
-        ./gnome-terminal-colors-solarized/set_dark.sh
-        print_info "Do not forget to change the font in the terminal"
+    if [ $XDG_CURRENT_DESKTOP == "GNOME" ]; then
+        if not_installed dconf-cli; then        
+            print_info "Installing prerequisites for gnome-terminal-colors-solarized"
+            execute_su "apt-get install dconf-cli"
+            ./gnome-terminal-colors-solarized/set_dark.sh
+            print_info "Do not forget to change the font in the terminal"
+        fi
+    else
+        print_info "Not on GNOME so cannot install gnome-terminal-colors-solarized"
     fi
 }
 
 setup_sublime_text_3() {
     if not_installed sublime-text-installer; then
         print_info "Installing Sublime Text 3"
-        execute "apt add-repository -y ppa:webupd8team/sublime-text-3"
-        execute "apt update -qq"
-        execute "apt install -qq sublime-text-installer"
+        execute_su "apt-add-repository -y ppa:webupd8team/sublime-text-3"
+        execute_su "apt-get update -qq"
+        execute_su "apt-get install -qq sublime-text-installer"
         print_info "Please install package control"
         xdg-open "https://packagecontrol.io/installation"
         subl
@@ -237,9 +241,9 @@ setup_haskell() {
     if not_installed ghc-7.10.3; then
         print_info "Installing ghc-7.10.3 and cabal-install-1.22"
         # ghc and cabal
-        execute "apt add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
-        execute "apt update -qq"
-        execute "apt install -y -qq cabal-install-1.22 ghc-7.10.3"
+        execute_su "apt-add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
+        execute_su "apt-get update -qq"
+        execute_su "apt-get install -y -qq cabal-install-1.22 ghc-7.10.3"
     else
         print_success "ghc and cabal already installed"
     fi
@@ -250,8 +254,8 @@ setup_haskell() {
         if answer_is_yes; then
             execute_su "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442"
             echo 'deb http://download.fpcomplete.com/ubuntu trusty main'|sudo tee /etc/apt/sources.list.d/fpco.list
-            execute "apt update -qq"
-            execute "apt install -y -qq stack"
+            execute_su "apt-get update -qq"
+            execute_su "apt-get install -y -qq stack"
         fi
     else
         print_success "stack already installed"
@@ -267,21 +271,20 @@ setup_burg() {
     if not_installed burg-emu; then
         ask_for_confirmation "Install burg bootloader?"
         if answer_is_yes; then
-            execute "apt add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
-            execute "apt update -qq"
+            execute_su "apt-add-repository -y ppa:n-muench/burg > /dev/null 2>&1"
+            execute_su "apt-get update -qq"
             apt install burg burg-themes
             execute_su "cp -r --preserve ./burg-themes/* /boot/burg/themes/"
             print_info "Edit settings in /etc/default/burg"
             ask_for_confirmation "Done?"
             execute_su "update-burg"
-    
         fi
     fi
 }
 
 setup_python3() {
     if not_installed pip3; then
-        execute "apt install -y python3-pip"
+        execute_su "apt-get install -y python3-pip"
         # -H so that sudo -H is set -> causes sudo to set $HOME to the target users suppresses pip warning
         execute_su "-H pip3 install -U pip"
         print_info "Now \"pip\" is the newest version of pip, and you should use it and not pip3"
@@ -291,10 +294,10 @@ setup_python3() {
 
 setup_js() {
     if not_installed npm; then
-        execute "apt install -y -qq curl"
+        execute_su "apt-get install -y -qq curl"
         print_info "Running official nodejs package manager setup script"
         (curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash - > /dev/null)
-        execute "apt install -y -qq nodejs"
+        execute_su "apt-get install -y -qq nodejs"
         symlink "/usr/bin/nodejs" "/usr/local/bin/node"
 
         # npm -g without sudo (run symlink of desktop)
@@ -303,12 +306,12 @@ setup_js() {
 }
 
 setup_java_scala() {
-    execute "apt add-repository -y ppa:webupd8team/java > /dev/null 2>&1"
+    execute_su "apt-get add-repository -y ppa:webupd8team/java > /dev/null 2>&1"
     echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt.list
     execute_su "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823"
-    execute "apt update -qq > /dev/null"
-    apt install oracle-java8-installer
-    execute "apt install -qq sbt"
+    execute_su "apt-get update -qq > /dev/null"
+    sudo apt-get install oracle-java8-installer
+    execute_su "apt-get install -qq sbt"
 
     print_info "Download the Scala binaries, extract them and place them under /usr/local/bin/scala-2.x.x"
     print_info "You may have to adjust the values in .zshrc to match the version number"
@@ -415,7 +418,7 @@ EOF
     "1")
         execute_su "chown -R $USER /usr/local/bin"
         setup_sublime_text_3
-        
+
         install_powerline_fonts
         install_solarized
 
