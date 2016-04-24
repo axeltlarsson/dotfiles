@@ -306,12 +306,12 @@ setup_js() {
 }
 
 setup_java_scala() {
-    execute_su "apt-get add-repository -y ppa:webupd8team/java > /dev/null 2>&1"
+    execute_su "apt-add-repository -y ppa:webupd8team/java"
     echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt.list
     execute_su "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823"
-    execute_su "apt-get update -qq > /dev/null"
+    execute_su "apt-get update -q"
     sudo apt-get install oracle-java8-installer
-    execute_su "apt-get install -qq sbt"
+    execute_su "apt-get install -q sbt"
 
     print_info "Download the Scala binaries, extract them and place them under /usr/local/bin/scala-2.x.x"
     print_info "You may have to adjust the values in .zshrc to match the version number"
