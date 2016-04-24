@@ -3,7 +3,7 @@
 	"detect_indentation": false,
 	"dictionary": "Packages/Language - English/en_GB.dic",
 	"font_face": "Hack",
-	"font_size": 15,
+	"font_size": 16,
 	"ignored_packages":
 	[
 		"Vintage"
