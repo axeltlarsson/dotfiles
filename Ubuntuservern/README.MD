@@ -100,3 +100,98 @@ instruera ppp att logga till /var/log/ppp istället vilket är lätt att manuell
 Lägg till detta i slutet av /etc/rsyslog.conf
 `local2.*       -/var/log/ppp.log
 `
+
+
+## vsftp
+Sätta uppftp-serier och ftp-filmer att bli chroot:ade till /Serier resp. /Filmer.
+With a bit of playing around I've managed to come up with a semi solution (not perfect but good enough)
+
+using 2707974 answer and information I've gained else where I've been able to get what I need.
+
+First you need vsftp and PAM installed
+
+apt-get install vsftpd libpam-pwdfile
+Edit /etc/vsftpd.conf
+
+nano /etc/vsftpd.conf
+then paste in the following
+
+listen=YES
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+local_root=/var/www
+chroot_local_user=YES
+allow_writeable_chroot=YES
+hide_ids=YES
+
+#virutal user settings
+user_config_dir=/etc/vsftpd_user_conf
+guest_enable=YES
+virtual_use_local_privs=YES
+pam_service_name=vsftpd
+nopriv_user=vsftpd
+guest_username=vsftpd
+Edit to your exact needs the most important bit for virtual users is everything after the virtual user settings comment
+
+Creating User
+
+You can either use a database or htpasswd I found htpasswd faster and easier to use.
+
+make a directory to store your users
+
+mkdir /etc/vsftpd
+htpasswd -cd /etc/vsftpd/ftpd.passwd user1
+adding additional users just omit the -c
+
+htpasswd -d /etc/vsftpd/ftpd.passwd user2
+I've only managed to get it to work using CRYPT which limits to 8 chars to use more than 8 chars use openssl to generate a compatible hash and pipe directly into htpasswd
+
+htpasswd -c -p -b /etc/vsftpd/ftpd.passwd user1 $(openssl passwd -1 -noverify password)
+Once your users are created you can now change your PAM config file
+
+nano /etc/pam.d/vsftpd
+and remove everything inside this file and replace with the following
+
+auth required pam_pwdfile.so pwdfile /etc/vsftpd/ftpd.passwd
+account required pam_permit.so
+This will enable login for your virtual users defined in /etc/vsftpd/ftpd.passwd and will disable local users
+
+Next we need to add a user for these virtual users to use. These users will not have access to the shell and will be called vsftpd
+
+useradd --home /home/vsftpd --gid nogroup -m --shell /bin/false vsftpd
+the user must match guest_username=vsftpd in the vsftpd conf file
+
+Defining Directory Access
+
+The important line here is the following
+
+user_config_dir=/etc/vsftpd_user_conf
+this means that when user1 logs in it will look for the following file
+
+/etc/vsftpd_user_conf/user1
+this file the same as the vsftpd.conf so you can define a new local_root
+
+going back to the question we want user1 to only have access to var/www/website_name1/sub_folder1, so we need to create the vsftpd_user_conf folder:
+
+mkdir /etc/vsftpd_user_conf
+Now create the user file:
+
+nano /etc/vsftpd_user_conf/user1
+and enter the following line
+
+local_root=/var/www/website_name1/sub_folder1
+Now restart vsftp
+
+service vsftpd restart
+you should now be able to login as user1 who will only be able to see var/www/website_name1/sub_folder1 and any folder and file inside it.
+
+That's it you can now add as many users as you want and limit their access to whatever folder you wish.
+
+important to remember if you do not create a user conf file it will default to the var/www folder as root (in the example above)
+
+If the subfolder is intended to be modifiable by the user, it might be necesary to change the owner of the shared subfolder:
+
+chown vsftpd:nogroup /var/www/website_name1/sub_folder1
+
