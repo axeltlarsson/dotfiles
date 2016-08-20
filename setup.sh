@@ -436,6 +436,7 @@ EOF
         install_conditional openssh-server
         install_conditional transmission-cli
         install_conditional build-essential
+        install_conditional httpie
 
         setup_burg
     ;;
