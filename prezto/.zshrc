@@ -38,3 +38,5 @@ export PATH=$PATH:$SCALA_HOME:$SCALA_HOME/bin
 # Ruby - rbenv
 #export PATH="$HOME/.rbenv/bin:$PATH"
 #eval "$(rbenv init -)"
+
+export PATH=/home/axel/.local/lib/python2.7/site-packages:$PATH
