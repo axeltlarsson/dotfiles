@@ -8,9 +8,9 @@
 	[
 		"node_modules",
 		".git",
-    "target",
-    "project/target",
-    "project/project"
+		"target",
+		"project/target",
+		"project/project"
 	],
 	"font_face": "Hack",
 	"font_options":
@@ -33,6 +33,6 @@
 	"material_theme_panel_separator": true,
 	"overlay_scroll_bars": "enabled",
 	"tab_size": 2,
-  "theme": "Material-Theme.sublime-theme",
+	"theme": "Material-Theme.sublime-theme",
 	"translate_tabs_to_spaces": true
 }

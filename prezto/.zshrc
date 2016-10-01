@@ -40,3 +40,4 @@ export PATH=$PATH:$SCALA_HOME:$SCALA_HOME/bin
 #eval "$(rbenv init -)"
 
 export PATH=/home/axel/.local/lib/python2.7/site-packages:$PATH
+set -o clobber
