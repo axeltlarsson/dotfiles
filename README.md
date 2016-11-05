@@ -1,6 +1,6 @@
 ## Setup
 ```shell
-apt add-repository -y ppa:git-core/ppa && \
+sudo apt-add-repository -y ppa:git-core/ppa && \
 apt update && \
 apt install -y git
 

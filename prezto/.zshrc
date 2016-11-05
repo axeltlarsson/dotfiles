@@ -34,3 +34,6 @@ export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
 
 # rbenv
 eval "$(rbenv init -)"
+export VISUAL=vim
+export EDITOR="$VISUAL"
+

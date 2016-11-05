@@ -1,14 +1,28 @@
 {
-	"color_scheme": "Packages/Theme - Afterglow/Afterglow.tmTheme",
+	"always_show_minimap_viewport": true,
+	"bold_folder_labels": true,
+	"color_scheme": "Packages/Material Theme/schemes/Material-Theme-OceanicNext.tmTheme",
 	"detect_indentation": false,
 	"dictionary": "Packages/Language - English/en_GB.dic",
 	"font_face": "Hack",
-	"font_size": 15,
+	"font_options":
+	[
+		"gray_antialias"
+	],
+	"font_size": 14,
 	"ignored_packages":
 	[
 		"Vintage"
 	],
+	"indent_guide_options":
+	[
+		"draw_normal",
+		"draw_active"
+	],
+	"line_padding_bottom": 3,
+	"line_padding_top": 3,
+	"overlay_scroll_bars": "enabled",
 	"tab_size": 2,
-	"theme": "Afterglow-blue.sublime-theme",
+	"theme": "Material-Theme.sublime-theme",
 	"translate_tabs_to_spaces": true
 }

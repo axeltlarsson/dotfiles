@@ -7,6 +7,7 @@
 	[
 		"Anaconda",
 		"Babel",
+		"Better CoffeeScript",
 		"Color Highlighter",
 		"Ensime",
 		"GitGutter",
@@ -16,6 +17,7 @@
 		"JSHint",
 		"JSHint Gutter",
 		"Markdown Preview",
+		"Material Theme",
 		"Package Control",
 		"Play 2.0",
 		"Python 3",
