@@ -294,11 +294,13 @@ setup_python3() {
 
 setup_js() {
     if not_installed npm; then
-        execute_su "apt-get install -y -q curl"
+        sudo apt-get install -y -q curl
         print_info "Running official nodejs package manager setup script"
-        (curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash - > /dev/null)
-        execute_su "apt-get install -y -q nodejs"
+        (curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - > /dev/null)
+        sudo apt-get install -y -q nodejs
         symlink "/usr/bin/nodejs" "/usr/local/bin/node"
+        print_info "Updating npm"
+        sudo npm install npm -g
 
         # npm -g without sudo (run symlink of desktop)
         execute "mkdir -p ${HOME}/.npm-packages"
@@ -434,6 +436,7 @@ EOF
         install_conditional openssh-server
         install_conditional transmission-cli
         install_conditional build-essential
+        install_conditional httpie
 
         setup_burg
     ;;

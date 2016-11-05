@@ -23,9 +23,6 @@
 #     ├── private
 #     └── public
 
-# Script will exit on first failed command
-set -e
-
 #---------------------------------------- Making space ----------------------------------------------
 # Stores the disk usage in $usage, given file path as $1
 # Note: $1 should be a real folder path where a disk is mounted
@@ -42,7 +39,7 @@ delete_oldest_dir() {
 	# modified from http://unix.stackexchange.com/questions/28939/how-to-delete-the-oldest-directory-in-a-given-directory
 	IFS= read -r -d $'\0' file < <(find /media/backup -maxdepth 1 ! -path /media/backup  -type d -printf '%p\0' | sort -z)
 	echo "Deleting $file"
-	rm -rf "$file"
+	rm -rf "$file" || exit 1
 }
 
 target=0.86
@@ -52,7 +49,7 @@ while [ $(echo $usage'>'$target | bc -l) == 1 ]; do
 	delete_oldest_dir
 	disk_usage "/media/backup"
 done
-echo "Disk usage $usage < $target => OK"
+echo "Disk usage $usage < $target ===> OK"
 
 #---------------------------------------- Doing the backup ------------------------------------------
 dest="/media/backup"

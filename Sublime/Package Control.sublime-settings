@@ -5,10 +5,12 @@
 	],
 	"installed_packages":
 	[
+		"AdvancedNewFile",
 		"Anaconda",
 		"Babel",
 		"Better CoffeeScript",
 		"Color Highlighter",
+		"EditorConfig",
 		"Ensime",
 		"GitGutter",
 		"HTML Snippets",
@@ -18,6 +20,7 @@
 		"JSHint Gutter",
 		"Markdown Preview",
 		"Material Theme",
+		"Material Theme - White Panels",
 		"Package Control",
 		"Play 2.0",
 		"Python 3",
