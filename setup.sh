@@ -325,6 +325,9 @@ setup_java_scala() {
 install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_files_in_dir dotfiles $HOME
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+vim +PluginInstall +qall
+
 #---------- Show menu with tasks --------------------
 # List more possibilities in a sub menu
 submenu() {
