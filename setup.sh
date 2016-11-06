@@ -324,8 +324,7 @@ setup_java_scala() {
 # Always set up zsh + prezto
 install_zsh
 print_info "Setting up prezto configuration framework"
-symlink_files_in_dir prezto $HOME
-
+symlink_files_in_dir dotfiles $HOME
 #---------- Show menu with tasks --------------------
 # List more possibilities in a sub menu
 submenu() {
