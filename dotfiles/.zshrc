@@ -32,9 +32,6 @@ title() {
 #unset MANPATH
 #export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
 
-export VISUAL=vim
-export EDITOR="$VISUAL"
-
 export SCALA_HOME=$SCALA_HOME:/usr/local/bin/scala-2.11.8
 export PATH=$PATH:$SCALA_HOME:$SCALA_HOME/bin
 
