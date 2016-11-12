@@ -88,7 +88,8 @@ function prompt_steeef_setup {
   PROMPT="
 ${_prompt_steeef_colors[3]}%n%f at ${_prompt_steeef_colors[2]}%m%f in ${_prompt_steeef_colors[5]}%~%f "'${vcs_info_msg_0_}'"
 "'$python_info[virtualenv]'"$ "
-  RPROMPT='hej'
+  VIM_PROMPT="${_prompt_steeef_colors[3]} [% NORMAL]% %{$reset_color%}"
+  RPROMPT='${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $EPS1'
 }
 
 prompt_steeef_setup "$@"
