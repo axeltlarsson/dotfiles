@@ -49,5 +49,3 @@ syntax enable
 set background=dark
 colorscheme solarized
 set number
-" Fix unreadable Airline in Konsole
-let &t_Co=256
