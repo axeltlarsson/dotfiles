@@ -30,22 +30,22 @@ execute() {
     # If fail: ask if user wants to try with su
 
     if [ $code -ne 0 ]; then
-    	ask_for_confirmation "Try with sudo?"
-    	if answer_is_yes; then
-    		execute_su "$1" "$2"
-		fi
+        ask_for_confirmation "Try with sudo?"
+        if answer_is_yes; then
+            execute_su "$1" "$2"
+        fi
     fi
 }
 
 execute_su() {
-	export -f ask_for_confirmation
-	export -f answer_is_yes
-	export -f execute
-	export -f print_error
-	export -f print_success
-	export -f print_result
-	e_msg=`sudo ${1} 2>&1`
-	print_result $? "${2:-$1} \n\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
+    export -f ask_for_confirmation
+    export -f answer_is_yes
+    export -f execute
+    export -f print_error
+    export -f print_success
+    export -f print_result
+    e_msg=`sudo ${1} 2>&1`
+    print_result $? "${2:-$1} \n\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
 }
 
 get_answer() {
@@ -86,8 +86,8 @@ install_zsh () {
 if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
     # Set the default shell to zsh if it isn't currently set to zsh
     if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
-    	print_info "Setting default shell to zsh, please enter your password"
-        execute "chsh -s $(which zsh)" 
+        print_info "Setting default shell to zsh, please enter your password"
+        execute "chsh -s $(which zsh)"
     elif [[ $(echo $SHELL) == $(which zsh) ]]; then
         print_info "zsh is already your shell"
     fi
@@ -96,7 +96,7 @@ else
     platform=$(uname);
     # If the platform is Linux, try an apt-get to install zsh and then recurse
     if [[ $platform == 'Linux' ]]; then
-    	print_info "Installing zsh..."
+        print_info "Installing zsh..."
         sudo apt-get install zsh
         install_zsh
     # If the platform is OS X, tell the user to install zsh :)
@@ -206,7 +206,7 @@ install_powerline_fonts() {
 
 install_solarized() {
     if [ $XDG_CURRENT_DESKTOP == "GNOME" ]; then
-        if not_installed dconf-cli; then        
+        if not_installed dconf-cli; then
             print_info "Installing prerequisites for gnome-terminal-colors-solarized"
             execute_su "apt-get install dconf-cli"
             ./gnome-terminal-colors-solarized/set_dark.sh
@@ -325,8 +325,7 @@ setup_java_scala() {
 install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_files_in_dir dotfiles $HOME
-git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-vim +PluginInstall +qall
+symlink $(fullpath .vim) $HOME/.vim
 
 #---------- Show menu with tasks --------------------
 # List more possibilities in a sub menu
@@ -336,7 +335,7 @@ do
     clear
     cat<<EOF
 ===============================================
-    .dotfiles setup                             
+    .dotfiles setup
 -----------------------------------------------
     All available tasks, dependencies in ():
 
@@ -356,7 +355,7 @@ do
     (7) Copy files from "Ubuntuservern"
 
     (8) Setup pip3 and virtualenv
-    
+
     (*) Return to main menu
 -----------------------------------------------
 EOF
@@ -377,7 +376,7 @@ EOF
         "3") setup_js ;;
         "4")
             symlink_files_in_dir desktop
-            git config --global core.excludesfile $HOME/.gitignore_global 
+            git config --global core.excludesfile $HOME/.gitignore_global
         ;;
 
         "5") symlink_files_in_dir Kodi-Rpi2              ;;
@@ -398,14 +397,14 @@ do
     clear
     cat<<EOF
 ===============================================
-    .dotfiles setup                             
+    .dotfiles setup
 -----------------------------------------------
     Common setup tasks:
 
-    (1) Desktop setup       
+    (1) Desktop setup
         - Sublime, Fonts, Solarized theme,
           symlinking desktop, tree, burg, etc
-    
+
     (2) Haskell dev environment
         - ghc, cabal, hsdev etc
 
@@ -413,7 +412,7 @@ do
         - OracleJDK8, sbt
 
     (4) List more possibilities
-    
+
     (q) Quit
 -----------------------------------------------
 EOF

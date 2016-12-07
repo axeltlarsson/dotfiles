@@ -1,6 +1,9 @@
 au FileType gitcommit set tw=72
-set nocompatible              " be iMproved, required
-filetype off                  " required
+set nocompatible                " be iMproved, required
+filetype off                    " required
+set hidden                      " allow multiple files to be opened in diff buffers, 'hidden' in bg
+set tabstop=4
+set expandtab                   " replace \t with 4 spaces
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -14,6 +17,8 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'derekwyatt/vim-scala'
+Plugin 'scrooloose/nerdtree'
+Plugin 'ctrlp.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -42,10 +47,11 @@ autocmd BufNewFile,BufRead *.html  match OverLength /\%251v.\+/
 autocmd BufNewFile,BufRead *.js  match OverLength /\%251v.\+/
 
 " Airline commands
-set laststatus=2
+set laststatus=2                    " always show the status bar
 let g:airline_powerline_fonts = 1
 let g:airline_theme='solarized'
 syntax enable
 set background=dark
 colorscheme solarized
 set number
+
