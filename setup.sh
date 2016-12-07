@@ -306,6 +306,8 @@ install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_files_in_dir dotfiles $HOME
 symlink $(fullpath .vim) $HOME/.vim
+git clone -q https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
+vim +PluginInstall +qall
 
 #---------- Show menu with tasks --------------------
 # List more possibilities in a sub menu
