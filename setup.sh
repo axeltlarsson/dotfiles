@@ -217,26 +217,6 @@ install_solarized() {
     fi
 }
 
-setup_sublime_text_3() {
-    if not_installed sublime-text-installer; then
-        print_info "Installing Sublime Text 3"
-        execute_su "apt-add-repository -y ppa:webupd8team/sublime-text-3"
-        execute_su "apt-get update -q"
-        execute_su "apt-get install -q sublime-text-installer"
-        print_info "Please install pacage control"
-        xdg-open "https://packagecontrol.io/installation"
-        subl
-
-        ask_for_confirmation "Have you installed Package Control?"
-        if answer_is_yes; then
-            print_info "Restart Sublime and allow Package Control some time to satisfy dependencies, you may have to change the color theme manually to AfterGlow."
-            symlink /opt/sublime_text/sublime_text /usr/local/bin/subl
-        fi
-    fi
-    mkdir -p $HOME/.config/sublime-text-3/Packages/User
-    symlink $(fullpath Sublime) $HOME/.config/sublime-text-3/Packages/User
-}
-
 setup_haskell() {
     if not_installed ghc-7.10.3; then
         print_info "Installing ghc-7.10.3 and cabal-install-1.22"
@@ -339,22 +319,20 @@ do
 -----------------------------------------------
     All available tasks, dependencies in ():
 
-    (1) Sublime Text 3 (fonts)
+    (1) gnome-terminal-solarized (fonts)
 
-    (2) gnome-terminal-solarized (fonts)
-
-    (3) Javascript dev environment
+    (2) Javascript dev environment
         - node, jspm, jshint etc
 
-    (4) Symlink files from "desktop"
+    (3) Symlink files from "desktop"
 
-    (5) Symlink files from "Kodi-Rpi2"
+    (4) Symlink files from "Kodi-Rpi2"
 
-    (6) Symlink files from "Backupservern"
+    (5) Symlink files from "Backupservern"
 
-    (7) Copy files from "Ubuntuservern"
+    (6) Copy files from "Ubuntuservern"
 
-    (8) Setup pip3 and virtualenv
+    (7) Setup pip3 and virtualenv
 
     (*) Return to main menu
 -----------------------------------------------
@@ -362,27 +340,19 @@ EOF
     read -n1 -s
     case "$REPLY" in
         "1")
-            install_sublime_text_3
-            mkdir -p $HOME/.config/sublime-text-3/Packages/User
-            symlink $(fullpath Sublime) $HOME/.config/sublime-text-3/Packages/User
-
-            install_powerline_fonts
-        ;;
-
-        "2")
             install_solarized
         ;;
 
-        "3") setup_js ;;
-        "4")
+        "2") setup_js ;;
+        "3")
             symlink_files_in_dir desktop
             git config --global core.excludesfile $HOME/.gitignore_global
         ;;
 
-        "5") symlink_files_in_dir Kodi-Rpi2              ;;
-        "6") symlink_files_in_dir Backupservern $HOME    ;;
-        "7") copy_dir Ubuntuservern             ;;
-        "8") setup_python3 ;;
+        "4") symlink_files_in_dir Kodi-Rpi2              ;;
+        "5") symlink_files_in_dir Backupservern $HOME    ;;
+        "6") copy_dir Ubuntuservern             ;;
+        "7") setup_python3 ;;
          * ) return
     esac
     sleep 1
@@ -402,7 +372,7 @@ do
     Common setup tasks:
 
     (1) Desktop setup
-        - Sublime, Fonts, Solarized theme,
+        - Fonts, Solarized theme,
           symlinking desktop, tree, burg, etc
 
     (2) Haskell dev environment
@@ -420,7 +390,6 @@ EOF
     case "$REPLY" in
     "1")
         execute_su "chown -R $USER /usr/local/bin"
-        setup_sublime_text_3
 
         install_powerline_fonts
         install_solarized

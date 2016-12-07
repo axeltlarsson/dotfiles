@@ -1,6 +1,0 @@
-{
-"path": "/usr/bin",
-"cmd": ["python3", "$file"],
-"file_regex": "^[ ]*File, line ([0-9]*)",
-"selector": "source.python"
-}
