@@ -11,14 +11,17 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # aliases
-alias sshServer="ssh -p512 axel@192.168.0.199"
-alias sshBackupserver="ssh axel@192.168.0.179"
+# typing an address suffixed by .se, .com etc will open firefox w that page
+alias -s se=firefox
+alias -s com=firefox
+alias -s nu=firefox
+
 alias wakeBackupserver="wakeonlan 00:23:54:37:4e:9e"
 alias pp_json="python -m json.tool | pygmentize -l javascript"
-export PATH=/usr/local/bin/activator:$PATH
 alias act="activator"
 alias gcc="gcc -pedantic -Wall -Werror -std=c11 -O3"
 export PATH=.cabal-sandbox/bin:~/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.10.3/bin:/opt/happy/1.19.5/bin:/opt/alex/3.1.4/bin:$PATH
+export PATH=/usr/local/bin/activator:$PATH
 
 # set terminal title with this function
 title() {
