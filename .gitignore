@@ -4,3 +4,6 @@ modules/*/cache.zsh
 #miscellaneous/usr/local/bin/magnet
 *.cache
 *.last-run
+.vim/bundle/*
+!.vim/bundle/Vundle.vim
+

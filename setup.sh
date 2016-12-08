@@ -301,12 +301,11 @@ setup_java_scala() {
     xdg-open "http://www.scala-lang.org/download"
 }
 
-# Always set up zsh + prezto
+# Always set up zsh + prezto and vim w. Vundle plugins
 install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_files_in_dir dotfiles $HOME
 symlink $(fullpath .vim) $HOME/.vim
-git clone -q https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
 vim +PluginInstall +qall
 
 #---------- Show menu with tasks --------------------
