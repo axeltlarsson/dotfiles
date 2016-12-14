@@ -5,6 +5,7 @@ set hidden                      " allow multiple files to be opened in diff buff
 set tabstop=4
 set expandtab                   " replace \t with 4 spaces
 
+" ---- Vundle ----
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -19,6 +20,7 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ctrlp.vim'
+Plugin 'scrooloose/nerdcommenter'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -46,12 +48,19 @@ autocmd BufNewFile,BufRead *.scala match OverLength /\%121v.\+/
 autocmd BufNewFile,BufRead *.html  match OverLength /\%251v.\+/
 autocmd BufNewFile,BufRead *.js  match OverLength /\%251v.\+/
 
-" Airline commands
 set laststatus=2                    " always show the status bar
+" Airline commands
 let g:airline_powerline_fonts = 1
 let g:airline_theme='solarized'
+" Theme
 syntax enable
 set background=dark
 colorscheme solarized
-set number
+set hlsearch
+set incsearch
+" Clear highlighting on escape in Normal mode
+nnoremap <esc> :noh<return><esc>
+nnoremap <esc>^[ <esc>^[
 
+" Rebind leader key
+let mapleader = ","
