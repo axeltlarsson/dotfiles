@@ -21,6 +21,7 @@ Plugin 'derekwyatt/vim-scala'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ctrlp.vim'
 Plugin 'scrooloose/nerdcommenter'
+Plugin 'pangloss/vim-javascript'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -58,6 +59,7 @@ set background=dark
 colorscheme solarized
 set hlsearch
 set incsearch
+set number
 " Clear highlighting on escape in Normal mode
 nnoremap <esc> :noh<return><esc>
 nnoremap <esc>^[ <esc>^[
