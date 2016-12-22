@@ -2,8 +2,11 @@ au FileType gitcommit set tw=72
 set nocompatible                " be iMproved, required
 filetype off                    " required
 set hidden                      " allow multiple files to be opened in diff buffers, 'hidden' in bg
-set tabstop=4
-set expandtab                   " replace \t with 4 spaces
+" For indentation w/o tabs, principle is to set expandtab, and set shiftwidth
+" and softtabstop to the same value, leaving tabstop at default
+set expandtab
+set shiftwidth=2
+set softtabstop=2
 
 " ---- Vundle ----
 " set the runtime path to include Vundle and initialize
@@ -66,3 +69,8 @@ nnoremap <esc>^[ <esc>^[
 
 " Rebind leader key
 let mapleader = ","
+set autoindent
+
+" Ignore custom dirs for CtrlP
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
+
