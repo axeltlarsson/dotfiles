@@ -74,3 +74,13 @@ set autoindent
 " Ignore custom dirs for CtrlP
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
 
+" Move lines down with Ctrl-J and up with Ctrl-K
+nnoremap <C-j> :m .+1<CR>==
+nnoremap <C-k> :m .-2<CR>==
+
+inoremap <C-j> <ESC>:m .+1<CR>==gi
+inoremap <C-k> <ESC>:m .-2<CR>==gi
+
+vnoremap <C-j> :m '>+1<CR>gv=gv
+vnoremap <C-k> :m '<-2<CR>gv=gv
+
