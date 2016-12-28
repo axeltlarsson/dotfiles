@@ -72,7 +72,7 @@ let mapleader = ","
 set autoindent
 
 " Ignore custom dirs for CtrlP
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|target\|lib_exec'
 
 " Move lines down with Ctrl-J and up with Ctrl-K
 nnoremap <C-j> :m .+1<CR>==
