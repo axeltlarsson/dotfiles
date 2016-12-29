@@ -25,6 +25,7 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'ctrlp.vim'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'pangloss/vim-javascript'
+Plugin 'abolish.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -83,4 +84,7 @@ inoremap <C-k> <ESC>:m .-2<CR>==gi
 
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
+
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
 
