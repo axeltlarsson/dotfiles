@@ -18,6 +18,7 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'w0ng/vim-hybrid'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'derekwyatt/vim-scala'
@@ -56,11 +57,11 @@ autocmd BufNewFile,BufRead *.js  match OverLength /\%251v.\+/
 set laststatus=2                    " always show the status bar
 " Airline commands
 let g:airline_powerline_fonts = 1
-let g:airline_theme='solarized'
+let g:airline_theme='tomorrow'
 " Theme
 syntax enable
 set background=dark
-colorscheme solarized
+colorscheme hybrid
 set hlsearch
 set incsearch
 set number
