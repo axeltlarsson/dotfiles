@@ -35,7 +35,7 @@ PATH="$NPM_PACKAGES/bin:$PATH"
 #unset MANPATH
 #export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
 
-export SCALA_HOME=$SCALA_HOME:/usr/local/bin/scala-2.11.8
+export SCALA_HOME=$SCALA_HOME:/usr/local/bin/scala-2.12.1
 export PATH=$PATH:$SCALA_HOME:$SCALA_HOME/bin
 
 # Ruby - rbenv
