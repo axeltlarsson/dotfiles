@@ -373,8 +373,17 @@ do
     Common setup tasks:
 
     (1) Desktop setup
-        - Fonts, Solarized theme,
-          symlinking desktop, tree, burg, etc
+        - take control of /usr/local/bin
+        - powerline_fonts
+        - symlink files from "desktop"
+        - You will be asked if you want:
+          * httpie
+          * tree
+          * wakeonlan
+          * keepassx
+          * openssh-server
+          * transmission-cli
+          * build-essential
 
     (2) Haskell dev environment
         - ghc, cabal, hsdev etc
@@ -393,7 +402,6 @@ EOF
         execute_su "chown -R $USER /usr/local/bin"
 
         install_powerline_fonts
-        install_solarized
 
         ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
         if answer_is_yes; then
@@ -401,15 +409,16 @@ EOF
             git config --global core.excludesfile $HOME/.gitignore_global
         fi
 
+        install_conditional httpie
         install_conditional tree
         install_conditional wakeonlan
         install_conditional keepassx
         install_conditional openssh-server
         install_conditional transmission-cli
         install_conditional build-essential
-        install_conditional httpie
 
-        setup_burg
+        # install_solarized
+        # setup_burg
     ;;
 
     "2")  setup_haskell             ;;
