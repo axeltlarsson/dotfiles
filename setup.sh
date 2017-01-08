@@ -157,7 +157,7 @@ install_conditional() {
     if not_installed ${1}; then
         ask_for_confirmation "Do you want to install ${1}?"
         if answer_is_yes; then
-            execute_su "apt-get install -q ${1}"
+            execute_su "apt-get --assume-yes install -qq ${1}"
         fi
     fi
 }
@@ -373,6 +373,7 @@ do
     Common setup tasks:
 
     (1) Desktop setup
+        - install mosh
         - take control of /usr/local/bin
         - powerline_fonts
         - symlink files from "desktop"
@@ -399,6 +400,7 @@ EOF
     read -n1 -s
     case "$REPLY" in
     "1")
+        execute_su "apt-get --assume-yes install -qq mosh"
         execute_su "chown -R $USER /usr/local/bin"
 
         install_powerline_fonts
