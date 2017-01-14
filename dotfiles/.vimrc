@@ -27,6 +27,7 @@ Plugin 'ctrlp.vim'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'pangloss/vim-javascript'
 Plugin 'abolish.vim'
+Plugin 'suan/vim-instant-markdown'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -73,8 +74,8 @@ nnoremap <esc>^[ <esc>^[
 let mapleader = ","
 set autoindent
 
-" Ignore custom dirs for CtrlP
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|target\|lib_exec'
+" CtrlP: Ignore dirs from .gitignore for
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 
 " Move lines down with Ctrl-J and up with Ctrl-K
 nnoremap <C-j> :m .+1<CR>==
