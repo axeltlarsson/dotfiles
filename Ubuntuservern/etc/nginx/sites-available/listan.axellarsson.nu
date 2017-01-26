@@ -44,4 +44,6 @@ server {
   location = /50x.html {
     root /usr/share/nginx/html;
   }
+
+  include expires.conf;
 }
