@@ -16,12 +16,16 @@ server {
   root /var/www/recept.axellarsson.nu/;
 
   location / {
-# fist attempt URL then try as php file
+  # fist attempt URL then try as php file
     try_files $uri @extensionless-php;
+    auth_basic "Restricted Content";
+    auth_basic_user_file /etc/nginx/.htpasswd;
   }
 
   location = / {
     index recipes.php;
+    auth_basic "Restricted Content";
+    auth_basic_user_file /etc/nginx/.htpasswd;
   }
 
   error_page 404 /404.php;
