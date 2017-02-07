@@ -28,6 +28,7 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'pangloss/vim-javascript'
 Plugin 'abolish.vim'
 Plugin 'suan/vim-instant-markdown'
+Plugin 'editorconfig/editorconfig-vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -63,6 +64,7 @@ let g:airline_theme='tomorrow'
 syntax enable
 set background=dark
 colorscheme hybrid
+let g:hybrid_custom_term_colors = 1
 set hlsearch
 set incsearch
 set number
@@ -75,8 +77,8 @@ let mapleader = ","
 set autoindent
 
 " CtrlP: Ignore dirs from .gitignore for
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 " Move lines down with Ctrl-J and up with Ctrl-K
 nnoremap <C-j> :m .+1<CR>==
 nnoremap <C-k> :m .-2<CR>==
