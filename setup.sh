@@ -148,8 +148,8 @@ copy() {
             print_success "$targetFile → $sourceFile"
         fi
     else
-        execute 'cp --preserve "$sourceFile" "$targetFile"'
     fi
+    execute 'cp --preserve "$sourceFile" "$targetFile"'
 }
 
 # Install the package given by $1 as long as it is available via apt and user accepts
@@ -307,6 +307,7 @@ print_info "Setting up prezto configuration framework"
 symlink_files_in_dir dotfiles $HOME
 symlink $(fullpath .vim) $HOME/.vim
 vim +PluginInstall +qall
+print_info "Do not forget to run :UpdateRemotePlugins in neovim"
 
 #---------- Show menu with tasks --------------------
 # List more possibilities in a sub menu
