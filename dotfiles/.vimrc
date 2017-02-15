@@ -17,7 +17,6 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'altercation/vim-colors-solarized'
 Plugin 'w0ng/vim-hybrid'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -29,6 +28,8 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'abolish.vim'
 Plugin 'suan/vim-instant-markdown'
 Plugin 'editorconfig/editorconfig-vim'
+Plugin 'shougo/deoplete.nvim'
+Plugin 'mileszs/ack.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -91,4 +92,15 @@ vnoremap <C-k> :m '<-2<CR>gv=gv
 
 " Add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
+
+" The Silver Searcher
+if executable('ag')
+  " Use ag over grep
+  let g:ackprg = 'ag --vimgrep'
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
 
