@@ -104,3 +104,6 @@ if executable('ag')
   let g:ctrlp_use_caching = 0
 endif
 
+" Use deoplete
+let g:deoplete#enable_at_startup = 1
+
