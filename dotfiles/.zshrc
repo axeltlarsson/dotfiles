@@ -20,6 +20,9 @@ alias wakeBackupserver="wakeonlan 00:23:54:37:4e:9e"
 alias pp_json="python -m json.tool | pygmentize -l javascript"
 alias act="activator"
 alias gcc="gcc -pedantic -Wall -Werror -std=c11 -O3"
+alias grep="ag"
+alias vim="nvim"
+
 export PATH=.cabal-sandbox/bin:~/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.10.3/bin:/opt/happy/1.19.5/bin:/opt/alex/3.1.4/bin:$PATH
 export PATH=/usr/local/bin/activator:$PATH
 
