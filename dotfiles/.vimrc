@@ -23,9 +23,9 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ctrlp.vim'
-Plugin 'scrooloose/nerdcommenter'
 Plugin 'pangloss/vim-javascript'
 Plugin 'abolish.vim'
+Plugin 'scrooloose/nerdcommenter'
 Plugin 'suan/vim-instant-markdown'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'shougo/deoplete.nvim'
@@ -66,6 +66,7 @@ syntax enable
 set background=dark
 colorscheme hybrid
 let g:hybrid_custom_term_colors = 1
+set termguicolors
 set hlsearch
 set incsearch
 set number
