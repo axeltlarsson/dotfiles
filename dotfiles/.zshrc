@@ -14,7 +14,7 @@ title() {
   echo -en "\e]2;$1\a"
 }
 
-# usage: if [[ is_mac ]]; then ... else ... fi
+# usage: if is_mac; then ... else ... fi // do not use [[ is_mac ]] !!!
 is_mac () {
   case `uname` in
     Darwin)
