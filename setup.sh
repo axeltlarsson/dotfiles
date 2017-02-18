@@ -330,7 +330,9 @@ execute "mkdir -p $HOME/.config/nvim"
 symlink $(fullpath dotfiles/.vimrc) $HOME/.config/nvim/init.vim
 symlink $(fullpath .vim) $HOME/.vim
 vim +PluginInstall +qall
+install_conditional silversearcher-ag
 print_info "Do not forget to run :CheckHealth in neovim"
+sleep 2
 
 #---------- Show menu with tasks --------------------
 # List more possibilities in a sub menu

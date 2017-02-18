@@ -66,7 +66,6 @@ syntax enable
 set background=dark
 colorscheme hybrid
 let g:hybrid_custom_term_colors = 1
-set termguicolors
 set hlsearch
 set incsearch
 set number
