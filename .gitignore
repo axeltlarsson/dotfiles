@@ -1,4 +1,4 @@
-.vim/undo/
+.vim/history/
 *.zwc
 *.zwc.old
 modules/*/cache.zsh
