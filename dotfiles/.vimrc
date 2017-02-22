@@ -3,8 +3,8 @@ set nocompatible                " be iMproved, required
 filetype off                    " required
 set hidden                      " allow multiple files to be opened in diff buffers, 'hidden' in bg
 
-" For indentation w/o tabs, principle is to set expandtab, and set shiftwidth
 " and softtabstop to the same value, leaving tabstop at default
+" For indentation w/o tabs, principle is to set expandtab, and set shiftwidth
 set expandtab
 set shiftwidth=2
 set softtabstop=2
@@ -31,6 +31,7 @@ Plugin 'suan/vim-instant-markdown'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'shougo/deoplete.nvim'
 Plugin 'mileszs/ack.vim'
+Plugin 'benekastah/neomake'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -128,4 +129,4 @@ set updatecount =100
 set directory   =$HOME/.vim/history/swap//
 
 set cursorline              " Highlight current line
-
+let g:neomake_javascript_enabled_makers = ['eslint']
