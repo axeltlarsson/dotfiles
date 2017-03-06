@@ -16,8 +16,8 @@ else # spara namnet från torrent-filen
    name=$(echo $1 | sed -n 's/.*\///p')
 fi
 
-host="192.168.0.199:9091"
-password="vallon"
+host="ip:port"
+password="password"
 
 # Försök lägga till magnet/torrent
 response=`/usr/bin/transmission-remote  $host -n transmission:$password --add "$1" 2>&1`  # apt-get install transmission-cli NOT: transmission-remote-cli
