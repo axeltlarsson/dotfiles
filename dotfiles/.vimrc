@@ -32,6 +32,8 @@ Plugin 'editorconfig/editorconfig-vim'
 Plugin 'shougo/deoplete.nvim'
 Plugin 'mileszs/ack.vim'
 Plugin 'benekastah/neomake'
+Plugin 'zchee/deoplete-jedi'
+Plugin 'Chiel92/vim-autoformat'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -60,7 +62,7 @@ let g:airline_theme='base16'
 syntax enable
 set background=dark
 colorscheme hybrid
-" set termguicolors
+set termguicolors
 
 let g:hybrid_custom_term_colors = 1
 set hlsearch
@@ -129,4 +131,9 @@ set updatecount =100
 set directory   =$HOME/.vim/history/swap//
 
 set cursorline              " Highlight current line
-let g:neomake_javascript_enabled_makers = ['eslint']
+" Neomake linters
+let g:neomake_javascript_enabled_makers = ['eslint'] " npm install eslint
+let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
+
+" Autoformat
+let g:formatter_yapf_style = 'pep8' " pip install yapf
