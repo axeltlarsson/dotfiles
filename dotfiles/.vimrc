@@ -13,35 +13,34 @@ set softtabstop=2
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'w0ng/vim-hybrid'
+Plugin 'w0ng/vim-hybrid'                  " Colorscheme
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ctrlp.vim'
 Plugin 'pangloss/vim-javascript'
-Plugin 'abolish.vim'
+Plugin 'abolish.vim'                      " Case coercion
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'suan/vim-instant-markdown'
 Plugin 'editorconfig/editorconfig-vim'
-Plugin 'shougo/deoplete.nvim'
-Plugin 'mileszs/ack.vim'
+Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
+Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
 Plugin 'benekastah/neomake'
-Plugin 'zchee/deoplete-jedi'
+Plugin 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'ryanoasis/vim-devicons'
+Plugin 'tpope/vim-rails'
+Plugin 'kchmck/vim-coffee-script'
+
 set encoding=utf8
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
 
 " Set scala-docstrings
 let g:scala_scaladoc_indent = 1
@@ -133,9 +132,11 @@ set updatecount =100
 set directory   =$HOME/.vim/history/swap//
 
 set cursorline              " Highlight current line
+
 " Neomake linters
-let g:neomake_javascript_enabled_makers = ['eslint'] " npm install eslint
+let g:neomake_javascript_enabled_makers = ['eslint'] " npm install -g eslint
 let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
+let g:neomake_coffee_enabled_markers = ['coffelint'] " npm install -g coffelint
 
 " Autoformat
 let g:formatter_yapf_style = 'pep8' " pip install yapf
