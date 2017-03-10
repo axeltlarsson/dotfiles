@@ -34,6 +34,8 @@ Plugin 'mileszs/ack.vim'
 Plugin 'benekastah/neomake'
 Plugin 'zchee/deoplete-jedi'
 Plugin 'Chiel92/vim-autoformat'
+Plugin 'ryanoasis/vim-devicons'
+set encoding=utf8
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -100,8 +102,8 @@ if executable('ag')
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 
-  " ag is fast enough that CtrlP doesn't need to cache
   let g:ctrlp_use_caching = 0
+  " ag is fast enough that CtrlP doesn't need to cache
 endif
 
 " Use deoplete
@@ -137,3 +139,4 @@ let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
 
 " Autoformat
 let g:formatter_yapf_style = 'pep8' " pip install yapf
+
