@@ -21,7 +21,7 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'scrooloose/nerdtree'
-Plugin 'ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'pangloss/vim-javascript'
 Plugin 'abolish.vim'                      " Case coercion
 Plugin 'scrooloose/nerdcommenter'
@@ -35,6 +35,7 @@ Plugin 'Chiel92/vim-autoformat'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-rails'
 Plugin 'kchmck/vim-coffee-script'
+Plugin 'evanmiller/nginx-vim-syntax'
 
 set encoding=utf8
 
