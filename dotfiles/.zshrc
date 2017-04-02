@@ -29,6 +29,17 @@ is_mac () {
   esac
 }
 
+is_linux () {
+  case `uname` in
+    Linux)
+      true
+      ;;
+    *)
+      false
+      ;;
+  esac
+}
+
 #------------ aliases ---------------------------------------------------------
 # typing an address suffixed by .se, .com etc will open firefox w that page
 alias -s se=firefox
@@ -38,6 +49,10 @@ alias -s org=firefox
 
 alias pp_json="python -m json.tool | pygmentize -l javascript" # e.g. "cat file.json | pp_json"
 alias gcc="gcc -pedantic -Wall -Werror -std=c11 -O3"
+
+if is_linux; then
+  alias open="xdg-open"
+fi
 
 # ----------- conditional aliases ---------------------------------------------
 if installed nvim; then
