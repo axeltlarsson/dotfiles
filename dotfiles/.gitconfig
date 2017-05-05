@@ -1,6 +1,7 @@
 [user]
 	email = mail@axellarsson.nu
 	name = AxelTLarsson
+	signingkey = 27B8DF6F75DCFDC3
 [push]
 	default = matching
 [credential]
@@ -18,3 +19,7 @@
 	oldHighlight = red bold 52
 	newNormal = green bold
 	newHighlight = green bold 22
+[gpg]
+	program = gpg1
+[commit]
+	gpgsign = false
