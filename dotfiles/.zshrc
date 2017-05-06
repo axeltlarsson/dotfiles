@@ -73,9 +73,14 @@ export SCALA_HOME=$SCALA_HOME:/usr/local/bin/scala-2.12.1
 export PATH=$PATH:$SCALA_HOME:$SCALA_HOME/bin
 
 # Ruby - rbenv
-if is_mac; then
-  export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/.rbenv/bin:$PATH"
+# ruby-build
+export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+if installed rbenv; then
   eval "$(rbenv init -)"
+fi
+
+if is_mac; then
   export PATH="/usr/local/opt/apache-spark@1.6/bin:$PATH"
 fi
 
