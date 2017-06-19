@@ -25,7 +25,7 @@ Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'pangloss/vim-javascript'
 Plugin 'abolish.vim'                      " Case coercion
 Plugin 'scrooloose/nerdcommenter'
-Plugin 'suan/vim-instant-markdown'
+Plugin 'suan/vim-instant-markdown'        " npm -g install instant-markdown-d
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
 Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
