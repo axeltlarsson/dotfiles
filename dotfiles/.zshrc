@@ -69,7 +69,7 @@ fi
 NPM_PACKAGES="${HOME}/.npm-packages"
 PATH="$NPM_PACKAGES/bin:$PATH"
 
-export SCALA_HOME=$SCALA_HOME:/usr/local/bin/scala-2.12.1
+export SCALA_HOME=$SCALA_HOME:/usr/local/bin/scala-2.12.2
 export PATH=$PATH:$SCALA_HOME:$SCALA_HOME/bin
 
 # Ruby - rbenv

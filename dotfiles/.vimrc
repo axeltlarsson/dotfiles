@@ -33,7 +33,6 @@ Plugin 'benekastah/neomake'
 Plugin 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'ryanoasis/vim-devicons'
-Plugin 'tpope/vim-rails'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'evanmiller/nginx-vim-syntax'
 
@@ -133,6 +132,8 @@ set updatecount =100
 set directory   =$HOME/.vim/history/swap//
 
 set cursorline              " Highlight current line
+" Set lazyredraw for better performance when scrolling
+set lazyredraw
 
 " Neomake linters
 let g:neomake_javascript_enabled_makers = ['eslint'] " npm install -g eslint
