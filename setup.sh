@@ -354,13 +354,7 @@ do
 
     (3) Symlink files from "desktop"
 
-    (4) Symlink files from "Kodi-Rpi2"
-
-    (5) Symlink files from "Backupservern"
-
-    (6) Copy files from "Ubuntuservern"
-
-    (7) Setup pip3 and virtualenv
+    (4) Setup pip3 and virtualenv
 
     (*) Return to main menu
 -----------------------------------------------
@@ -377,10 +371,7 @@ EOF
             git config --global core.excludesfile $HOME/.gitignore_global
         ;;
 
-        "4") symlink_files_in_dir Kodi-Rpi2              ;;
-        "5") symlink_files_in_dir Backupservern $HOME    ;;
-        "6") copy_dir Ubuntuservern             ;;
-        "7") setup_python3 ;;
+        "4") setup_python3 ;;
          * ) return
     esac
     sleep 1
