@@ -65,3 +65,9 @@ Simply download from http://osxfuse.github.io, brew does not behave well with OS
   ```
   
 ## [httpie](http://radek.io/2015/10/20/httpie/)
+
+## Fonts
+```
+brew tap caskroom/fonts
+brew cask install font-hack-nerd-font
+```

@@ -325,7 +325,8 @@ install_neovim() {
 install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_files_in_dir dotfiles $HOME
-install_neovim
+# does not work on os x
+#install_neovim
 execute "mkdir -p $HOME/.config/nvim"
 symlink $(fullpath dotfiles/.vimrc) $HOME/.config/nvim/init.vim
 symlink $(fullpath .vim) $HOME/.vim
