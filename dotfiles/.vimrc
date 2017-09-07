@@ -35,6 +35,8 @@ Plugin 'Chiel92/vim-autoformat'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'evanmiller/nginx-vim-syntax'
+Plugin 'skwp/greplace.vim'
+Plugin 'tpope/vim-surround'
 
 set encoding=utf8
 
@@ -142,4 +144,8 @@ let g:neomake_coffee_enabled_markers = ['coffelint'] " npm install -g coffelint
 
 " Autoformat
 let g:formatter_yapf_style = 'pep8' " pip install yapf
+
+" Open NERDTree automatically if no files specified
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
