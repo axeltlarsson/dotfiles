@@ -3,6 +3,9 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+# TODO
+# - refactor into different files for different envs (machines/os:es)
+# - optimise calls to is_mac / is_linux (related to above)
 #------------ functions --------------------------------------------------------
 # usage: orElse nvim vim [args]
 orElse() {
@@ -86,4 +89,9 @@ fi
 
 # allow pipe redirect to overwrite files
 set -o clobber
+
+# postgresapp
+if is_mac; then
+  export PATH="$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
+end
 
