@@ -65,7 +65,6 @@ let g:airline_theme='tomorrow'
 syntax enable
 set background=dark
 colorscheme hybrid
-set termguicolors
 
 let g:hybrid_custom_term_colors = 1
 set hlsearch
