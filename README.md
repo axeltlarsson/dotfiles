@@ -9,11 +9,6 @@ cd .zprezto
 ./setup.sh
 ```
 
-May need to install pure prompt manually:
-```console
-npm install -g pure-prompt
-```
-
 iTerm2 theme:
 [https://github.com/sindresorhus/iterm2-snazzy](https://github.com/sindresorhus/iterm2-snazzy)
 
