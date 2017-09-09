@@ -15,6 +15,28 @@ This dotfiles repo uses zsh and prezto as a configuration framework.
 Prezto is the configuration framework for zsh; it enriches the command line
 interface environment with sane defaults, aliases, functions, auto completion,
 and prompt themes.
+=======
+### Troubleshooting
+
+If you are not able to find certain commands after switching to *Prezto*,
+modify the `PATH` variable in *~/.zprofile* then open a new Zsh terminal
+window or tab.
+
+Updating
+--------
+
+Run `zprezto-update` to automatically check if there is an update to zprezto.
+If there are no file conflicts, zprezto and its submodules will be
+automatically updated. If there are conflicts you will instructed to go into
+the `$ZPREZTODIR` directory and resolve them yourself.
+
+To pull the latest changes and update submodules manually:
+
+```console
+cd $ZPREZTODIR
+git pull
+git submodule update --init --recursive
+```
 
 Usage
 -----
@@ -38,27 +60,13 @@ accompanying README files to learn of what is available.
 License
 -------
 
-(The MIT License)
+This project is licensed under the MIT License.
 
-Copyright (c) 2009-2011 Robby Russell and contributors.
-
-Copyright (c) 2011-2015 Sorin Ionescu and contributors.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+[1]: http://www.zsh.org
+[2]: http://i.imgur.com/nrGV6pg.png "sorin theme"
+[3]: http://git-scm.com
+[4]: https://github.com
+[5]: http://gitimmersion.com
+[6]: http://gitref.org
+[7]: http://www.bash2zsh.com/zsh_refcard/refcard.pdf
+[8]: http://grml.org/zsh/zsh-lovers.html
