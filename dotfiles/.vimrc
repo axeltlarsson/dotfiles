@@ -37,6 +37,7 @@ Plugin 'kchmck/vim-coffee-script'
 Plugin 'evanmiller/nginx-vim-syntax'
 Plugin 'skwp/greplace.vim'
 Plugin 'tpope/vim-surround'
+Plugin 'godlygeek/tabular'
 
 set encoding=utf8
 
