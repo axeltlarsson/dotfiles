@@ -29,7 +29,7 @@ Plugin 'suan/vim-instant-markdown'        " npm -g install instant-markdown-d
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
 Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
-Plugin 'benekastah/neomake'
+Plugin 'neomake/neomake'
 Plugin 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'ryanoasis/vim-devicons'
@@ -141,6 +141,8 @@ set lazyredraw
 let g:neomake_javascript_enabled_makers = ['eslint'] " npm install -g eslint
 let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
 let g:neomake_coffee_enabled_markers = ['coffelint'] " npm install -g coffelint
+" Call Neomake automatically when writing a buffer.
+call neomake#configure#automake('w')
 
 " Autoformat
 let g:formatter_yapf_style = 'pep8' " pip install yapf
