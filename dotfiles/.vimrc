@@ -102,9 +102,11 @@ if executable('ag')
   let g:ackprg = 'ag --vimgrep'
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
-  let g:ctrlp_use_caching = 0
   " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+   
+  set grepprg=ag
+  let g:grep_cmd_opts = '--line-numbers --noheading'
 endif
 
 " Use deoplete
@@ -130,8 +132,8 @@ set undofile                    " Save undo's after file closes
 set undodir=$HOME/.vim/history  " where to save undo histories
 set undolevels=1000             " How many undos
 set undoreload=10000            " number of lines to save for undo
-set updatecount =100
-set directory   =$HOME/.vim/history/swap//
+set updatecount=100
+set directory=$HOME/.vim/history/swap//
 
 set cursorline              " Highlight current line
 " Set lazyredraw for better performance when scrolling
