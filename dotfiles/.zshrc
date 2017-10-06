@@ -89,9 +89,3 @@ fi
 
 # allow pipe redirect to overwrite files
 set -o clobber
-
-# postgresapp
-if is_mac; then
-  export PATH="$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
-fi
-
