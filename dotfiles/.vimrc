@@ -154,5 +154,5 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 " Set syntax error for nbsp
-syntax match Error " "
+autocmd BufEnter,WinEnter * call matchadd("Error", " ", -1)
 
