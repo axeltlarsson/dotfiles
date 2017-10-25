@@ -58,7 +58,7 @@
 Simply download from http://osxfuse.github.io, brew does not behave well with OSXFuse
 
 
-## [httpie](http://radek.io/2015/10/20/httpie/)
+## [httpie](https://httpie.org)
 
 ## Fonts
 ```

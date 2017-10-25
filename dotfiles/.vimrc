@@ -24,8 +24,8 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'pangloss/vim-javascript'
 Plugin 'abolish.vim'                      " Case coercion
-Plugin 'scrooloose/nerdcommenter'
 Plugin 'suan/vim-instant-markdown'        " npm -g install instant-markdown-d
+Plugin 'scrooloose/nerdcommenter'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
 Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
@@ -34,7 +34,6 @@ Plugin 'zchee/deoplete-jedi'              " Autocompletion, static anal for Pyth
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'kchmck/vim-coffee-script'
-Plugin 'evanmiller/nginx-vim-syntax'
 Plugin 'skwp/greplace.vim'
 Plugin 'tpope/vim-surround'
 Plugin 'godlygeek/tabular'
@@ -104,7 +103,6 @@ if executable('ag')
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
   " ag is fast enough that CtrlP doesn't need to cache
   let g:ctrlp_use_caching = 0
-   
   set grepprg=ag
   let g:grep_cmd_opts = '--line-numbers --noheading'
 endif
@@ -152,4 +150,7 @@ let g:formatter_yapf_style = 'pep8' " pip install yapf
 " Open NERDTree automatically if no files specified
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
+" Set syntax error for nbsp, usage ':set list' to display listchars
+syntax match ErrorMsg " "
 
