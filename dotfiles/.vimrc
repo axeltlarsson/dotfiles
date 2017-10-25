@@ -16,27 +16,29 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'w0ng/vim-hybrid'                  " Colorscheme
+
+Plugin 'Chiel92/vim-autoformat'
+Plugin 'abolish.vim'                      " Case coercion
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'derekwyatt/vim-scala'
+Plugin 'editorconfig/editorconfig-vim'
+Plugin 'godlygeek/tabular'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
+Plugin 'mxw/vim-jsx'
+Plugin 'neomake/neomake'
+Plugin 'pangloss/vim-javascript'
+Plugin 'ryanoasis/vim-devicons'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'scrooloose/nerdtree'
+Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
+Plugin 'skwp/greplace.vim'
+Plugin 'suan/vim-instant-markdown'        " npm -g install instant-markdown-d
+Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'derekwyatt/vim-scala'
-Plugin 'scrooloose/nerdtree'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'pangloss/vim-javascript'
-Plugin 'abolish.vim'                      " Case coercion
-Plugin 'suan/vim-instant-markdown'        " npm -g install instant-markdown-d
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'editorconfig/editorconfig-vim'
-Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
-Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
-Plugin 'neomake/neomake'
+Plugin 'w0ng/vim-hybrid'                  " Colorscheme
 Plugin 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
-Plugin 'Chiel92/vim-autoformat'
-Plugin 'ryanoasis/vim-devicons'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'skwp/greplace.vim'
-Plugin 'tpope/vim-surround'
-Plugin 'godlygeek/tabular'
 
 set encoding=utf8
 
