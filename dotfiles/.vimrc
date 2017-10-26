@@ -153,6 +153,13 @@ let g:formatter_yapf_style = 'pep8' " pip install yapf
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
-" Set syntax error for nbsp
-autocmd BufEnter,WinEnter * call matchadd("Error", " ", -1)
+" Set syntax error for nbsp, except for NERDTree
+fun! SyntaxErrorOnNbsp()
+  " Don't do it for NERDTree
+  if &ft =~ 'nerdtree'
+    return
+  endif
+  call matchadd("Error", " ", -1)
+endfun
 
+autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
