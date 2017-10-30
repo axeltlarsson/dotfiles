@@ -31,6 +31,7 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'scrooloose/nerdtree'
+Plugin 'sheerun/vim-polyglot'
 Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
 Plugin 'skwp/greplace.vim'
 Plugin 'suan/vim-instant-markdown'        " npm -g install instant-markdown-d
