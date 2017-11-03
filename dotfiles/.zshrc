@@ -85,6 +85,7 @@ fi
 
 if is_mac; then
   export PATH="/usr/local/opt/apache-spark@1.6/bin:$PATH"
+  export PATH="/Library/TeX/texbin:$PATH"
 fi
 
 # allow pipe redirect to overwrite files
