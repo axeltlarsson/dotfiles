@@ -35,6 +35,7 @@ Plugin 'sheerun/vim-polyglot'
 Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
 Plugin 'skwp/greplace.vim'
 Plugin 'suan/vim-instant-markdown'        " npm -g install instant-markdown-d
+Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
