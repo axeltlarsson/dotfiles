@@ -17,12 +17,15 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'abolish.vim'                      " Case coercion
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'godlygeek/tabular'
+Plugin 'junegunn/fzf'
+Plugin 'junegunn/fzf.vim'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
 Plugin 'mxw/vim-jsx'
@@ -41,7 +44,6 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'w0ng/vim-hybrid'                  " Colorscheme
 Plugin 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
-
 set encoding=utf8
 
 " All of your Plugins must be added before the following line
