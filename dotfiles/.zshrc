@@ -90,3 +90,5 @@ fi
 
 # allow pipe redirect to overwrite files
 set -o clobber
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

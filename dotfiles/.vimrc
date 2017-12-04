@@ -165,3 +165,4 @@ fun! SyntaxErrorOnNbsp()
 endfun
 
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
+
