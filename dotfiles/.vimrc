@@ -20,7 +20,6 @@ Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'abolish.vim'                      " Case coercion
-Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'godlygeek/tabular'
@@ -85,8 +84,8 @@ nnoremap <esc>^[ <esc>^[
 let mapleader = ","
 set autoindent
 
-" CtrlP: Ignore dirs from .gitignore for
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+" FZF: invoke it with Ctrl+P
+nnoremap <C-p> :FZF<cr>
 
 " Move lines down with Ctrl-J and up with Ctrl-K
 nnoremap <C-j> :m .+1<CR>==
@@ -105,11 +104,6 @@ let g:NERDSpaceDelims = 1
 if executable('ag')
   " Use ag over grep
   let g:ackprg = 'ag --vimgrep'
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
-  set grepprg=ag
   let g:grep_cmd_opts = '--line-numbers --noheading'
 endif
 
