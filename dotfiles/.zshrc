@@ -88,6 +88,10 @@ if is_mac; then
   export PATH="/Library/TeX/texbin:$PATH"
 fi
 
+if is_linux; then
+  export PATH="/home/axel/.vim/bundle/fzf/bin":$PATH
+fi
+
 # allow pipe redirect to overwrite files
 set -o clobber
 
