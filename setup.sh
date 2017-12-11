@@ -209,10 +209,18 @@ symlink_files_in_dir() {
 # Returns true if package-name given by $1 is not installed
 not_installed() {
   pkg=$1
-  if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
-    return 1
-  else
-    return 0
+  if is_linux; then
+    if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
+      return 1
+    else
+      return 0
+    fi
+  elif is_mac; then
+    if brew ls --versions $1 > /dev/null; then
+      false # because not_installed
+    else
+      true
+    fi
   fi
 }
 
@@ -256,10 +264,13 @@ install_neovim
 execute "mkdir -p $HOME/.config/nvim"
 symlink $(fullpath dotfiles/.vimrc) $HOME/.config/nvim/init.vim
 symlink $(fullpath .vim) $HOME/.vim
-print_info "Kindly install Vundle, my lord"
 nvim +PluginInstall +qall
 
-install_conditional silversearcher-ag
+if is_linux; then
+  install_conditional silversearcher-ag
+elif is_mac; then
+  install_conditional the_silver_searcher
+fi
 print_info "Do not forget to run :CheckHealth in neovim"
 
 execute "mkdir -p ${HOME}/.npm-packages"
