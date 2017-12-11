@@ -25,7 +25,6 @@ Plugin 'editorconfig/editorconfig-vim'
 Plugin 'godlygeek/tabular'
 Plugin 'junegunn/fzf'
 Plugin 'junegunn/fzf.vim'
-Plugin 'kchmck/vim-coffee-script'
 Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
 Plugin 'mxw/vim-jsx'
 Plugin 'neomake/neomake'
@@ -140,7 +139,6 @@ set lazyredraw
 " Neomake linters
 let g:neomake_javascript_enabled_makers = ['eslint'] " npm install -g eslint
 let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
-let g:neomake_coffee_enabled_markers = ['coffelint'] " npm install -g coffelint
 " Call Neomake automatically when writing a buffer.
 call neomake#configure#automake('w')
 
