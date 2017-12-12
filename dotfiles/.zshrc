@@ -88,7 +88,15 @@ if is_mac; then
   export PATH="/Library/TeX/texbin:$PATH"
 fi
 
+if is_linux; then
+  export PATH="/home/axel/.linuxbrew/bin:$PATH"
+  export MANPATH="/home/axel/.linuxbrew/share/man:$MANPATH"
+  export INFOPATH="/home/axel/.linuxbrew/share/info:$INFOPATH"
+fi
+
 # allow pipe redirect to overwrite files
 set -o clobber
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Setting ag as the default source for fzf
+export FZF_DEFAULT_COMMAND='ag'

@@ -1,4 +1,28 @@
 #!/bin/bash
+
+# usage: if is_mac; then ... else ... fi // do not use [[ is_mac ]] !!!
+is_mac () {
+  case `uname` in
+    Darwin)
+      true
+      ;;
+    *)
+      false
+      ;;
+  esac
+}
+
+is_linux () {
+  case `uname` in
+    Linux)
+      true
+      ;;
+    *)
+      false
+      ;;
+  esac
+}
+
 answer_is_yes() {
   [[ "$REPLY" =~ ^[Yy]$ ]] \
     && return 0 \
@@ -92,16 +116,13 @@ install_zsh () {
       print_info "zsh is already your shell"
     fi
   else
-    # If zsh isn't installed, get the platform of the current machine
-    platform=$(uname);
     # If the platform is Linux, try an apt-get to install zsh and then recurse
-    if [[ $platform == 'Linux' ]]; then
+    if is_linux; then
       print_info "Installing zsh..."
       sudo apt-get install zsh
       install_zsh
-      # If the platform is OS X, tell the user to install zsh :)
-    elif [[ $platform == 'Darwin' ]]; then
-      print_error "Please install zsh, then re-run this script!"
+    elif is_mac; then
+      brew install zsh
       exit
     fi
   fi
@@ -157,7 +178,11 @@ install_conditional() {
   if not_installed ${1}; then
     ask_for_confirmation "Do you want to install ${1}?"
     if answer_is_yes; then
-      execute_su "apt-get --assume-yes install -qq ${1}"
+      if is_linux; then
+        execute_su "apt-get --assume-yes install -qq ${1}"
+      elif is_mac; then
+        brew install $1
+      fi
     fi
   fi
 }
@@ -184,10 +209,18 @@ symlink_files_in_dir() {
 # Returns true if package-name given by $1 is not installed
 not_installed() {
   pkg=$1
-  if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
-    return 1
-  else
-    return 0
+  if is_linux; then
+    if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
+      return 1
+    else
+      return 0
+    fi
+  elif is_mac; then
+    if brew ls --versions $1 > /dev/null; then
+      false # because not_installed
+    else
+      true
+    fi
   fi
 }
 
@@ -204,108 +237,11 @@ install_powerline_fonts() {
   fi
 }
 
-install_solarized() {
-  if [ $XDG_CURRENT_DESKTOP == "GNOME" ]; then
-    if not_installed dconf-cli; then
-      print_info "Installing prerequisites for gnome-terminal-colors-solarized"
-      execute_su "apt-get install dconf-cli"
-      ./gnome-terminal-colors-solarized/set_dark.sh
-      print_info "Do not forget to change the font in the terminal"
-    fi
-  else
-    print_info "Not on GNOME so cannot install gnome-terminal-colors-solarized"
-  fi
-}
-
-setup_haskell() {
-  if not_installed ghc-7.10.3; then
-    print_info "Installing ghc-7.10.3 and cabal-install-1.22"
-    # ghc and cabal
-    execute_su "apt-add-repository -y ppa:hvr/ghc > /dev/null 2>&1"
-    execute_su "apt-get update -q"
-    execute_su "apt-get install -y -q cabal-install-1.22 ghc-7.10.3"
-  else
-    print_success "ghc and cabal already installed"
-  fi
-
-  if not_installed stack; then
-    print_info "Installing stack"
-    ask_for_confirmation "Are you on trusty?"
-    if answer_is_yes; then
-      execute_su "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442"
-      echo 'deb http://download.fpcomplete.com/ubuntu trusty main'|sudo tee /etc/apt/sources.list.d/fpco.list
-      execute_su "apt-get update -q"
-      execute_su "apt-get install -y -q stack"
-    fi
-  else
-    print_success "stack already installed"
-  fi
-  # deps for SublimeHaskell
-  execute "cabal update"
-  execute "cabal install happy aeson haskell-src-exts haddock"
-  execute "cabal install hsdev"
-  execute "cabal install stylish-haskell"
-}
-
-setup_burg() {
-  if not_installed burg-emu; then
-    ask_for_confirmation "Install burg bootloader?"
-    if answer_is_yes; then
-      execute_su "apt-add-repository -y ppa:n-muench/burg"
-      execute_su "apt-get update -q"
-      sudo apt-get install burg burg-themes
-      execute_su "cp -r --preserve ./burg-themes/* /boot/burg/themes/"
-      print_info "Edit settings in /etc/default/burg"
-      ask_for_confirmation "Done?"
-      execute_su "update-burg"
-    fi
-  fi
-}
-
-setup_python3() {
-  if not_installed pip3; then
-    execute_su "apt-get install -y python3-pip"
-    # -H so that sudo -H is set -> causes sudo to set $HOME to the target users suppresses pip warning
-    execute_su "-H pip3 install -U pip"
-    print_info "Now \"pip\" is the newest version of pip, and you should use it and not pip3"
-    execute_su "-H pip install virtualenv"
-  fi
-}
-
-setup_js() {
-  if not_installed npm; then
-    sudo apt-get install -y -q curl
-    print_info "Running official nodejs package manager setup script"
-    (curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - > /dev/null)
-    sudo apt-get install -y -q nodejs
-    symlink "/usr/bin/nodejs" "/usr/local/bin/node"
-    print_info "Updating npm"
-    sudo npm install npm -g
-
-    # npm -g without sudo (run symlink of desktop)
-    execute "mkdir -p ${HOME}/.npm-packages"
-  fi
-}
-
-setup_java_scala() {
-  execute_su "apt-add-repository -y ppa:webupd8team/java"
-  echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt.list
-  execute_su "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823"
-  execute_su "apt-get update -q"
-  sudo apt-get install oracle-java8-installer
-  execute_su "apt-get install -q sbt"
-
-  print_info "Download the Scala binaries, extract them and place them under /usr/local/bin/scala-2.x.x"
-  print_info "You may have to adjust the values in .zshrc to match the version number"
-  ask_for_confirmation "When you press enter, the download page for Scala will open"
-  xdg-open "http://www.scala-lang.org/download"
-}
-
 install_neovim() {
   if not_installed neovim; then
+    print_info "Installing neovim..."
     platform=$(uname);
-    if [[ $platform == 'Linux' ]]; then
-      print_info "Installing neovim..."
+    if is_linux; then
       sudo apt-get install python-dev python-pip python3-dev python3-pip && \
         sudo apt-get install software-properties-common && \
         sudo add-apt-repository ppa:neovim-ppa/stable && \
@@ -314,9 +250,8 @@ install_neovim() {
         sudo pip3 install neovim && \
         sudo pip2 install neovim
       # If the platform is macOS, tell the user to install neovim ;)
-    elif [[ $platform == 'Darwin' ]]; then
-      print_error "Please install neovim with brew, then re-run this script!"
-      exit
+    elif is_mac; then
+      brew install neovim
     fi
   fi
 }
@@ -325,15 +260,21 @@ install_neovim() {
 install_zsh
 print_info "Setting up prezto configuration framework"
 symlink_files_in_dir dotfiles $HOME
-# does not work on os x
-#install_neovim
+install_neovim
 execute "mkdir -p $HOME/.config/nvim"
 symlink $(fullpath dotfiles/.vimrc) $HOME/.config/nvim/init.vim
 symlink $(fullpath .vim) $HOME/.vim
-print_info "Kindly install Vundle, my lord"
 nvim +PluginInstall +qall
-install_conditional silversearcher-ag
+
+if is_linux; then
+  install_conditional silversearcher-ag
+elif is_mac; then
+  install_conditional the_silver_searcher
+fi
 print_info "Do not forget to run :CheckHealth in neovim"
+
+execute "mkdir -p ${HOME}/.npm-packages"
+git config --global core.excludesfile $HOME/.gitignore_global
 sleep 2
 
 #---------- Show menu with tasks --------------------
@@ -348,14 +289,7 @@ do
 -----------------------------------------------
     All available tasks, dependencies in ():
 
-    (1) gnome-terminal-solarized (fonts)
-
-    (2) Javascript dev environment
-        - node, jspm, jshint etc
-
-    (3) Symlink files from "desktop"
-
-    (4) Setup pip3 and virtualenv
+    (1) Symlink files from "desktop"
 
     (*) Return to main menu
 -----------------------------------------------
@@ -363,17 +297,11 @@ EOF
     read -n1 -s
     case "$REPLY" in
         "1")
-            install_solarized
-        ;;
-
-        "2") setup_js ;;
-        "3")
             symlink_files_in_dir desktop
             git config --global core.excludesfile $HOME/.gitignore_global
         ;;
 
-        "4") setup_python3 ;;
-         * ) return
+        * ) return
     esac
     sleep 1
 done
@@ -404,14 +332,7 @@ do
           * openssh-server
           * transmission-cli
           * build-essential
-
-    (2) Haskell dev environment
-        - ghc, cabal, hsdev etc
-
-    (3) Scala/Java dev environment
-        - OracleJDK8, sbt
-
-    (4) List more possibilities
+    (2) List more possibilities
 
     (q) Quit
 -----------------------------------------------
@@ -422,12 +343,14 @@ EOF
         execute_su "apt-get --assume-yes install -qq mosh"
         execute_su "chown -R $USER /usr/local/bin"
 
-        install_powerline_fonts
+        ask_for_confirmation "Do you want to install powerline fonts?"
+        if answer_is_yes; then
+            install_powerline_fonts
+        fi
 
         ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
         if answer_is_yes; then
             symlink_files_in_dir desktop
-            git config --global core.excludesfile $HOME/.gitignore_global
         fi
 
         install_conditional httpie
@@ -438,13 +361,9 @@ EOF
         install_conditional transmission-cli
         install_conditional build-essential
 
-        # install_solarized
-        # setup_burg
     ;;
 
-    "2")  setup_haskell             ;;
-    "3")  setup_java_scala                ;;
-    "4")  submenu                   ;;
+    "2")  submenu                   ;;
     "q")
         zsh
         exit                        ;;
