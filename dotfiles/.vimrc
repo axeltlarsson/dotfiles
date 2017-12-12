@@ -87,6 +87,22 @@ set autoindent
 " FZF: invoke it with Ctrl+P
 nnoremap <C-p> :FZF<cr>
 
+" Customize fzf colors to match your color scheme
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
 " Move lines down with Ctrl-J and up with Ctrl-K
 nnoremap <C-j> :m .+1<CR>==
 nnoremap <C-k> :m .-2<CR>==
@@ -133,7 +149,9 @@ set undoreload=10000            " number of lines to save for undo
 set updatecount=100
 set directory=$HOME/.vim/history/swap//
 
-set cursorline              " Highlight current line
+" Highlight current line
+set cursorline
+
 " Set lazyredraw for better performance when scrolling
 set lazyredraw
 
