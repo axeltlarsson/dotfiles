@@ -99,4 +99,4 @@ set -o clobber
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # Setting ag as the default source for fzf
-export FZF_DEFAULT_COMMAND='ag'
+# export FZF_DEFAULT_COMMAND='ag'
