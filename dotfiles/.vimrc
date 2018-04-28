@@ -35,7 +35,7 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
 Plugin 'skwp/greplace.vim'
-Plugin 'suan/vim-instant-markdown'        " npm -g install instant-markdown-d
+Plugin 'plasticboy/vim-markdown'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
@@ -166,6 +166,10 @@ let g:formatter_yapf_style = 'pep8' " pip install yapf
 " Open NERDTree automatically if no files specified
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
+" vim-markdown
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_new_list_item_indent = 2
 
 " Set syntax error for nbsp, except for NERDTree
 fun! SyntaxErrorOnNbsp()
