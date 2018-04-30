@@ -112,6 +112,10 @@ inoremap <C-k> <ESC>:m .-2<CR>==gi
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
 
+" More natural splits
+set splitbelow
+set splitright
+
 " Add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
 
