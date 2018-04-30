@@ -23,6 +23,7 @@ Plugin 'abolish.vim'                      " Case coercion
 Plugin 'derekwyatt/vim-scala'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'godlygeek/tabular'
+Plugin 'jiangmiao/auto-pairs'
 Plugin 'junegunn/fzf'
 Plugin 'junegunn/fzf.vim'
 Plugin 'junegunn/goyo.vim'                " Distraction-free writing
@@ -39,6 +40,7 @@ Plugin 'sheerun/vim-polyglot'
 Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
 Plugin 'skwp/greplace.vim'
 Plugin 'plasticboy/vim-markdown'
+Plugin 'tpope/vim-endwise'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
@@ -194,6 +196,7 @@ let NERDTreeMinimalUI = 1
 " vim-markdown
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_new_list_item_indent = 2
+let g:vim_markdown_math = 1
 
 set conceallevel=2
 " Zen Mode
