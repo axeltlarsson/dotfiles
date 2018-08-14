@@ -16,8 +16,6 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
-
-
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'abolish.vim'                      " Case coercion
 Plugin 'derekwyatt/vim-scala'
@@ -85,6 +83,8 @@ set laststatus=2
 " Airline commands
 let g:airline_powerline_fonts = 1
 let g:airline_theme='tomorrow'
+" Do not display "-- INSERT --" since that is unnecessary with airline
+set noshowmode
 
 " Theme
 syntax enable
@@ -213,4 +213,4 @@ fun! SyntaxErrorOnNbsp()
 endfun
 
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
-
+set completefunc=emoji#complete
