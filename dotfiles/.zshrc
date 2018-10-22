@@ -86,6 +86,7 @@ fi
 if is_mac; then
   export PATH="/usr/local/opt/apache-spark@1.6/bin:$PATH"
   export PATH="/Library/TeX/texbin:$PATH"
+  export PATH="/Users/axel/Library/Python/3.6/bin:$PATH"
 fi
 
 if is_linux; then

@@ -182,6 +182,7 @@ set lazyredraw
 " Neomake linters
 let g:neomake_javascript_enabled_makers = ['eslint'] " npm install -g eslint
 let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
+let g:neomake_sh_enabled_markers = ['shellcheck'] " apt-get install shellcheck
 " Call Neomake automatically when writing a buffer.
 call neomake#configure#automake('w')
 
