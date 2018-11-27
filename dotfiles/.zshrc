@@ -63,10 +63,6 @@ if installed nvim; then
   alias vim=nvim
 fi
 
-if installed ag; then
-  alias grep=ag
-fi
-
 # ------------ environment variables -------------------------------------------
 # npm to not have to use sudo for global packages
 NPM_PACKAGES="${HOME}/.npm-packages"
