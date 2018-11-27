@@ -136,11 +136,11 @@ set splitright
 " Add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
 
-" The Silver Searcher
-if executable('ag')
-  " Use ag over grep
-  let g:ackprg = 'ag --vimgrep'
-  let g:grep_cmd_opts = '--line-numbers --noheading'
+" ripgrep
+if executable('rg')
+  " Use ripgrep over grep
+  let g:ackprg = 'rg --vimgrep'
+  let g:grep_cmd_opts = '--ignore-case --hidden'
 endif
 
 " Use deoplete
