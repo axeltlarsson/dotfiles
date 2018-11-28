@@ -249,7 +249,6 @@ install_neovim() {
         sudo apt-get install neovim && \
         sudo pip3 install neovim && \
         sudo pip2 install neovim
-      # If the platform is macOS, tell the user to install neovim ;)
     elif is_mac; then
       brew install neovim
     fi
@@ -259,22 +258,24 @@ install_neovim() {
 # Always set up zsh + prezto and vim w. Vundle plugins
 install_zsh
 print_info "Setting up prezto configuration framework"
-symlink_files_in_dir dotfiles $HOME
+symlink_files_in_dir dotfiles "$HOME"
 install_neovim
 execute "mkdir -p $HOME/.config/nvim"
-symlink $(fullpath dotfiles/.vimrc) $HOME/.config/nvim/init.vim
-symlink $(fullpath .vim) $HOME/.vim
+symlink "$(fullpath dotfiles/.vimrc)" "$HOME/.config/nvim/init.vim"
+symlink "$(fullpath .vim)" "$HOME/.vim"
+execute "mkdir -p $HOME/.config/pgcli"
+symlink "$(fullpath .config/pgcli/config)" "$HOME/.config/pgcli/config"
 nvim +PluginInstall +qall
 
 if is_linux; then
-  install_conditional silversearcher-ag
+  install_conditional ripgrep
 elif is_mac; then
-  install_conditional the_silver_searcher
+  install_conditional ripgrep
 fi
 print_info "Do not forget to run :CheckHealth in neovim"
 
 execute "mkdir -p ${HOME}/.npm-packages"
-git config --global core.excludesfile $HOME/.gitignore_global
+git config --global core.excludesfile "$HOME/.gitignore_global"
 sleep 2
 
 #---------- Show menu with tasks --------------------
