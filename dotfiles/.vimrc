@@ -18,7 +18,6 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'abolish.vim'                      " Case coercion
-Plugin 'derekwyatt/vim-scala'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'godlygeek/tabular'
 Plugin 'jiangmiao/auto-pairs'
@@ -28,8 +27,8 @@ Plugin 'junegunn/goyo.vim'                " Distraction-free writing
 Plugin 'junegunn/limelight.vim'           " Hyperfocus-writing
 Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
 Plugin 'mxw/vim-jsx'
-Plugin 'neomake/neomake'
 Plugin 'pangloss/vim-javascript'
+Plugin 'plasticboy/vim-markdown'
 Plugin 'reedes/vim-pencil'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'scrooloose/nerdcommenter'
@@ -37,13 +36,14 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
 Plugin 'skwp/greplace.vim'
-Plugin 'plasticboy/vim-markdown'
 Plugin 'tpope/vim-endwise'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'vim-scripts/bats.vim'
 Plugin 'w0ng/vim-hybrid'                  " Colorscheme
+Plugin 'w0rp/ale'                         " For LSP
 Plugin 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
 set encoding=utf8
 
@@ -80,7 +80,7 @@ set laststatus=2
 
 " Airline commands
 let g:airline_powerline_fonts = 1
-let g:airline_theme='tomorrow'
+let g:airline_theme='hybrid'
 " Do not display "-- INSERT --" since that is unnecessary with airline
 set noshowmode
 
@@ -146,7 +146,7 @@ if executable('rg')
 endif
 
 " Use deoplete
-let g:deoplete#enable_at_startup = 1
+" let g:deoplete#enable_at_startup = 1
 
 " Copy to clipboard
 vnoremap  <leader>y  "+y
@@ -178,14 +178,15 @@ set cursorline
 set lazyredraw
 
 " Neomake linters
-let g:neomake_javascript_enabled_makers = ['eslint'] " npm install -g eslint
-let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
-let g:neomake_sh_enabled_markers = ['shellcheck'] " apt-get install shellcheck
+" let g:neomake_javascript_enabled_makers = ['eslint'] " npm install -g eslint
+" let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
+" let g:neomake_sh_enabled_markers = ['shellcheck'] " apt-get install shellcheck
 " Call Neomake automatically when writing a buffer.
-call neomake#configure#automake('w')
+" call neomake#configure#automake('w')
 
 " Autoformat
-let g:formatter_yapf_style = 'pep8' " pip install yapf
+" let g:autoformat_verbosemode = 1
+let g:formatters_python = ['yapf'] " pip install yapf
 
 " Open NERDTree automatically if directory specified (i.e. vim .)
 autocmd StdinReadPre * let s:std_in=1
@@ -212,4 +213,3 @@ fun! SyntaxErrorOnNbsp()
 endfun
 
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
-set completefunc=emoji#complete
