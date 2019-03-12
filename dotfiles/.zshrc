@@ -132,3 +132,6 @@ _gen_fzf_default_opts
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # Setting ripgrep as the default source for fzf
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+
+# Setup machine specific envs
+source ~/.local_envs
