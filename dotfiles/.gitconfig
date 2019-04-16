@@ -1,7 +1,6 @@
 [user]
     email = mail@axellarsson.nu
     name = AxelTLarsson
-    signingkey = 6F86B42246015152
 
 [push]
     default = simple
@@ -31,8 +30,6 @@
     new = green bold
     whitespace = red reverse
 
-[gpg]
-    program = gpg
-
-[commit]
-    ; gpgsign = true
+; Machine-specific configuration
+[include]
+  path = .gitconfig_local
