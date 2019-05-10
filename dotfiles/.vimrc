@@ -25,7 +25,6 @@ Plugin 'junegunn/fzf'
 Plugin 'junegunn/fzf.vim'
 Plugin 'junegunn/goyo.vim'                " Distraction-free writing
 Plugin 'junegunn/limelight.vim'           " Hyperfocus-writing
-Plugin 'mileszs/ack.vim'                  " Search, fast, see SilverSearcher
 Plugin 'mxw/vim-jsx'
 Plugin 'pangloss/vim-javascript'
 Plugin 'plasticboy/vim-markdown'
