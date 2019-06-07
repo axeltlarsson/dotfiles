@@ -16,6 +16,7 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+Plugin 'Alok/notational-fzf-vim'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'abolish.vim'                      " Case coercion
 Plugin 'editorconfig/editorconfig-vim'
@@ -212,3 +213,5 @@ fun! SyntaxErrorOnNbsp()
 endfun
 
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
+
+let g:nv_search_paths = ['~/notes']
