@@ -1,4 +1,3 @@
-# vi: ft=dosini
 [main]
 
 # Enables context sensitive auto-completion. If this is disabled the all
@@ -21,6 +20,11 @@ multi_line = False
 # insert a newline, and [Esc] [Enter] or [Alt]-[Enter] must be used to execute
 # a command.
 multi_line_mode = psql
+
+# Destructive warning mode will alert you before executing a sql statement
+# that may cause harm to the database such as "drop table", "drop database"
+# or "shutdown".
+destructive_warning = True
 
 # Enables expand mode, which is similar to `\x` in psql.
 expand = False
@@ -77,8 +81,6 @@ search_path_filter = False
 # Default pager.
 # By default 'PAGER' environment variable is used
 # pager = less -SRXF
-# https://github.com/okbob/pspg
-pager = pspg -XF -s 11
 
 # Timing of sql statments and table rendering.
 timing = True
@@ -113,54 +115,81 @@ row_limit = 1000
 less_chatty = True
 
 # Postgres prompt
+# \t - Current date and time
 # \u - Username
-# \h - Hostname of the server
+# \h - Short hostname of the server (up to first '.')
+# \H - Hostname of the server
 # \d - Database name
+# \p - Database port
+# \i - Postgres PID
+# \# - "@" sign if logged in as superuser, '>' in other case
 # \n - Newline
-prompt = '\u@\h:\d> '
+# \dsn_alias - name of dsn alias if -D option is used (empty otherwise)
+prompt = "\u@\h:\d> "
 
 # Number of lines to reserve for the suggestion menu
 min_num_menu_lines = 4
 
 # Character used to left pad multi-line queries to match the prompt size.
-multiline_continuation_char = ''
+multiline_continuation_char = ""
 
 # The string used in place of a null value.
-null_string = '<null>'
+null_string = <null>
 
-# Custom colors for the completion menu, toolbar, etc.
+# manage pager on startup
+enable_pager = True
+
+# Use keyring to automatically save and load password in a secure manner 
+keyring = True
+pager = pspg -XF -s 11
 [colors]
-Token.Menu.Completions.Completion.Current = 'bg:#ffffff #000000'
-Token.Menu.Completions.Completion = 'bg:#008888 #ffffff'
-Token.Menu.Completions.Meta.Current = 'bg:#44aaaa #000000'
-Token.Menu.Completions.Meta = 'bg:#448888 #ffffff'
-Token.Menu.Completions.MultiColumnMeta = 'bg:#aaffff #000000'
-Token.Menu.Completions.ProgressButton = 'bg:#003333'
-Token.Menu.Completions.ProgressBar = 'bg:#00aaaa'
-Token.SelectedText = '#ffffff bg:#6666aa'
-Token.SearchMatch = '#ffffff bg:#4444aa'
-Token.SearchMatch.Current = '#ffffff bg:#44aa44'
-Token.Toolbar = 'bg:#222222 #aaaaaa'
-Token.Toolbar.Off = 'bg:#222222 #888888'
-Token.Toolbar.On = 'bg:#222222 #ffffff'
-Token.Toolbar.Search = 'noinherit bold'
-Token.Toolbar.Search.Text = 'nobold'
-Token.Toolbar.System = 'noinherit bold'
-Token.Toolbar.Arg = 'noinherit bold'
-Token.Toolbar.Arg.Text = 'nobold'
-Token.Toolbar.Transaction.Valid = 'bg:#222222 #00ff5f bold'
-Token.Toolbar.Transaction.Failed = 'bg:#222222 #ff005f bold'
+completion-menu.completion.current = "bg:#ffffff #000000"
+completion-menu.completion = "bg:#008888 #ffffff"
+completion-menu.meta.completion.current = "bg:#44aaaa #000000"
+completion-menu.meta.completion = "bg:#448888 #ffffff"
+completion-menu.multi-column-meta = "bg:#aaffff #000000"
+scrollbar.arrow = "bg:#003333"
+scrollbar = "bg:#00aaaa"
+selected = "#ffffff bg:#6666aa"
+search = "#ffffff bg:#4444aa"
+search.current = "#ffffff bg:#44aa44"
+bottom-toolbar = "bg:#222222 #aaaaaa"
+bottom-toolbar.off = "bg:#222222 #888888"
+bottom-toolbar.on = "bg:#222222 #ffffff"
+search-toolbar = noinherit bold
+search-toolbar.text = nobold
+system-toolbar = noinherit bold
+arg-toolbar = noinherit bold
+arg-toolbar.text = nobold
+bottom-toolbar.transaction.valid = "bg:#222222 #00ff5f bold"
+bottom-toolbar.transaction.failed = "bg:#222222 #ff005f bold"
 
-# Named queries are queries you can execute by name.
+# style classes for colored table output
+output.header = "#00ff5f bold"
+output.odd-row = ""
+output.even-row = ""
+Token.Menu.Completions.Completion.Current = "bg:#ffffff #000000"
+Token.Menu.Completions.Completion = "bg:#008888 #ffffff"
+Token.Menu.Completions.Meta.Current = "bg:#44aaaa #000000"
+Token.Menu.Completions.Meta = "bg:#448888 #ffffff"
+Token.Menu.Completions.MultiColumnMeta = "bg:#aaffff #000000"
+Token.Menu.Completions.ProgressButton = "bg:#003333"
+Token.Menu.Completions.ProgressBar = "bg:#00aaaa"
+Token.SelectedText = "#ffffff bg:#6666aa"
+Token.SearchMatch = "#ffffff bg:#4444aa"
+Token.SearchMatch.Current = "#ffffff bg:#44aa44"
+Token.Toolbar = "bg:#222222 #aaaaaa"
+Token.Toolbar.Off = "bg:#222222 #888888"
+Token.Toolbar.On = "bg:#222222 #ffffff"
+Token.Toolbar.Search = noinherit bold
+Token.Toolbar.Search.Text = nobold
+Token.Toolbar.System = noinherit bold
+Token.Toolbar.Arg = noinherit bold
+Token.Toolbar.Arg.Text = nobold
+Token.Toolbar.Transaction.Valid = "bg:#222222 #00ff5f bold"
+Token.Toolbar.Transaction.Failed = "bg:#222222 #ff005f bold"
 [named queries]
-
-# DNS to call by -D option
 [alias_dsn]
-# example_dsn = postgresql://[user[:password]@][netloc][:port][/dbname]
-
-# Format for number representation
-# for decimal "d" - 12345678, ",d" - 12,345,678
-# for float "g" - 123456.78, ",g" - 123,456.78
 [data_formats]
 decimal = ""
 float = ""
