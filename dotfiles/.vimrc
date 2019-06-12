@@ -214,4 +214,4 @@ endfun
 
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 
-let g:nv_search_paths = ['~/notes']
+let g:nv_search_paths = ['../notes', './notes', '~/notes']
