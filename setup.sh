@@ -261,7 +261,7 @@ print_info "Setting up prezto configuration framework"
 symlink_files_in_dir dotfiles "$HOME"
 install_neovim
 execute "mkdir -p $HOME/.config/nvim"
-symlink "$(fullpath dotfiles/.vimrc)" "$HOME/.config/nvim/init.vim"
+symlink "$(fullpath .config/nvim)" "$HOME/.config/nvim"
 symlink "$(fullpath .vim)" "$HOME/.vim"
 execute "mkdir -p $HOME/.config/pgcli"
 symlink "$(fullpath .config/pgcli/config)" "$HOME/.config/pgcli/config"
