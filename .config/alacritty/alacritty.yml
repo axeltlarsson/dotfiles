@@ -170,6 +170,7 @@ font:
 
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
+
 # Colors
     # Bright and dim foreground colors
     #
@@ -195,34 +196,6 @@ draw_bold_text_with_bright_colors: true
   #selection:
   #  text: '0xeaeaea'
   #  background: '0x404040'
-# Colors (Snazzy)
-# colors:
-  # # Default colors
-  # primary:
-    # background: '0x282a36'
-    # foreground: '0xeff0eb'
-
-  # # Normal colors
-  # normal:
-    # black:   '0x282a36'
-    # red:     '0xff5c57'
-    # green:   '0x5af78e'
-    # yellow:  '0xf3f99d'
-    # blue:    '0x57c7ff'
-    # magenta: '0xff6ac1'
-    # cyan:    '0x9aedfe'
-    # white:   '0xf1f1f0'
-
-  # # Bright colors
-  # bright:
-    # black:   '0x686868'
-    # red:     '0xff5c57'
-    # green:   '0x5af78e'
-    # yellow:  '0xf3f99d'
-    # blue:    '0x57c7ff'
-    # magenta: '0xff6ac1'
-    # cyan:    '0x9aedfe'
-    # white:   '0xf1f1f0'
     
 # Colors (Hybrid)
 colors:
@@ -230,6 +203,10 @@ colors:
   primary:
     background: '0x27292c'
     foreground: '0xd0d2d1'
+
+  cursor:
+   text: '0x000000'
+   cursor: '0xffffff'
 
   # Normal colors
   normal:
@@ -300,7 +277,7 @@ colors:
 # Specifying a `duration` of `0` will disable the visual bell.
 visual_bell:
   animation: EaseOutExpo
-  duration: 300
+  duration: 30
   color: '0xffffff'
 
 # Background opacity
@@ -351,7 +328,8 @@ mouse:
     #   - (macOS) open
     #   - (Linux) xdg-open
     #   - (Windows) explorer
-    #launcher:
+    launcher:
+      program: open
     #  program: xdg-open
     #  args: []
 
