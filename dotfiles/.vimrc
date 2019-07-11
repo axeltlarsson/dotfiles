@@ -3,11 +3,11 @@ set nocompatible                " be iMproved, required
 filetype off                    " required
 set hidden                      " allow multiple files to be opened in diff buffers, 'hidden' in bg
 
-" and softtabstop to the same value, leaving tabstop at default
 " For indentation w/o tabs, principle is to set expandtab, and set shiftwidth
-set expandtab
-set shiftwidth=2
-set softtabstop=2
+" and softtabstop to the same value, leaving tabstop at default (8)
+set expandtab       " inserts `softtabstop` amount of space chars
+set shiftwidth=2    " indentation, (<<,>>, ==)
+set softtabstop=2   " insert 2 spaces
 
 " ---- Vundle ----
 " set the runtime path to include Vundle and initialize
@@ -20,6 +20,7 @@ Plugin 'Alok/notational-fzf-vim'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'abolish.vim'                      " Case coercion
 Plugin 'editorconfig/editorconfig-vim'
+Plugin 'elmcast/elm-vim'
 Plugin 'godlygeek/tabular'
 Plugin 'jiangmiao/auto-pairs'
 Plugin 'junegunn/fzf'
@@ -215,3 +216,4 @@ endfun
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 
 let g:nv_search_paths = ['../notes', './notes', '~/notes']
+let g:polyglot_disabled = ['elm'] " elmcast/elm-vim covers this better
