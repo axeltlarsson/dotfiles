@@ -18,7 +18,6 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'Alok/notational-fzf-vim'
 Plugin 'Chiel92/vim-autoformat'
-Plugin 'abolish.vim'                      " Case coercion
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'elmcast/elm-vim'
 Plugin 'godlygeek/tabular'
@@ -66,15 +65,11 @@ endif
 set t_8f=[38;2;%lu;%lu;%lum
 set t_8b=[48;2;%lu;%lu;%lum
 
-" Set scala-docstrings
-let g:scala_scaladoc_indent = 1
-
-" Highlight characters that go over 80 columns
-highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-autocmd BufNewFile,BufRead *.* match OverLength /\%81v.\+/
-autocmd BufNewFile,BufRead *.scala match OverLength /\%121v.\+/
-autocmd BufNewFile,BufRead *.html  match OverLength /\%251v.\+/
-autocmd BufNewFile,BufRead *.js  match OverLength /\%251v.\+/
+" Theme
+syntax enable
+set background=dark
+colorscheme hybrid
+" let g:hybrid_custom_term_colors = 1
 
 " always show the status bar
 set laststatus=2
@@ -82,18 +77,20 @@ set laststatus=2
 " Airline commands
 let g:airline_powerline_fonts = 1
 let g:airline_theme='hybrid'
-" Do not display "-- INSERT --" since that is unnecessary with airline
-set noshowmode
 
-" Theme
-syntax enable
-set background=dark
-colorscheme hybrid
-
-" let g:hybrid_custom_term_colors = 1
+set noshowmode " do not display "-- INSERT --" since that is unnecessary with airline
 set hlsearch
 set incsearch
 set number
+set cursorline " highlight current line
+set conceallevel=2
+
+" Set lazyredraw for better performance when scrolling
+set lazyredraw
+
+" More natural splits
+set splitbelow
+set splitright
 
 " Clear highlighting on escape in Normal mode
 nnoremap <esc> :noh<return><esc>
@@ -102,6 +99,9 @@ nnoremap <esc>^[ <esc>^[
 " Rebind leader key
 let mapleader = ","
 set autoindent
+
+" Search current word with Rg
+set keywordprg=:Rg
 
 " FZF: invoke it with Ctrl+P
 nnoremap <C-p> :FZF<cr>
@@ -132,19 +132,9 @@ inoremap <C-k> <ESC>:m .-2<CR>==gi
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
 
-" More natural splits
-set splitbelow
-set splitright
 
-" Add spaces after comment delimiters by default
+" NERDCommenters add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
-
-" ripgrep
-if executable('rg')
-  " Use ripgrep over grep
-  let g:ackprg = 'rg --vimgrep'
-  let g:grep_cmd_opts = '--ignore-case --hidden'
-endif
 
 " Use deoplete
 " let g:deoplete#enable_at_startup = 1
@@ -172,18 +162,6 @@ set undoreload=10000            " number of lines to save for undo
 set updatecount=100
 set directory=$HOME/.vim/history/swap//
 
-" Highlight current line
-set cursorline
-
-" Set lazyredraw for better performance when scrolling
-set lazyredraw
-
-" Neomake linters
-" let g:neomake_javascript_enabled_makers = ['eslint'] " npm install -g eslint
-" let g:neomake_python_enabled_markers = ['pep8'] " apt-get install pep8
-" let g:neomake_sh_enabled_markers = ['shellcheck'] " apt-get install shellcheck
-" Call Neomake automatically when writing a buffer.
-" call neomake#configure#automake('w')
 
 " Autoformat
 " let g:autoformat_verbosemode = 1
@@ -199,7 +177,7 @@ let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_math = 1
 
-set conceallevel=2
+
 " Zen Mode
 autocmd! User GoyoEnter Limelight
 autocmd! User GoyoLeave Limelight!
@@ -215,5 +193,8 @@ endfun
 
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 
+" notational-fzf-vim
 let g:nv_search_paths = ['../notes', './notes', '~/notes']
+
+" polyglot
 let g:polyglot_disabled = ['elm'] " elmcast/elm-vim covers this better
