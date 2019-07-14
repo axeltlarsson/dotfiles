@@ -1,55 +1,52 @@
-au FileType gitcommit set tw=72
-set nocompatible                " be iMproved, required
-filetype off                    " required
-set hidden                      " allow multiple files to be opened in diff buffers, 'hidden' in bg
+" Automatically install vim-plug
+if has('nvim')
+  if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
+    silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
+          \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  endif
+elseif
+  if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+          \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  endif
+endif
 
-" For indentation w/o tabs, principle is to set expandtab, and set shiftwidth
-" and softtabstop to the same value, leaving tabstop at default (8)
-set expandtab       " inserts `softtabstop` amount of space chars
-set shiftwidth=2    " indentation, (<<,>>, ==)
-set softtabstop=2   " insert 2 spaces
+" ---- Plugins ----
+call plug#begin('~/.vim/plugged')
 
-" ---- Vundle ----
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+Plug 'Alok/notational-fzf-vim'
+Plug 'Chiel92/vim-autoformat'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'elmcast/elm-vim'
+Plug 'godlygeek/tabular'
+Plug 'jiangmiao/auto-pairs'
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/goyo.vim'                " Distraction-free writing
+Plug 'junegunn/limelight.vim'           " Hyperfocus-writing
+Plug 'mxw/vim-jsx'
+Plug 'pangloss/vim-javascript'
+Plug 'plasticboy/vim-markdown'
+Plug 'reedes/vim-pencil'
+Plug 'ryanoasis/vim-devicons'
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree'
+Plug 'sheerun/vim-polyglot'
+Plug 'shougo/deoplete.nvim'             " Async completion fw for neovim
+Plug 'skwp/greplace.vim'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-scripts/bats.vim'
+Plug 'w0ng/vim-hybrid'                  " Colorscheme
+Plug 'w0rp/ale'                         " For LSP
+Plug 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'Alok/notational-fzf-vim'
-Plugin 'Chiel92/vim-autoformat'
-Plugin 'editorconfig/editorconfig-vim'
-Plugin 'elmcast/elm-vim'
-Plugin 'godlygeek/tabular'
-Plugin 'jiangmiao/auto-pairs'
-Plugin 'junegunn/fzf'
-Plugin 'junegunn/fzf.vim'
-Plugin 'junegunn/goyo.vim'                " Distraction-free writing
-Plugin 'junegunn/limelight.vim'           " Hyperfocus-writing
-Plugin 'mxw/vim-jsx'
-Plugin 'pangloss/vim-javascript'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'reedes/vim-pencil'
-Plugin 'ryanoasis/vim-devicons'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'scrooloose/nerdtree'
-Plugin 'sheerun/vim-polyglot'
-Plugin 'shougo/deoplete.nvim'             " Async completion fw for neovim
-Plugin 'skwp/greplace.vim'
-Plugin 'tpope/vim-endwise'
-Plugin 'tpope/vim-repeat'
-Plugin 'tpope/vim-surround'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'vim-scripts/bats.vim'
-Plugin 'w0ng/vim-hybrid'                  " Colorscheme
-Plugin 'w0rp/ale'                         " For LSP
-Plugin 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
-set encoding=utf8
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+call plug#end()
 
 "Use 24-bit (true-color) mode in Vim/Neovim
 if (has("nvim"))
@@ -79,12 +76,20 @@ let g:airline_powerline_fonts = 1
 let g:airline_theme='hybrid'
 
 set noshowmode " do not display "-- INSERT --" since that is unnecessary with airline
+set encoding=utf8
 set hlsearch
 set incsearch
 set number
 set cursorline " highlight current line
 set conceallevel=2
+set nocompatible                " be iMproved, required
+set hidden                      " allow multiple files to be opened in diff buffers, 'hidden' in bg
 
+" For indentation w/o tabs, principle is to set expandtab, and set shiftwidth
+" and softtabstop to the same value, leaving tabstop at default (8)
+set expandtab       " inserts `softtabstop` amount of space chars
+set shiftwidth=2    " indentation, (<<,>>, ==)
+set softtabstop=2   " insert 2 spaces
 " Set lazyredraw for better performance when scrolling
 set lazyredraw
 
