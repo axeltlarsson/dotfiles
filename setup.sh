@@ -29,28 +29,16 @@ answer_is_yes() {
     || return 1
 }
 
-# ask $1
-ask() {
-  print_question "${1}"
-  read
-}
-
 ask_for_confirmation() {
   print_question "$1 (y/n) "
   read -n 1
   printf "\n"
 }
 
-cmd_exists() {
-  [ -x "$(command -v "$1")" ] \
-    && printf 0 \
-    || printf 1
-}
-
 execute() {
   e_msg=$($1 2>&1)
   code=$?
-  print_result $code "${2:-$1} \n\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
+  print_result $code "${2:-$1} \t\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
   # If fail: ask if user wants to try with su
 
   if [ $code -ne 0 ]; then
@@ -70,10 +58,6 @@ execute_su() {
   export -f print_result
   e_msg=`sudo ${1} 2>&1`
   print_result $? "${2:-$1} \n\t$e_msg" # ${2:-$1} prints $2 or if not given, $1
-}
-
-get_answer() {
-  printf "$REPLY"
 }
 
 print_error() {
@@ -128,48 +112,25 @@ install_zsh () {
   fi
 }
 
-# Basically does ln -fs $realFile $symFile with some fancy cli graphics
+# Basically does ln -fs $sourceFile $targetFile with some fancy cli graphics
 symlink() {
-  local realFile=$1
-  local symFile=$2
-  if [ -e "${symFile}" ]; then
-    if [ "$(fullpath "${symFile}")" != "${realFile}" ]; then
-      ask_for_confirmation "'${symFile}' already exists, do you want to overwrite it?"
+  local sourceFile=$1
+  local targetFile=$2
+  if [ -e "${targetFile}" ]; then
+    if [ "$(fullpath "${targetFile}")" != "${sourceFile}" ]; then
+      ask_for_confirmation "'${targetFile}' already exists, do you want to overwrite it?"
       if answer_is_yes; then
-        rm -rf "${symFile}"
-        execute "ln -fs ${realFile} ${symFile}" "${symFile} → ${realFile}"
+        rm -rf "${targetFile}"
+        execute "ln -fs ${sourceFile} ${targetFile}" "${targetFile} → ${sourceFile}"
       else
-        print_error "${symFile} → ${realFile}"
+        print_error "${targetFile} → ${sourceFile}"
       fi
 
     else
-      print_success "${symFile} → ${realFile}"
+      print_success "${targetFile} → ${sourceFile}"
     fi
   else
-    execute "ln -fs ${realFile} ${symFile}" "${symFile} → ${realFile}"
-  fi
-}
-
-# Basically does cp $sourceFile $targetFile with some fancy cli graphics
-# NOTE! No support for spaces in filenames
-copy() {
-  local sourceFile="$1"
-  local targetFile="$2"
-  if [ -e "$targetFile" ]; then
-    if [ "$(fullpath "$targetFile")" != "$sourceFile" ]; then
-      ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
-      if answer_is_yes; then
-        rm -rf "$targetFile"
-        execute 'cp --preserve "$sourceFile" "$targetFile"' '"$targetFile" → "$sourceFile"'
-      else
-        print_error "$targetFile → $sourceFile"
-      fi
-
-    else
-      print_success "$targetFile → $sourceFile"
-    fi
-  else
-    execute 'cp --preserve "$sourceFile" "$targetFile"'
+    execute "ln -fs ${sourceFile} ${targetFile}" "${targetFile} → ${sourceFile}"
   fi
 }
 
@@ -188,20 +149,20 @@ install_conditional() {
 }
 
 # Symlinks the files in the $1 directory to their respective locations
-# as given by their directory structure. Optional: prepend ($HOME) with $2
+# as given by their directory structure with a dot prefix. Optional: prepend ($HOME) with $2
 # Ex: "symlink_files dir" with "dir" containing "dir/subdir/subsubdir/file"
-# will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/file"
+# will do "symlink dir/subdir/subsubdir/file /subdir/subsubdir/.file"
 # NOTE! This function does not support any paths with spaces in them or rather symlink doesnt!
-symlink_files_in_dir() {
+symlink_dotfiles_in_dir() {
   declare -a files
   while IFS= read -r -d '' n; do
     files+=( "$n" )
   done < <(find $1 -type f -not -iname '*.md' -print0)
 
   for file in "${files[@]}"; do
-    realFile=$(fullpath "${file}")
-    symFile="${2}/${file#$1/}"
-    symlink "${realFile}" "${symFile}"
+    sourceFile=$(fullpath "${file}")
+    targetFile="${2}/.${file#$1/}"
+    symlink "${sourceFile}" "${targetFile}"
   done
 }
 
@@ -229,14 +190,6 @@ fullpath() {
   echo "$dirname"
 }
 
-install_powerline_fonts() {
-  if ls $HOME/.fonts 2> /dev/null | grep -q Powerline.ttf ; then
-    return
-  else
-    execute "./fonts/install.sh" "powerline fonts installed"
-  fi
-}
-
 install_neovim() {
   if not_installed neovim; then
     print_info "Installing neovim..."
@@ -255,121 +208,24 @@ install_neovim() {
   fi
 }
 
-# Always set up zsh + prezto and vim w. Vundle plugins
+# Always set up zsh + prezto and nvim w. with plugins
 install_zsh
-print_info "Setting up prezto configuration framework"
-symlink_files_in_dir dotfiles "$HOME"
+print_info "Setting up dotfiles"
+symlink_dotfiles_in_dir dotfiles "$HOME"
 install_neovim
 execute "mkdir -p $HOME/.config/nvim"
-symlink "$(fullpath .config/nvim)" "$HOME/.config/nvim"
-symlink "$(fullpath .vim)" "$HOME/.vim"
+symlink "$(fullpath config/nvim)" "$HOME/.config/nvim"
+symlink "$(fullpath config/nvim/init.vim)" "$HOME/.config/nvim/init.vim"
+
 execute "mkdir -p $HOME/.config/pgcli"
-symlink "$(fullpath .config/pgcli/config)" "$HOME/.config/pgcli/config"
-nvim +PluginInstall +qall
+symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
+
+
+execute "mkdir -p ${HOME}/.npm-packages"
+git config --global core.excludesfile "$HOME/.gitignore_global"
 
 if is_linux; then
   install_conditional ripgrep
 elif is_mac; then
   install_conditional ripgrep
 fi
-print_info "Do not forget to run :CheckHealth in neovim"
-
-execute "mkdir -p ${HOME}/.npm-packages"
-git config --global core.excludesfile "$HOME/.gitignore_global"
-sleep 2
-
-#---------- Show menu with tasks --------------------
-# List more possibilities in a sub menu
-submenu() {
-while :
-do
-    clear
-    cat<<EOF
-===============================================
-    .dotfiles setup
------------------------------------------------
-    All available tasks, dependencies in ():
-
-    (1) Symlink files from "desktop"
-
-    (*) Return to main menu
------------------------------------------------
-EOF
-    read -n1 -s
-    case "$REPLY" in
-        "1")
-            symlink_files_in_dir desktop
-            git config --global core.excludesfile $HOME/.gitignore_global
-        ;;
-
-        * ) return
-    esac
-    sleep 1
-done
-}
-
-
-print_info "Loading setup menu..."
-sleep 1 # to give user a chance to see that previous task completed successfully
-while :
-do
-    clear
-    cat<<EOF
-===============================================
-    .dotfiles setup
------------------------------------------------
-    Common setup tasks:
-
-    (1) Desktop setup
-        - install mosh
-        - take control of /usr/local/bin
-        - powerline_fonts
-        - symlink files from "desktop"
-        - You will be asked if you want:
-          * httpie
-          * tree
-          * wakeonlan
-          * keepassx
-          * openssh-server
-          * transmission-cli
-          * build-essential
-    (2) List more possibilities
-
-    (q) Quit
------------------------------------------------
-EOF
-    read -n1 -s
-    case "$REPLY" in
-    "1")
-        execute_su "apt-get --assume-yes install -qq mosh"
-        execute_su "chown -R $USER /usr/local/bin"
-
-        ask_for_confirmation "Do you want to install powerline fonts?"
-        if answer_is_yes; then
-            install_powerline_fonts
-        fi
-
-        ask_for_confirmation "Do you want to symlink files from \"desktop\"?"
-        if answer_is_yes; then
-            symlink_files_in_dir desktop
-        fi
-
-        install_conditional httpie
-        install_conditional tree
-        install_conditional wakeonlan
-        install_conditional keepassx
-        install_conditional openssh-server
-        install_conditional transmission-cli
-        install_conditional build-essential
-
-    ;;
-
-    "2")  submenu                   ;;
-    "q")
-        zsh
-        exit                        ;;
-     * )  echo "invalid option"     ;;
-    esac
-    sleep 1
-done
-
