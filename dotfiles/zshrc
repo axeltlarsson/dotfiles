@@ -50,12 +50,11 @@ alias -s com=firefox
 alias -s nu=firefox
 alias -s org=firefox
 
-alias pp_json="python -m json.tool | pygmentize -l javascript" # e.g. "cat file.json | pp_json"
-alias gcc="gcc -pedantic -Wall -Werror -std=c11 -O3"
-
 if is_linux; then
   alias open="xdg-open"
 fi
+
+alias :q=exit
 
 # ----------- conditional aliases ---------------------------------------------
 if installed nvim; then
@@ -64,25 +63,25 @@ if installed nvim; then
 fi
 
 # ------------ environment variables -------------------------------------------
+
 # npm to not have to use sudo for global packages
 NPM_PACKAGES="${HOME}/.npm-packages"
 PATH="$NPM_PACKAGES/bin:$PATH"
-
-export SCALA_HOME=$SCALA_HOME:/usr/local/bin/scala-2.12.2
-export PATH=$PATH:$SCALA_HOME:$SCALA_HOME/bin
 
 # Ruby - rbenv
 export PATH="$HOME/.rbenv/bin:$PATH"
 # ruby-build
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+
 if installed rbenv; then
   eval "$(rbenv init -)"
 fi
 
-if is_mac; then
-  export PATH="/usr/local/opt/apache-spark@1.6/bin:$PATH"
-  export PATH="/Library/TeX/texbin:$PATH"
-  export PATH="/Users/axel/Library/Python/3.6/bin:$PATH"
+# Python -pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
 fi
 
 if is_linux; then
