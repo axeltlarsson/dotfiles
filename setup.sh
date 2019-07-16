@@ -171,13 +171,13 @@ symlink_dotfiles_in_dir() {
 not_installed() {
   pkg=$1
   if is_linux; then
-    if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
+    if dpkg --get-selections | grep -q "^${pkg[[:space:]]}*install$" >/dev/null; then
       return 1
     else
       return 0
     fi
   elif is_mac; then
-    if brew ls --versions $1 > /dev/null; then
+    if brew ls --versions "$1" > /dev/null; then
       false # because not_installed
     else
       true
@@ -186,14 +186,13 @@ not_installed() {
 }
 
 fullpath() {
-  dirname=`perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1"`
+  dirname=$(perl -e 'use Cwd "abs_path";print abs_path(shift)' "$1")
   echo "$dirname"
 }
 
 install_neovim() {
   if not_installed neovim; then
     print_info "Installing neovim..."
-    platform=$(uname);
     if is_linux; then
       sudo apt-get install python-dev python-pip python3-dev python3-pip && \
         sudo apt-get install software-properties-common && \
@@ -215,10 +214,14 @@ symlink_dotfiles_in_dir dotfiles "$HOME"
 install_neovim
 execute "mkdir -p $HOME/.config/nvim"
 symlink "$(fullpath config/nvim)" "$HOME/.config/nvim"
+# Needed because config/nvim/init.vim is a symlink:
 symlink "$(fullpath config/nvim/init.vim)" "$HOME/.config/nvim/init.vim"
 
 execute "mkdir -p $HOME/.config/pgcli"
 symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
+
+execute "mkdir -p $HOME/.config/alacritty"
+symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 
 
 execute "mkdir -p ${HOME}/.npm-packages"
