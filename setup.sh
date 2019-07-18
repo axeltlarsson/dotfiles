@@ -90,26 +90,30 @@ print_success() {
 }
 
 install_zsh () {
-  # Test to see if zshell is installed.  If it is:
-  if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
-    # Set the default shell to zsh if it isn't currently set to zsh
-    if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
-      print_info "Setting default shell to zsh, please enter your password"
-      execute "chsh -s $(which zsh)"
-    elif [[ $(echo $SHELL) == $(which zsh) ]]; then
-      print_info "zsh is already your shell"
-    fi
-  else
-    # If the platform is Linux, try an apt-get to install zsh and then recurse
-    if is_linux; then
-      print_info "Installing zsh..."
-      sudo apt-get install zsh
-      install_zsh
-    elif is_mac; then
-      brew install zsh
-      exit
-    fi
+  if is_mac; then
+    zsh_path=/usr/local/bin/zsh
+    # Idempotently add /usr/local/bin/zsh to /etc/shells
+    grep -qxF '/usr/local/bin/zsh' /etc/shells \
+      || (print_info "/usr/local/bin/zsh >> /etc/shells" \
+      && sudo sh -c 'echo "/usr/local/bin/zsh" >> /etc/shells')
+  elif is_linux; then
+    zsh_path=/usr/bin/zsh
   fi
+
+  if [ ! -x $zsh_path ]; then
+    # Install and recurse
+    if is_mac; then
+      brew install zsh
+    elif is_linux; then
+      execute_su "apt-get --assume-yes install -qq zsh"
+    fi
+    install_zsh
+  elif [[ ! "$SHELL" == "$zsh_path" ]]; then
+    # Set default shell
+    print_info "Setting default shell to zsh, please enter your password"
+    execute "chsh -s /usr/local/bin/zsh"
+  fi
+
 }
 
 # Basically does ln -fs $sourceFile $targetFile with some fancy cli graphics
