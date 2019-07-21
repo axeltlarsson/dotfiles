@@ -231,6 +231,8 @@ symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 execute "mkdir -p ${HOME}/.npm-packages"
 git config --global core.excludesfile "$HOME/.gitignore_global"
 
+touch "$HOME/.local_envs"
+
 if is_linux; then
   install_conditional ripgrep
 elif is_mac; then
