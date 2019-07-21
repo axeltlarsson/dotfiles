@@ -97,7 +97,7 @@ install_zsh () {
       || (print_info "/usr/local/bin/zsh >> /etc/shells" \
       && sudo sh -c 'echo "/usr/local/bin/zsh" >> /etc/shells')
   elif is_linux; then
-    zsh_path=/usr/bin/zsh
+    zsh_path=/usr/local/bin/zsh
   fi
 
   if [ ! -x $zsh_path ]; then
@@ -219,7 +219,7 @@ install_neovim
 execute "mkdir -p $HOME/.config/nvim"
 symlink "$(fullpath config/nvim)" "$HOME/.config/nvim"
 # Needed because config/nvim/init.vim is a symlink:
-symlink "$(fullpath config/nvim/init.vim)" "$HOME/.config/nvim/init.vim"
+symlink "$(fullpath dotfiles/vimrc)" "$HOME/.config/nvim/init.vim"
 
 execute "mkdir -p $HOME/.config/pgcli"
 symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
@@ -231,10 +231,9 @@ symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 execute "mkdir -p ${HOME}/.npm-packages"
 git config --global core.excludesfile "$HOME/.gitignore_global"
 
-touch "$HOME/.local_envs"
+execute "touch $HOME/.local_envs"
+execute "mkdir -p $HOME/notes"
 
-if is_linux; then
-  install_conditional ripgrep
-elif is_mac; then
-  install_conditional ripgrep
-fi
+
+# Other useful tooling
+install_conditional ripgrep
