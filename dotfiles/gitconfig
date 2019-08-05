@@ -29,6 +29,17 @@
     new = green bold
     whitespace = red reverse
 
+[merge]
+    tool = nvim
+    conflictstyle = diff3
+
+[mergetool]
+    keepBackup = false
+
+[mergetool "nvim"]
+    prompt = false
+    cmd = nvim -d $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J'
+
 ; Machine-specific configuration
 [include]
   path = .gitconfig_local
