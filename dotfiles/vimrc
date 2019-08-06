@@ -18,6 +18,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'Alok/notational-fzf-vim'
 Plug 'Chiel92/vim-autoformat'
+Plug 'airblade/vim-gitgutter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'elmcast/elm-vim'
 Plug 'godlygeek/tabular'
@@ -75,6 +76,9 @@ set laststatus=2
 " Airline commands
 let g:airline_powerline_fonts = 1
 let g:airline_theme='hybrid'
+
+" gitgutter
+set updatetime=100
 
 set noshowmode " do not display "-- INSERT --" since that is unnecessary with airline
 set encoding=utf8
