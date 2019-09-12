@@ -30,7 +30,7 @@ destructive_warning = True
 expand = False
 
 # Enables auto expand mode, which is similar to `\x auto` in psql.
-auto_expand = False
+auto_expand = True
 
 # If set to True, table suggestions will include a table alias
 generate_aliases = False
@@ -142,6 +142,7 @@ enable_pager = True
 # Use keyring to automatically save and load password in a secure manner 
 keyring = True
 pager = pspg -XF -s 11
+
 [colors]
 completion-menu.completion.current = "bg:#ffffff #000000"
 completion-menu.completion = "bg:#008888 #ffffff"
@@ -189,6 +190,18 @@ Token.Toolbar.Arg.Text = nobold
 Token.Toolbar.Transaction.Valid = "bg:#222222 #00ff5f bold"
 Token.Toolbar.Transaction.Failed = "bg:#222222 #ff005f bold"
 [named queries]
+historical_performance = '''SELECT
+  userid, rolname, query, calls, total_time, mean_time, rows,
+  100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent
+FROM pg_stat_statements
+JOIN pg_authid ON pg_stat_statements.userid = pg_authid.oid
+ORDER BY mean_time DESC
+LIMIT 100'''
+currently_running = '''SELECT
+  pid, age(now(), query_start), usename, left(query,80), state
+FROM pg_stat_activity
+WHERE query != '<IDLE>' AND query NOT ILIKE '%pg_stat_activity%' AND state = 'active'
+ORDER BY query_start desc'''
 [alias_dsn]
 [data_formats]
 decimal = ""
