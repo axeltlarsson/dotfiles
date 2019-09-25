@@ -219,6 +219,7 @@ install_neovim
 execute "mkdir -p $HOME/.config/nvim"
 symlink "$(fullpath config/nvim)" "$HOME/.config/nvim"
 # Needed because config/nvim/init.vim is a symlink:
+# TODO: just ignore vimrc, the config is only compatible with nvim anyway
 symlink "$(fullpath dotfiles/vimrc)" "$HOME/.config/nvim/init.vim"
 
 execute "mkdir -p $HOME/.config/pgcli"
