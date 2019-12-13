@@ -47,7 +47,6 @@ Plug 'vim-scripts/bats.vim'
 Plug 'w0ng/vim-hybrid'                  " Colorscheme
 Plug 'w0rp/ale'                         " For LSP
 Plug 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
-
 call plug#end()
 
 "Use 24-bit (true-color) mode in Vim/Neovim

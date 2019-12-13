@@ -82,6 +82,11 @@ search_path_filter = False
 # By default 'PAGER' environment variable is used
 # pager = less -SRXF
 
+# manage pager on startup
+enable_pager = True
+# https://github.com/okbob/pspg
+pager = pspg -XF -s 11
+
 # Timing of sql statments and table rendering.
 timing = True
 
@@ -136,12 +141,8 @@ multiline_continuation_char = ""
 # The string used in place of a null value.
 null_string = <null>
 
-# manage pager on startup
-enable_pager = True
-
-# Use keyring to automatically save and load password in a secure manner 
+# Use keyring to automatically save and load password in a secure manner
 keyring = True
-pager = pspg -XF -s 11
 
 [colors]
 completion-menu.completion.current = "bg:#ffffff #000000"
@@ -191,8 +192,8 @@ Token.Toolbar.Transaction.Valid = "bg:#222222 #00ff5f bold"
 Token.Toolbar.Transaction.Failed = "bg:#222222 #ff005f bold"
 [named queries]
 historical_performance = '''SELECT
-  userid, rolname, query, calls, total_time, mean_time, rows,
-  100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent
+  100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent, query
+  userid, rolname, calls, total_time, mean_time, rows,
 FROM pg_stat_statements
 JOIN pg_authid ON pg_stat_statements.userid = pg_authid.oid
 ORDER BY mean_time DESC
@@ -202,6 +203,13 @@ currently_running = '''SELECT
 FROM pg_stat_activity
 WHERE query != '<IDLE>' AND query NOT ILIKE '%pg_stat_activity%' AND state = 'active'
 ORDER BY query_start desc'''
+historical_performance_by_total = '''SELECT
+  userid, rolname, calls, total_time, mean_time, rows,
+  100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent, query
+FROM pg_stat_statements
+JOIN pg_authid ON pg_stat_statements.userid = pg_authid.oid
+ORDER BY total_time DESC
+LIMIT 100'''
 [alias_dsn]
 [data_formats]
 decimal = ""

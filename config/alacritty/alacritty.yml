@@ -77,15 +77,6 @@ scrolling:
   # scrollback is enabled (history > 0).
   multiplier: 3
 
-  # Faux Scrolling
-  #
-  # The `faux_multiplier` setting controls the number of lines the terminal
-  # should scroll when the alternate screen buffer is active. This is used
-  # to allow mouse scrolling for applications like `man`.
-  #
-  # Specifying `0` will disable faux scrolling.
-  faux_multiplier: 3
-
   # Scroll to the bottom when new text is written to the terminal.
   auto_scroll: false
 
@@ -196,7 +187,7 @@ draw_bold_text_with_bright_colors: true
   #selection:
   #  text: '0xeaeaea'
   #  background: '0x404040'
-    
+
 # Colors (Hybrid)
 colors:
   # Default colors
@@ -231,7 +222,7 @@ colors:
     white:   '0xfcf7e2'
 
   # Dim colors
-  
+
   # If the dim colors are not set, they will be calculated automatically based
   # on the `normal` colors.
   dim:
@@ -541,7 +532,7 @@ key_bindings:
   # - { key: F,      mods: Command|Control, action: ToggleFullscreen }
 
   - { key: Return,      mods: Command, action: ToggleFullscreen }
-  
+
   # General QoL improvements https://github.com/jwilm/alacritty/wiki/Keyboard-mappings#general-quality-of-life-improvements
   - { key: Comma,     mods: Command,      command:
       {program: "open", args: ["~/.config/alacritty/alacritty.yml"]}     }
@@ -673,7 +664,7 @@ key_bindings:
   #  - { key: Key0,      mods: Alt,          chars: "\x7D"                  }
   #  - { key: Minus,     mods: Alt,          chars: "\x5C"                  }
   #  - { key: Grave,     mods: Alt,          chars: "\x7C"                  }
-  
+
   - { key: Key1,      mods: Alt|Shift,    chars: "\xA1"                  }
   - { key: Key2,      mods: Alt|Shift,    chars: "”"                     }
   - { key: Key3,      mods: Alt|Shift,    chars: "\xA5"                  }
