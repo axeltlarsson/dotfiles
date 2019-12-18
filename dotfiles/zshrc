@@ -84,6 +84,10 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
 
+if command -v pyenv virtualenv  1>/dev/null 2>&1; then
+  eval "$(pyenv virtualenv-init -)"
+fi
+
 if is_linux; then
   export PATH="/home/axel/.linuxbrew/bin:$PATH"
   export MANPATH="/home/axel/.linuxbrew/share/man:$MANPATH"
