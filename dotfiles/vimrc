@@ -181,8 +181,11 @@ set directory=$HOME/.vim/history/swap//
 
 
 " Autoformat
-" let g:autoformat_verbosemode = 1
-let g:formatters_python = ['yapf'] " pip install yapf
+let g:autoformat_verbosemode = 1
+let g:formatters_python = ['black'] " pip install black
+
+let g:ale_fixers = {'python': ['black', 'isort']} " pip install black isort
+let g:ale_linters = {'python': ['flake8']}
 
 " Open NERDTree automatically if directory specified (i.e. vim .)
 autocmd StdinReadPre * let s:std_in=1
