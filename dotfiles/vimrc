@@ -118,7 +118,7 @@ set mouse=n
 set keywordprg=:Rg
 
 " override polyglot's vim-ruby "ri"
-autocmd FileType ruby,eruby set keywordprg=:Rg
+autocmd FileType ruby,eruby,haml set keywordprg=:Rg
 
 " FZF: invoke it with Ctrl+P
 nnoremap <C-p> :FZF<cr>
