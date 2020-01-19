@@ -139,13 +139,39 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
+" floating fzf
+if has('nvim')
+  " let $FZF_DEFAULT_OPTS .= ' --layout=reverse'
+
+function! FloatingFZF()
+  let buf = nvim_create_buf(v:false, v:true)
+  call setbufvar(buf, '&signcolumn', 'no')
+
+  let width = float2nr(&columns - (&columns * 2 / 10))
+  let height = &lines - 3
+  let y = &lines - 3
+  let x = float2nr((&columns - width) / 2)
+
+  let opts = {
+        \ 'relative': 'editor',
+        \ 'row': y,
+        \ 'col': x,
+        \ 'width': width,
+        \ 'height': height
+        \ }
+
+  call nvim_open_win(buf, v:true, opts)
+endfunction
+
+  let g:fzf_layout = { 'window': 'call FloatingFZF()' }
+endif
+
 " Move lines down with Ctrl-J and up with Ctrl-K
 nnoremap <C-j> :m .+1<CR>==
 nnoremap <C-k> :m .-2<CR>==
 
 inoremap <C-j> <ESC>:m .+1<CR>==gi
 inoremap <C-k> <ESC>:m .-2<CR>==gi
-
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
 
@@ -181,8 +207,12 @@ set directory=$HOME/.vim/history/swap//
 
 
 " Autoformat
-" let g:autoformat_verbosemode = 1
-let g:formatters_python = ['yapf'] " pip install yapf
+let g:autoformat_verbosemode = 1
+let g:formatters_python = ['black']
+
+" ALE
+let g:ale_fixers = {'python': ['black', 'isort']}
+let g:ale_linters = {'python': ['flake8']}
 
 " Open NERDTree automatically if directory specified (i.e. vim .)
 autocmd StdinReadPre * let s:std_in=1
