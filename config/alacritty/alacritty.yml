@@ -99,7 +99,7 @@ font:
     #   - (macOS) Menlo
     #   - (Linux) monospace
     #   - (Windows) Consolas
-    family: Hack Nerd Font
+    family: Hasklig
     # family: Menlo
 
     # The `style` can be specified to pick a specific face.
