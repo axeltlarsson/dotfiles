@@ -139,32 +139,6 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
-" floating fzf
-if has('nvim')
-  " let $FZF_DEFAULT_OPTS .= ' --layout=reverse'
-
-function! FloatingFZF()
-  let buf = nvim_create_buf(v:false, v:true)
-  call setbufvar(buf, '&signcolumn', 'no')
-
-  let width = float2nr(&columns - (&columns * 2 / 10))
-  let height = &lines - 3
-  let y = &lines - 3
-  let x = float2nr((&columns - width) / 2)
-
-  let opts = {
-        \ 'relative': 'editor',
-        \ 'row': y,
-        \ 'col': x,
-        \ 'width': width,
-        \ 'height': height
-        \ }
-
-  call nvim_open_win(buf, v:true, opts)
-endfunction
-
-  let g:fzf_layout = { 'window': 'call FloatingFZF()' }
-endif
 
 " Move lines down with Ctrl-J and up with Ctrl-K
 nnoremap <C-j> :m .+1<CR>==
@@ -222,7 +196,6 @@ let NERDTreeMinimalUI = 1
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_math = 1
-
 
 " Zen Mode
 autocmd! User GoyoEnter Limelight
