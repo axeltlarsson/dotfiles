@@ -228,7 +228,6 @@ symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
 execute "mkdir -p $HOME/.config/alacritty"
 symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 
-
 execute "mkdir -p ${HOME}/.npm-packages"
 git config --global core.excludesfile "$HOME/.gitignore_global"
 
