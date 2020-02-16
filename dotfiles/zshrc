@@ -55,16 +55,19 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 # ruby-build
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
-if installed rbenv; then
-  eval "$(rbenv init - --no-rehash)"
-fi
+rbenv() {
+  eval "$(command rbenv init - --no-rehash)"
+  rbenv "$@"
+}
 
-# Python -pyenv
+# Python - pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init - --no-rehash)"
-fi
+
+pyenv() {
+  eval "$(command pyenv init - --no-rehash)"
+  pyenv "$@"
+}
 
 if command -v pyenv virtualenv  1>/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
