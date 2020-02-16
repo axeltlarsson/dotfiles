@@ -9,8 +9,19 @@ cd .zprezto
 ./setup.sh
 ```
 
-iTerm2 theme:
-[https://github.com/sindresorhus/iterm2-snazzy](https://github.com/sindresorhus/iterm2-snazzy)
+iTerm2 theme: [https://github.com/sindresorhus/iterm2-snazzy](https://github.com/sindresorhus/iterm2-snazzy)
+
+## Performance tweaks
+
+```bash
+for i in $(seq 1 10); do /usr/bin/time $SHELL -i -c exit; done
+```
+
+References:
+- https://carlosbecker.com/posts/speeding-up-zsh
+- https://htr3n.github.io/2018/07/faster-zsh/
+- https://blog.jonlu.ca/posts/speeding-up-zsh
+
 
 ## Prezto information
 This dotfiles repo uses zsh and prezto as a configuration framework.
