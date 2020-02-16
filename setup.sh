@@ -1,26 +1,12 @@
 #!/bin/bash
 
 # usage: if is_mac; then ... else ... fi // do not use [[ is_mac ]] !!!
-is_mac () {
-  case `uname` in
-    Darwin)
-      true
-      ;;
-    *)
-      false
-      ;;
-  esac
+function is_mac {
+  [[ "$OSTYPE" == darwin* ]]
 }
 
-is_linux () {
-  case `uname` in
-    Linux)
-      true
-      ;;
-    *)
-      false
-      ;;
-  esac
+function is_linux {
+  [[ "$OSTYPE" == linux* ]]
 }
 
 answer_is_yes() {
