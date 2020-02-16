@@ -226,7 +226,6 @@ execute "mkdir -p $HOME/.config/alacritty"
 symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 
 execute "mkdir -p ${HOME}/.npm-packages"
-git config --global core.excludesfile "$HOME/.gitignore_global"
 
 execute "touch $HOME/.local_envs"
 execute "mkdir -p $HOME/notes"
