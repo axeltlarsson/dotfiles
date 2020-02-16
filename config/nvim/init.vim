@@ -181,7 +181,7 @@ set directory=$HOME/.vim/history/swap//
 
 
 " Autoformat
-let g:autoformat_verbosemode = 1
+let g:autoformat_verbosemode = 0
 let g:formatters_python = ['black'] " pip install black
 
 let g:ale_fixers = {'python': ['black', 'isort']} " pip install black isort
