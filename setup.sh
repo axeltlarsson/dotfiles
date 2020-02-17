@@ -1,26 +1,12 @@
 #!/bin/bash
 
 # usage: if is_mac; then ... else ... fi // do not use [[ is_mac ]] !!!
-is_mac () {
-  case `uname` in
-    Darwin)
-      true
-      ;;
-    *)
-      false
-      ;;
-  esac
+function is_mac {
+  [[ "$OSTYPE" == darwin* ]]
 }
 
-is_linux () {
-  case `uname` in
-    Linux)
-      true
-      ;;
-    *)
-      false
-      ;;
-  esac
+function is_linux {
+  [[ "$OSTYPE" == linux* ]]
 }
 
 answer_is_yes() {
@@ -218,9 +204,6 @@ symlink_dotfiles_in_dir dotfiles "$HOME"
 install_neovim
 execute "mkdir -p $HOME/.config/nvim"
 symlink "$(fullpath config/nvim)" "$HOME/.config/nvim"
-# Needed because config/nvim/init.vim is a symlink:
-# TODO: just ignore vimrc, the config is only compatible with nvim anyway
-symlink "$(fullpath dotfiles/vimrc)" "$HOME/.config/nvim/init.vim"
 
 execute "mkdir -p $HOME/.config/pgcli"
 symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
@@ -228,9 +211,7 @@ symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
 execute "mkdir -p $HOME/.config/alacritty"
 symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 
-
 execute "mkdir -p ${HOME}/.npm-packages"
-git config --global core.excludesfile "$HOME/.gitignore_global"
 
 execute "touch $HOME/.local_envs"
 execute "mkdir -p $HOME/notes"
