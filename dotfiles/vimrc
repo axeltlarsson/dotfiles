@@ -101,7 +101,7 @@ set lazyredraw
 set splitbelow
 set splitright
 
-set inccommand=nosplit
+set inccommand=split
 set scrolloff=2
 
 " Clear highlighting on escape in Normal mode
