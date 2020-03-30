@@ -54,6 +54,8 @@ PATH="$NPM_PACKAGES/bin:$PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
 # ruby-build
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+# Brew ruby
+export PATH="/usr/local/opt/ruby/bin:$PATH"
 
 rbenv() {
   eval "$(command rbenv init - --no-rehash)"
