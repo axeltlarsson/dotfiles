@@ -185,7 +185,7 @@ let g:autoformat_verbosemode = 0
 let g:formatters_python = ['black'] " pip install black
 
 let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['sqlformat']} " pip install black isort sqlparse
-let g:ale_sql_sqlformat_options = '--reindent --keywords lower --indent_width 2 --strip-comments --indent_after_first --indent_columns'
+let g:ale_sql_sqlformat_options = '--reindent --keywords lower --indent_width 2 --indent_after_first --indent_columns '
 let g:ale_linters = {'python': ['flake8'], 'sql': ['sqlint']}
 let g:ale_fix_on_save = 1
 

@@ -54,26 +54,30 @@ PATH="$NPM_PACKAGES/bin:$PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
 # ruby-build
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
-# Brew ruby
-export PATH="/usr/local/opt/ruby/bin:$PATH"
+# Instead of the expensive rbenv init
+export PATH="$HOME/.rbenv/shims:$PATH"
 
-rbenv() {
+# Normally don't need this: adds command line completions though
+init_rb() {
   eval "$(command rbenv init - --no-rehash)"
-  rbenv "$@"
 }
 
 # Python - pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
+# Instead of the expensive pyenv init
+export PATH="$PYENV_ROOT/shims:$PATH"
 
-pyenv() {
+# Normally don't need this: adds command line completions though
+init_py() {
   eval "$(command pyenv init - --no-rehash)"
-  pyenv "$@"
+  # automatically activate/deactivate virtualenvs on entering/leaving directories which contain a .python-version file
+  # that contains the name of a valid virtual environment as shown in the output of pyenv virtualenvs
+  if command -v pyenv virtualenv  1>/dev/null 2>&1; then
+    eval "$(pyenv virtualenv-init -)"
+  fi
 }
 
-if command -v pyenv virtualenv  1>/dev/null 2>&1; then
-  eval "$(pyenv virtualenv-init -)"
-fi
 
 if is_linux; then
   export PATH="/home/axel/.linuxbrew/bin:$PATH"
