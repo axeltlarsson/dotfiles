@@ -82,11 +82,6 @@ search_path_filter = False
 # By default 'PAGER' environment variable is used
 # pager = less -SRXF
 
-# manage pager on startup
-enable_pager = True
-# https://github.com/okbob/pspg
-pager = pspg -XF -s 11
-
 # Timing of sql statments and table rendering.
 timing = True
 
@@ -113,7 +108,7 @@ vi = True
 # Possible values "STOP" or "RESUME"
 on_error = STOP
 
-# Set threshold for row limit prompt. Use 0 to disable prompt.
+# Set threshold for row limit. Use 0 to disable limiting.
 row_limit = 1000
 
 # Skip intro on startup and goodbye on exit
@@ -141,9 +136,12 @@ multiline_continuation_char = ""
 # The string used in place of a null value.
 null_string = <null>
 
-# Use keyring to automatically save and load password in a secure manner
-keyring = True
+# manage pager on startup
+enable_pager = True
 
+# Use keyring to automatically save and load password in a secure manner 
+keyring = True
+pager = pspg -XF -s 11
 [colors]
 completion-menu.completion.current = "bg:#ffffff #000000"
 completion-menu.completion = "bg:#008888 #ffffff"
@@ -190,32 +188,32 @@ Token.Toolbar.Arg = noinherit bold
 Token.Toolbar.Arg.Text = nobold
 Token.Toolbar.Transaction.Valid = "bg:#222222 #00ff5f bold"
 Token.Toolbar.Transaction.Failed = "bg:#222222 #ff005f bold"
-
 [named queries]
-  historical_performance = '''SELECT
+historical_performance = '''SELECT
     100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent, query
     userid, rolname, calls, total_time, mean_time, rows
   FROM pg_stat_statements
   JOIN pg_authid ON pg_stat_statements.userid = pg_authid.oid
   ORDER BY mean_time DESC
   LIMIT 100'''
-
-  currently_running = '''SELECT
+currently_running = '''SELECT
     pid, age(now(), query_start), usename, left(query,250), state
   FROM pg_stat_activity
   WHERE query != '<IDLE>' AND query NOT ILIKE '%pg_stat_activity%' AND state = 'active'
   ORDER BY query_start desc'''
-
-  historical_performance_by_total = '''SELECT
+historical_performance_by_total = '''SELECT
     userid, rolname, calls, total_time, mean_time, rows,
     100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent, query
   FROM pg_stat_statements
   JOIN pg_authid ON pg_stat_statements.userid = pg_authid.oid
   ORDER BY total_time DESC
   LIMIT 100'''
-
+table_privilege = "select grantee, table_schema, table_name, privilege_type from information_schema.table_privileges where table_name like '$1'"
 [alias_dsn]
-
+prod = postgresql://aptible@elb-arthro-10703.aptible.in:5432/db
+replica = postgresql://aptible@elb-arthro-22487.aptible.in:5432/db
+bi = postgresql://etl@ja-bi.cfpim9tf70uk.eu-north-1.rds.amazonaws.com/analytics
+analytics = postgresql://jointacademy@jointacademy.cy6yvswbjmjq.eu-west-1.rds.amazonaws.com:5432/jointacademy_analytics
 [data_formats]
 decimal = ""
 float = ""
