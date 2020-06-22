@@ -18,9 +18,9 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'Alok/notational-fzf-vim'
 Plug 'Chiel92/vim-autoformat'
+Plug 'Zaptic/elm-vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'elmcast/elm-vim'
 Plug 'godlygeek/tabular'
 Plug 'jiangmiao/auto-pairs'
 " Installs fzf as system command
@@ -219,7 +219,7 @@ autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 let g:nv_search_paths = ['../notes', './notes', '~/notes']
 
 " polyglot
-let g:polyglot_disabled = ['elm'] " elmcast/elm-vim covers this better
+let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
 
 let g:python3_host_prog='/Users/axel/.pyenv/versions/py3neovim/bin/python'
 let g:python_host_prog='/Users/axel/.pyenv/versions/py2neovim/bin/python'
