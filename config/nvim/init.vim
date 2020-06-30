@@ -187,7 +187,7 @@ let g:formatters_python = ['black'] " pip install black
 
 let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter']} " pip install black isort && brew install pgformatter
 let g:ale_linters = {'python': ['flake8'], 'sql': ['sqlint']}
-let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1'
+let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_fix_on_save = 1
 
 " Open NERDTree automatically if directory specified (i.e. vim .)
