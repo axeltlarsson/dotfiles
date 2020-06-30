@@ -87,7 +87,7 @@ font:
     #   - (macOS) Menlo
     #   - (Linux) monospace
     #   - (Windows) Consolas
-    family: Hasklig
+    family: Hasklug Nerd Font
     # family: Menlo
 
     # The `style` can be specified to pick a specific face.
