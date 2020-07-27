@@ -189,10 +189,18 @@ set directory=$HOME/.vim/history/swap//
 let g:autoformat_verbosemode = 0
 let g:formatters_python = ['black'] " pip install black
 
+" ALE
 let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter']} " pip install black isort && brew install pgformatter
 let g:ale_linters = {'python': ['flake8'], 'sql': ['sqlint']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_fix_on_save = 1
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+let g:ale_open_list = 1
+" Set this if you want to.
+" This can be useful if you are combining ALE with
+" some other plugin which sets quickfix errors, etc.
+" let g:airline#extensions#ale#enabled = 1
 
 " Open NERDTree automatically if directory specified (i.e. vim .)
 autocmd StdinReadPre * let s:std_in=1
