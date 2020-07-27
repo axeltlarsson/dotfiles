@@ -110,7 +110,7 @@ nnoremap <esc> :noh<return><esc>
 nnoremap <esc>^[ <esc>^[
 
 " Rebind leader key
-let mapleader = ","
+let mapleader = "\ "
 set autoindent
 
 set mouse=n
@@ -150,6 +150,10 @@ inoremap <C-k> <ESC>:m .-2<CR>==gi
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
 
+nnoremap <Leader>w :w<CR>
+
+map <Leader>n :NERDTreeToggle<CR>
+map <Leader>f :NERDTreeFind<CR>
 
 " NERDCommenters add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
