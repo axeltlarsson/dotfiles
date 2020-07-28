@@ -151,6 +151,8 @@ vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
 
 nnoremap <Leader>w :w<CR>
+nnoremap <Leader>x :x<CR>
+nnoremap <Leader>q :q<CR>
 
 map <Leader>n :NERDTreeToggle<CR>
 map <Leader>f :NERDTreeFind<CR>
