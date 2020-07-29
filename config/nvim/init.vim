@@ -157,8 +157,7 @@ nnoremap <Leader>q :q<CR>
 map <Leader>n :NERDTreeToggle<CR>
 map <Leader>f :NERDTreeFind<CR>
 
-" NERDCommenters add spaces after comment delimiters by default
-let g:NERDSpaceDelims = 1
+map <Leader>r :Rg<CR>
 
 " Use deoplete
 " let g:deoplete#enable_at_startup = 1
@@ -211,6 +210,11 @@ let g:airline#extensions#ale#enabled = 1
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 let NERDTreeMinimalUI = 1
+let NERDTreeAutoDeleteBuffer=1
+
+" NERDCommenter adds spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
 
 " vim-markdown
 let g:vim_markdown_folding_disabled = 1
