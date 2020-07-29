@@ -18,6 +18,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'Alok/notational-fzf-vim'
 Plug 'Chiel92/vim-autoformat'
+Plug 'SirVer/ultisnips'
 Plug 'Zaptic/elm-vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'editorconfig/editorconfig-vim'
@@ -201,6 +202,7 @@ let g:ale_fix_on_save = 1
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
+
 " Set this if you want to.
 " This can be useful if you are combining ALE with
 " some other plugin which sets quickfix errors, etc.
@@ -244,6 +246,17 @@ let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
 
 let g:python3_host_prog='/Users/axel/.pyenv/versions/py3neovim/bin/python'
 let g:python_host_prog='/Users/axel/.pyenv/versions/py2neovim/bin/python'
+
+" snippets
+let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
+
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 
 " Edit vimrc with :Vimrc (change to :vs to open in a new split)
 command! Vimrc :e $MYVIMRC
