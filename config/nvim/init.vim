@@ -23,22 +23,20 @@ Plug 'Zaptic/elm-vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'godlygeek/tabular'
-Plug 'jiangmiao/auto-pairs'
-" Installs fzf as system command
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " Installs fzf as system command
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'                " Distraction-free writing
 Plug 'junegunn/limelight.vim'           " Hyperfocus-writing
+Plug 'lambdalisue/fern-renderer-nerdfont.vim'
+Plug 'lambdalisue/fern.vim'
+Plug 'lambdalisue/glyph-palette.vim'
+Plug 'lambdalisue/nerdfont.vim'
 Plug 'mxw/vim-jsx'
 Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'reedes/vim-pencil'
-Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdcommenter'
-Plug 'scrooloose/nerdtree'
 Plug 'sheerun/vim-polyglot'
-Plug 'shougo/deoplete.nvim'             " Async completion fw for neovim
-Plug 'skwp/greplace.vim'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
@@ -48,7 +46,6 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/bats.vim'
 Plug 'w0ng/vim-hybrid'                  " Colorscheme
 Plug 'w0rp/ale'                         " For LSP
-Plug 'zchee/deoplete-jedi'              " Autocompletion, static anal for Python
 call plug#end()
 
 "Use 24-bit (true-color) mode in Vim/Neovim
@@ -74,22 +71,22 @@ colorscheme hybrid
 " always show the status bar
 set laststatus=2
 
-" Airline commands
+" Airline
 let g:airline_powerline_fonts = 1
 let g:airline_theme='hybrid'
 
 " gitgutter
 set updatetime=100
 
-set noshowmode " do not display "-- INSERT --" since that is unnecessary with airline
+set noshowmode     " do not display" -- INSERT -- " since that is unnecessary with airline
 set encoding=utf8
 set hlsearch
 set incsearch
 set number
-set cursorline " highlight current line
+set cursorline     " highlight current line
 set conceallevel=2
-set nocompatible                " be iMproved, required
-set hidden                      " allow multiple files to be opened in diff buffers, 'hidden' in bg
+set nocompatible   " be iMproved, required
+set hidden         " allow multiple files to be opened in diff buffers, 'hidden' in bg
 
 " For indentation w/o tabs, principle is to set expandtab, and set shiftwidth
 " and softtabstop to the same value, leaving tabstop at default (8)
@@ -122,8 +119,20 @@ set keywordprg=:Rg
 " override polyglot's vim-ruby "ri"
 autocmd FileType ruby,eruby,haml set keywordprg=:Rg
 
-" FZF: invoke it with Ctrl+P
-nnoremap <C-p> :FZF<cr>
+" FZF: invoke the :Files with Ctrl+P
+nnoremap <C-p> :Files<cr>
+nnoremap <silent> <Leader><Space> :Files<CR>
+if has('nvim-0.4.0') || has("patch-8.2.0191")
+    let g:fzf_layout = { 'window': {
+                \ 'width': 0.9,
+                \ 'height': 0.7,
+                \ 'highlight': 'Comment',
+                \ 'rounded': v:false } }
+else
+    let g:fzf_layout = { "window": "silent botright 16split enew" }
+endif
+
+map <Leader>r :Rg<CR>
 
 " Customize fzf colors to match your color scheme
 let g:fzf_colors =
@@ -154,14 +163,44 @@ vnoremap <C-k> :m '<-2<CR>gv=gv
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>x :x<CR>
 nnoremap <Leader>q :q<CR>
+nnoremap <Leader>Q :q!<CR>
 
-map <Leader>n :NERDTreeToggle<CR>
-map <Leader>f :NERDTreeFind<CR>
+" Fern
+let g:fern#renderer = "nerdfont"
+noremap <silent> <Leader>d :Fern . -drawer -width=35 -toggle<CR><C-w>=
+noremap <silent> <Leader>f :Fern . -drawer -reveal=% -width=35<CR><C-w>=
+noremap <silent> <Leader>. :Fern %:h -drawer -width=35<CR><C-w>=
 
-map <Leader>r :Rg<CR>
+function! FernInit() abort
+  set nonu
+  nmap <buffer><expr>
+        \ <Plug>(fern-my-open-expand-collapse)
+        \ fern#smart#leaf(
+        \   "\<Plug>(fern-action-open:select)",
+        \   "\<Plug>(fern-action-expand)",
+        \   "\<Plug>(fern-action-collapse)",
+        \ )
+  nmap <buffer> <CR> <Plug>(fern-my-open-expand-collapse)
+  nmap <buffer> <2-LeftMouse> <Plug>(fern-my-open-expand-collapse)
+  nmap <buffer> m <Plug>(fern-action-mark-toggle)j
+  nmap <buffer> N <Plug>(fern-action-new-file)
+  nmap <buffer> K <Plug>(fern-action-new-dir)
+  nmap <buffer> D <Plug>(fern-action-remove)
+  nmap <buffer> R <Plug>(fern-action-move)
+  nmap <buffer> s <Plug>(fern-action-open:split)
+  nmap <buffer> v <Plug>(fern-action-open:vsplit)
+  nmap <buffer> r <Plug>(fern-action-reload)
+  nmap <buffer> q :q<CR>
+  nmap <buffer> <nowait> d <Plug>(fern-action-hidden-toggle)j
+  nmap <buffer> <nowait> < <Plug>(fern-action-leave)
+  nmap <buffer> <nowait> > <Plug>(fern-action-enter)
+endfunction
 
-" Use deoplete
-" let g:deoplete#enable_at_startup = 1
+augroup FernGroup
+  autocmd!
+  autocmd FileType fern call FernInit()
+  autocmd FileType fern call glyph_palette#apply()
+augroup END
 
 " Copy to clipboard
 vnoremap  <leader>y  "+y
@@ -199,24 +238,13 @@ let g:ale_python_auto_pipenv = 1
 let g:ale_python_mypy_options = '--follow-imports skip'
 
 let g:ale_fix_on_save = 1
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
-let g:ale_open_list = 1
-
-" Set this if you want to.
-" This can be useful if you are combining ALE with
-" some other plugin which sets quickfix errors, etc.
+" let g:ale_set_loclist = 0
+" let g:ale_set_quickfix = 1
+" let g:ale_open_list = 1
 let g:airline#extensions#ale#enabled = 1
-
-" Open NERDTree automatically if directory specified (i.e. vim .)
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-let NERDTreeMinimalUI = 1
-let NERDTreeAutoDeleteBuffer=1
 
 " NERDCommenter adds spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
-
 
 " vim-markdown
 let g:vim_markdown_folding_disabled = 1
