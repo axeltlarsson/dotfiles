@@ -128,5 +128,8 @@ _gen_fzf_default_opts
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
+# Bat https://github.com/sharkdp/bat
+export BAT_THEME="Sublime Snazzy"
+
 # Setup machine specific envs
 source ~/.local_envs
