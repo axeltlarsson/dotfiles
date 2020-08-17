@@ -43,3 +43,5 @@
 ; Machine-specific configuration
 [include]
   path = .gitconfig_local
+[pull]
+	rebase = false
