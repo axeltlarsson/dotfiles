@@ -165,6 +165,8 @@ nnoremap <Leader>x :x<CR>
 nnoremap <Leader>q :q<CR>
 nnoremap <Leader>Q :q!<CR>
 
+nnoremap <Leader>l :ALEFix<CR>
+
 " Fern
 let g:fern#renderer = "nerdfont"
 noremap <silent> <Leader>d :Fern . -drawer -width=35 -toggle<CR><C-w>=
