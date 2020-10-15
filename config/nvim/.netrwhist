@@ -1,3 +1,9 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =1
+let g:netrw_dirhistcnt =7
+let g:netrw_dirhist_7='/Users/axel/utveckling/stiftelseapp/.git'
+let g:netrw_dirhist_6='/Users/axel/utveckling/arthro/jojnts-service'
+let g:netrw_dirhist_5='/Users/axel/utveckling/arthro/arthro-data/data-science/notebook_base_image'
+let g:netrw_dirhist_4='/Users/axel/utveckling/arthro/arthro-data/data-science'
+let g:netrw_dirhist_3='/Users/axel/utveckling/arthro/arthro-data/data-science/dashboard-web'
+let g:netrw_dirhist_2='/Users/axel/utveckling/arthro/arthro-data/uxdata.arthro.ai'
 let g:netrw_dirhist_1='/Users/axel/.zprezto/dotfiles'
