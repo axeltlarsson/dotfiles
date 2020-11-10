@@ -211,7 +211,7 @@ symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
 execute "mkdir -p $HOME/.config/alacritty"
 symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 
-execute "mkdir -p ${HOME}/.npm-packages"
+execute "mkdir -p ${HOME}/.npm-packages/lib"
 
 execute "touch $HOME/.local_envs"
 execute "mkdir -p $HOME/notes"
