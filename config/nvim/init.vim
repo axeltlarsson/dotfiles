@@ -16,6 +16,8 @@ endif
 " ---- Plugins ----
 call plug#begin('~/.vim/plugged')
 
+let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
+
 Plug 'Alok/notational-fzf-vim'
 Plug 'Chiel92/vim-autoformat'
 Plug 'SirVer/ultisnips'
@@ -233,8 +235,9 @@ let g:autoformat_verbosemode = 0
 let g:formatters_python = ['black'] " pip install black
 
 " ALE
-let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter']} " pip install black isort && brew install pgformatter
-let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint']}
+" pip install black isort && brew install pgformatter
+let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['hindent'], 'javascript': ['eslint']}
+let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint'], 'javascript': ['eslint']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_python_auto_pipenv = 1
 let g:ale_python_mypy_options = '--follow-imports skip'
@@ -271,8 +274,6 @@ autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 " notational-fzf-vim
 let g:nv_search_paths = ['../notes', './notes', '~/notes']
 
-" polyglot
-let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
 
 let g:python3_host_prog='/Users/axel/.pyenv/versions/py3neovim/bin/python'
 let g:python_host_prog='/Users/axel/.pyenv/versions/py2neovim/bin/python'
