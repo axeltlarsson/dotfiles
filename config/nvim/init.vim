@@ -236,8 +236,8 @@ let g:formatters_python = ['black'] " pip install black
 
 " ALE
 " pip install black isort && brew install pgformatter
-let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['hindent'], 'javascript': ['eslint']}
-let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint'], 'javascript': ['eslint']}
+let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['hindent'], 'javascript': ['eslint'], 'markdown': ['prettier']}
+let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_python_auto_pipenv = 1
 let g:ale_python_mypy_options = '--follow-imports skip'
