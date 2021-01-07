@@ -1,5 +1,5 @@
-.vim/history/
-.config/nvim/.netwrwhist
+vim/history/
+config/nvim/.netrwhist
 *.zwc
 *.zwc.old
 modules/*/cache.zsh
