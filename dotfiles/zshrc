@@ -38,6 +38,9 @@ fi
 
 alias :q=exit
 
+alias dc=docker-compose
+alias mdtoc="docker run -v $(pwd)":/app" -w /app --rm -it sebdah/markdown-toc"
+
 # ----------- conditional aliases ---------------------------------------------
 if installed nvim; then
   alias vi=nvim
@@ -136,5 +139,3 @@ source ~/.local_envs
 
 # GPG
 export GPG_TTY=$(tty)
-
-alias mdtoc="docker run -v $(pwd)":/app" -w /app --rm -it sebdah/markdown-toc"
