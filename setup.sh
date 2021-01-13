@@ -213,6 +213,9 @@ symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 
 execute "mkdir -p ${HOME}/.npm-packages/lib"
 
+execute "mkdir -p $HOME/.gnupg"
+symlink "$(fullpath config/gpg-agent.conf)" "$HOME/.gnupg/gpg-agent.conf"
+
 execute "touch $HOME/.local_envs"
 execute "mkdir -p $HOME/notes"
 
