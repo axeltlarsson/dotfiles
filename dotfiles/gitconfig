@@ -47,3 +47,5 @@
 ; Machine-specific configuration
 [include]
   path = .gitconfig_local
+[submodule]
+	recurse = true
