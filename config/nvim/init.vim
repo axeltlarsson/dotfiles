@@ -48,6 +48,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/bats.vim'
 Plug 'w0ng/vim-hybrid'                  " Colorscheme
 Plug 'w0rp/ale'                         " For LSP
+Plug 'yazgoo/unicodemoji'
 call plug#end()
 
 "Use 24-bit (true-color) mode in Vim/Neovim
@@ -171,6 +172,8 @@ nnoremap <Leader>l :ALEFix<CR>
 
 map ö [
 map ä ]
+
+nmap <Leader>u :Unicodemoji<CR>
 
 " Fern
 let g:fern#renderer = "nerdfont"
