@@ -169,6 +169,7 @@ nnoremap <Leader>q :q<CR>
 nnoremap <Leader>Q :q!<CR>
 
 nnoremap <Leader>l :ALEFix<CR>
+nnoremap <silent> <Leader>n :NV<CR>
 
 map ö [
 map ä ]
@@ -269,7 +270,7 @@ autocmd! User GoyoLeave Limelight!
 " Set syntax error for nbsp, except for NERDTree
 fun! SyntaxErrorOnNbsp()
   " Don't do it for NERDTree
-  if &ft =~ 'nerdtree'
+  if &ft =~ 'fern'
     return
   endif
   call matchadd("Error", " ", -1)
@@ -279,7 +280,6 @@ autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 
 " notational-fzf-vim
 let g:nv_search_paths = ['../notes', './notes', '~/notes']
-
 
 let g:python3_host_prog='/Users/axel/.pyenv/versions/py3neovim/bin/python'
 let g:python_host_prog='/Users/axel/.pyenv/versions/py2neovim/bin/python'
