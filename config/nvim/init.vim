@@ -156,6 +156,11 @@ let g:fzf_colors =
   \ 'header':  ['fg', 'Comment'] }
 
 
+" Insert mode completion TODO: read up on this
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+" imap <c-x><c-l> <plug>(fzf-complete-line)
+
 " Move lines down with Ctrl-J and up with Ctrl-K
 nnoremap <C-j> :m .+1<CR>==
 nnoremap <C-k> :m .-2<CR>==
@@ -197,20 +202,14 @@ inoremap <expr> <c-t> fzf#vim#complete(fzf#vim#with_preview(fzf#wrap({
   \ 'source':  'rg --smart-case --no-line-number --files /Users/axel/notes',
   \ 'reducer': function('<sid>make_note_link') })))
 
-" Insert mode completion TODO: read up on this
-imap <c-x><c-k> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
-" imap <c-x><c-l> <plug>(fzf-complete-line)
-
+" Searching for notes from anywhere
 nnoremap <silent> <Leader>ns :Notes<CR>
 
 " TODO: maybe I want to use Rg to search in notes too? and not just for file
 " names?
-" TODO: think about whether I can complete remove the need for
-" notational-fzf-vim - probably I can...
+" TODO: make this actually work
 command! -bang -nargs=? -complete=dir Notes
-    \ call fzf#vim#files('/Users/axel/notes', fzf#vim#with_preview(), <bang>0)
-
+    \ call fzf#vim#files('~/notes', fzf#vim#with_preview(), <bang>0)
 
 " Fern
 let g:fern#renderer = "nerdfont"
