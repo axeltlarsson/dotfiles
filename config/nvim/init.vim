@@ -112,7 +112,7 @@ nnoremap <esc> :noh<return><esc>
 nnoremap <esc>^[ <esc>^[
 
 " Rebind leader key
-let mapleader = "\ "
+map <space> <Leader>
 set autoindent
 
 set mouse=n
@@ -137,6 +137,7 @@ else
 endif
 
 map <Leader>r :Rg<CR>
+nnoremap <Leader>b :Buffers<CR>
 
 " Customize fzf colors to match your color scheme
 let g:fzf_colors =
@@ -170,12 +171,46 @@ nnoremap <Leader>q :q<CR>
 nnoremap <Leader>Q :q!<CR>
 
 nnoremap <Leader>l :ALEFix<CR>
-nnoremap <silent> <Leader>n :NV<CR>
 
 map ö [
 map ä ]
 
 nmap <Leader>u :Unicodemoji<CR>
+
+" Notes
+nnoremap <Leader>ni :e $NOTES_DIR/index.md<CR>:cd $NOTES_DIR<CR>
+nnoremap <leader>nz :Zet
+let g:nv_search_paths = ['../notes', './notes', '~/notes']
+let g:nv_create_note_key = 'ctrl-x'
+
+" make link to other notes
+" TODO: probably move to ftplugin?
+function! s:make_note_link(file)
+    let filename = fnameescape(join(a:file))
+    let filename_wo_timestamp = fnameescape(fnamemodify(join(a:file), ":t:s/^[0-9]*-//"))
+     " Insert the markdown link to the file in the current buffer
+    let mdlink = "[". filename_wo_timestamp ."](".filename.")"
+    return mdlink
+endfunction
+
+inoremap <expr> <c-t> fzf#vim#complete(fzf#vim#with_preview(fzf#wrap({
+  \ 'source':  'rg --smart-case --no-line-number --files /Users/axel/notes',
+  \ 'reducer': function('<sid>make_note_link') })))
+
+" Insert mode completion TODO: read up on this
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+" imap <c-x><c-l> <plug>(fzf-complete-line)
+
+nnoremap <silent> <Leader>ns :Notes<CR>
+
+" TODO: maybe I want to use Rg to search in notes too? and not just for file
+" names?
+" TODO: think about whether I can complete remove the need for
+" notational-fzf-vim - probably I can...
+command! -bang -nargs=? -complete=dir Notes
+    \ call fzf#vim#files('/Users/axel/notes', fzf#vim#with_preview(), <bang>0)
+
 
 " Fern
 let g:fern#renderer = "nerdfont"
@@ -279,8 +314,6 @@ endfun
 
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 
-" notational-fzf-vim
-let g:nv_search_paths = ['../notes', './notes', '~/notes']
 
 let g:python3_host_prog='/Users/axel/.pyenv/versions/py3neovim/bin/python'
 let g:python_host_prog='/Users/axel/.pyenv/versions/py2neovim/bin/python'
