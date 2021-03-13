@@ -184,32 +184,20 @@ nmap <Leader>u :Unicodemoji<CR>
 
 " Notes
 nnoremap <Leader>ni :e $NOTES_DIR/index.md<CR>:cd $NOTES_DIR<CR>
-nnoremap <leader>nz :Zet
+nnoremap <leader>nz :Zet<space>
+
+" TODO: remove NV
 let g:nv_search_paths = ['../notes', './notes', '~/notes']
 let g:nv_create_note_key = 'ctrl-x'
-
-" make link to other notes
-" TODO: probably move to ftplugin?
-function! s:make_note_link(file)
-    let filename = fnameescape(join(a:file))
-    let filename_wo_timestamp = fnameescape(fnamemodify(join(a:file), ":t:s/^[0-9]*-//"))
-     " Insert the markdown link to the file in the current buffer
-    let mdlink = "[". filename_wo_timestamp ."](".filename.")"
-    return mdlink
-endfunction
-
-inoremap <expr> <c-t> fzf#vim#complete(fzf#vim#with_preview(fzf#wrap({
-  \ 'source':  'rg --smart-case --no-line-number --files /Users/axel/notes',
-  \ 'reducer': function('<sid>make_note_link') })))
 
 " Searching for notes from anywhere
 nnoremap <silent> <Leader>ns :Notes<CR>
 
-" TODO: maybe I want to use Rg to search in notes too? and not just for file
-" names?
-" TODO: make this actually work
-command! -bang -nargs=? -complete=dir Notes
-    \ call fzf#vim#files('~/notes', fzf#vim#with_preview(), <bang>0)
+command! -bang -nargs=* Notes
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview({'dir': '~/notes'}), <bang>0)
+
 
 " Fern
 let g:fern#renderer = "nerdfont"
@@ -278,7 +266,7 @@ let g:formatters_python = ['black'] " pip install black
 
 " ALE
 " pip install black isort && brew install pgformatter
-let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['hindent'], 'javascript': ['eslint'], 'markdown': ['prettier']}
+let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['stylish-haskell'], 'javascript': ['eslint'], 'markdown': ['prettier']}
 let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_python_auto_pipenv = 1
