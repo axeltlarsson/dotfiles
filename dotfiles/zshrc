@@ -81,6 +81,8 @@ init_py() {
   fi
 }
 
+# direnv
+eval "$(direnv hook zsh)"
 
 if is_linux; then
   export PATH="/home/axel/.linuxbrew/bin:$PATH"
