@@ -26,3 +26,9 @@
 	path = modules/prompt/external/powerlevel9k
 	url = https://github.com/bhilburn/powerlevel9k.git
 	ignore = dirty
+[submodule "fzf-tab"]
+	path = fzf-tab
+	url = https://github.com/Aloxaf/fzf-tab.git
+[submodule "modules/fzf-tab"]
+	path = modules/fzf-tab
+	url = https://github.com/AxelTLarsson/fzf-tab.git
