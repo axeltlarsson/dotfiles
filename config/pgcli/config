@@ -190,7 +190,7 @@ Token.Toolbar.Transaction.Valid = "bg:#222222 #00ff5f bold"
 Token.Toolbar.Transaction.Failed = "bg:#222222 #ff005f bold"
 [named queries]
 historical_performance = '''SELECT
-    100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent, query
+    100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent, left(query, 120),
     userid, rolname, calls, total_time, mean_time, rows
   FROM pg_stat_statements
   JOIN pg_authid ON pg_stat_statements.userid = pg_authid.oid
@@ -203,7 +203,7 @@ currently_running = '''SELECT
   ORDER BY query_start desc'''
 historical_performance_by_total = '''SELECT
     userid, rolname, calls, total_time, mean_time, rows,
-    100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent, query
+    100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent, left(query, 120)
   FROM pg_stat_statements
   JOIN pg_authid ON pg_stat_statements.userid = pg_authid.oid
   ORDER BY total_time DESC

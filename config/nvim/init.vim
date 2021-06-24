@@ -17,6 +17,7 @@ endif
 call plug#begin('~/.vim/plugged')
 
 let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
+let g:elm_setup_keybindings = 0
 
 Plug 'Alok/notational-fzf-vim'
 Plug 'Chiel92/vim-autoformat'
@@ -91,6 +92,8 @@ set cursorline     " highlight current line
 set conceallevel=2
 set nocompatible   " be iMproved, required
 set hidden         " allow multiple files to be opened in diff buffers, 'hidden' in bg
+
+set nofoldenable
 
 " For indentation w/o tabs, principle is to set expandtab, and set shiftwidth
 " and softtabstop to the same value, leaving tabstop at default (8)
@@ -282,7 +285,7 @@ let g:airline#extensions#ale#enabled = 1
 let g:NERDSpaceDelims = 1
 
 " vim-markdown
-let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_folding_disabled = 0
 let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_math = 1
 
