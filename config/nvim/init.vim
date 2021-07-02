@@ -321,3 +321,8 @@ let g:UltiSnipsEditSplit="vertical"
 
 " Edit vimrc with :Vimrc (change to :vs to open in a new split)
 command! Vimrc :e $MYVIMRC
+
+" Macro to convert Nordnet "Depåöversikt" to csv
+" First copy-paste from Nordnet.se, include headers for "Börshandlat", not for
+" "Fonder", exclude "Totalt" row
+let @g = ':%s/$/;:g/Byt/dgg:g/.*/,/^KöpSälj\|\%$/join:%s/KöpSälj;/'
