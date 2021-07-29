@@ -180,28 +180,14 @@ fullpath() {
   echo "$dirname"
 }
 
-install_neovim() {
-  if not_installed neovim; then
-    print_info "Installing neovim..."
-    if is_linux; then
-      sudo apt-get install python-dev python-pip python3-dev python3-pip && \
-        sudo apt-get install software-properties-common && \
-        sudo add-apt-repository ppa:neovim-ppa/stable && \
-        sudo apt-get update && \
-        sudo apt-get install neovim && \
-        sudo pip3 install neovim && \
-        sudo pip2 install neovim
-    elif is_mac; then
-      brew install neovim
-    fi
-  fi
-}
-
 # Always set up zsh + prezto and nvim w. with plugins
-install_zsh
 print_info "Setting up dotfiles"
 symlink_dotfiles_in_dir dotfiles "$HOME"
-install_neovim
+
+execute "mkdir -p $HOME/.config/nixpkgs"
+symlink "$(fullpath config/nixpkgs/home.nix)" "$HOME/.config/nixpkgs/home.nix"
+exit 0
+
 execute "mkdir -p $HOME/.config/nvim"
 symlink "$(fullpath config/nvim)" "$HOME/.config/nvim"
 
@@ -211,6 +197,7 @@ symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
 execute "mkdir -p $HOME/.config/alacritty"
 symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 
+
 execute "mkdir -p ${HOME}/.npm-packages/lib"
 
 execute "mkdir -p $HOME/.gnupg"
@@ -218,7 +205,3 @@ symlink "$(fullpath config/gpg-agent.conf)" "$HOME/.gnupg/gpg-agent.conf"
 
 execute "touch $HOME/.local_envs"
 execute "mkdir -p $HOME/notes"
-
-
-# Other useful tooling
-install_conditional ripgrep
