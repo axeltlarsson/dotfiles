@@ -19,7 +19,22 @@
   # changes in each release.
   home.stateVersion = "21.11";
 
-  home.packages = with pkgs; [ nixfmt ripgrep diff-so-fancy bat ];
+  home.packages = with pkgs; [
+    nixfmt
+    ripgrep
+    diff-so-fancy
+    bat
+    elmPackages.elm-format
+    elmPackages.elm-json
+    elmPackages.elm-test
+    elmPackages.create-elm-app
+    nodejs
+    pinentry_mac
+    pinentry
+  ];
+
+  home.sessionPath = [ "\${HOME}/.npm-packages/bin" ];
+  home.file.".npmrc".source = ../../dotfiles/npmrc;
 
   programs.git = {
     enable = true;
@@ -94,6 +109,17 @@
   programs.zsh = {
     enable = true;
 
+    envExtra = ''
+      function zet {
+        nvim "+Zet $*"
+      }
+    '';
+
+    sessionVariables = {
+      BAT_THEME = "Sublime Snazzy";
+      EDITOR = "nvim";
+      GPG_TTY = "$(tty)";
+    };
     prezto = {
       enable = true;
       editor.keymap = "vi";
@@ -168,4 +194,19 @@
       "--color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
     ];
   };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
+  programs.gpg = { enable = true; };
+
+  programs.keychain = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  # home.file.".".source = dotfiles/pspqconf
 }
