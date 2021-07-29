@@ -19,7 +19,7 @@
   # changes in each release.
   home.stateVersion = "21.11";
 
-  home.packages = with pkgs; [ nixfmt ];
+  home.packages = with pkgs; [ nixfmt ripgrep diff-so-fancy ];
 
   programs.git = {
     enable = true;
@@ -58,7 +58,6 @@
         };
       };
 
-
       color = {
         diff-highlight = {
           oldNormal = "red bold";
@@ -90,5 +89,61 @@
       signByDefault = true;
     };
 
+  };
+
+  programs.zsh = {
+    enable = true;
+
+    prezto = {
+      enable = true;
+      editor.keymap = "vi";
+      prompt.theme = "pure";
+
+      pmodules = [
+        "environment"
+        "editor"
+        "history"
+        "directory"
+        "spectrum"
+        "utility"
+        "completion"
+        "fasd"
+        "syntax-highlighting"
+        "history-substring-search"
+        "prompt"
+        "tmux"
+      ];
+
+      tmux.autoStartLocal = true;
+      tmux.defaultSessionName = "local";
+
+      # TODO
+      # # fzf-tab https://github.com/Aloxaf/fzf-tab
+      # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+      # # disable sort when completing `git checkout`
+      # zstyle ':completion:*:git-checkout:*' sort false
+      # # set descriptions format to enable group support
+      # zstyle ':completion:*:descriptions' format '[%d]'
+      # # set list-colors to enable filename colorizing
+      # zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+      # # preview directory's content with exa when completing cd
+      # # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+      # # switch group using `,` and `.`
+      # zstyle ':fzf-tab:*' switch-group ',' '.'
+
+    };
+
+  };
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultCommand = ''rg --files --hidden --follow --glob "!.git/*"'';
+    defaultOptions = [
+      "--height 40%"
+      "--border"
+      # TODO: the rest of the options for Tomorrow Night Theme
+
+    ];
   };
 }
