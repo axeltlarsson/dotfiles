@@ -32,7 +32,6 @@ zstyle ':prezto:load' pmodule \
   'utility' \
   'completion' \
   'fasd' \
-  'fzf-tab' \
   'syntax-highlighting' \
   'history-substring-search' \
   'prompt' \

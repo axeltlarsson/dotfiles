@@ -19,7 +19,7 @@
   # changes in each release.
   home.stateVersion = "21.11";
 
-  home.packages = with pkgs; [ nixfmt ripgrep diff-so-fancy ];
+  home.packages = with pkgs; [ nixfmt ripgrep diff-so-fancy bat ];
 
   programs.git = {
     enable = true;
@@ -108,28 +108,30 @@
         "utility"
         "completion"
         "fasd"
+        "fzf-tab"
         "syntax-highlighting"
         "history-substring-search"
         "prompt"
         "tmux"
       ];
+      pmoduleDirs = [ ../../zprezto-modules ];
+      extraConfig = ''
+        # fzf-tab https://github.com/Aloxaf/fzf-tab
+        zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+        # disable sort when completing `git checkout`
+        zstyle ':completion:*:git-checkout:*' sort false
+        # set descriptions format to enable group support
+        zstyle ':completion:*:descriptions' format '[%d]'
+        # set list-colors to enable filename colorizing
+        #zstyle ':completion:*' list-colors \$\{("s.:.")LS_COLORS\}
+        # preview directory's content with exa when completing cd
+        # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+        # switch group using `,` and `.`
+        zstyle ':fzf-tab:*' switch-group ',' '.'
+      '';
 
       tmux.autoStartLocal = true;
       tmux.defaultSessionName = "local";
-
-      # TODO
-      # # fzf-tab https://github.com/Aloxaf/fzf-tab
-      # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
-      # # disable sort when completing `git checkout`
-      # zstyle ':completion:*:git-checkout:*' sort false
-      # # set descriptions format to enable group support
-      # zstyle ':completion:*:descriptions' format '[%d]'
-      # # set list-colors to enable filename colorizing
-      # zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-      # # preview directory's content with exa when completing cd
-      # # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
-      # # switch group using `,` and `.`
-      # zstyle ':fzf-tab:*' switch-group ',' '.'
 
     };
 
@@ -139,11 +141,31 @@
     enable = true;
     enableZshIntegration = true;
     defaultCommand = ''rg --files --hidden --follow --glob "!.git/*"'';
-    defaultOptions = [
+    defaultOptions = let
+      # Base16 Tomorrow Night
+      # Author: Chris Kempson (http://chriskempson.com)
+      color00 = "#1d1f21";
+      color01 = "#282a2e";
+      color02 = "#373b41";
+      color03 = "#969896";
+      color04 = "#b4b7b4";
+      color05 = "#c5c8c6";
+      color06 = "#e0e0e0";
+      color07 = "#ffffff";
+      color08 = "#cc6666";
+      color09 = "#de935f";
+      color0A = "#f0c674";
+      color0B = "#b5bd68";
+      color0C = "#8abeb7";
+      color0D = "#81a2be";
+      color0E = "#b294bb";
+      color0F = "#a3685a";
+    in [
       "--height 40%"
       "--border"
-      # TODO: the rest of the options for Tomorrow Night Theme
-
+      "--color=bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D}"
+      "--color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C}"
+      "--color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
     ];
   };
 }
