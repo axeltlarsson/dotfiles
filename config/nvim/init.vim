@@ -27,7 +27,7 @@ Plug 'Zaptic/elm-vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'godlygeek/tabular'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " Installs fzf as system command
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } } " Installs fzf as system command
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'                " Distraction-free writing
 Plug 'junegunn/limelight.vim'           " Hyperfocus-writing

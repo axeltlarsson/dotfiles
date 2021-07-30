@@ -1,0 +1,1 @@
+/Users/axel/.config/home-manager.nix

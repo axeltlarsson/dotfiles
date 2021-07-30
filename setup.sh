@@ -182,25 +182,15 @@ fullpath() {
 
 # Always set up zsh + prezto and nvim w. with plugins
 print_info "Setting up dotfiles"
-symlink_dotfiles_in_dir dotfiles "$HOME"
+# symlink_dotfiles_in_dir dotfiles "$HOME"
 
 execute "mkdir -p $HOME/.config/nixpkgs"
-symlink "$(fullpath config/nixpkgs/home.nix)" "$HOME/.config/nixpkgs/home.nix"
-exit 0
+symlink "$(fullpath config/home-manager.nix)" "$HOME/.config/nixpkgs/home.nix"
 
 execute "mkdir -p $HOME/.config/nvim"
 symlink "$(fullpath config/nvim)" "$HOME/.config/nvim"
-
-execute "mkdir -p $HOME/.config/pgcli"
-symlink "$(fullpath config/pgcli/config)" "$HOME/.config/pgcli/config"
+exit 0
 
 execute "mkdir -p $HOME/.config/alacritty"
 symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
 
-
-execute "mkdir -p ${HOME}/.npm-packages/lib"
-
-execute "mkdir -p $HOME/.gnupg"
-symlink "$(fullpath config/gpg-agent.conf)" "$HOME/.gnupg/gpg-agent.conf"
-
-execute "mkdir -p $HOME/notes"

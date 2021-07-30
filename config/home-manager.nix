@@ -31,10 +31,115 @@
     nodejs
     pinentry_mac
     pinentry
+    neovim
   ];
 
-  home.sessionPath = [ "\${HOME}/.npm-packages/bin" ];
-  home.file.".npmrc".source = ../../dotfiles/npmrc;
+  home.sessionPath = [ "${config.home.homeDirectory}.npm-packages/bin" ];
+
+  home.file.".npmrc".source = ./npmrc.conf;
+  home.file.".config/pgcli/config".source = ./pgcli.conf;
+  home.file.".pspgconf".source = ./pspg.conf;
+  home.file.".psqlrc".source = ./psqlrc.conf;
+
+  programs.zsh = {
+    enable = true;
+
+    envExtra = ''
+      function zet {
+        nvim "+Zet $*"
+      }
+      # TODO: why this required?
+      if [ -e ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
+        . ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh;
+      fi
+    '';
+
+    initExtra = ''
+      alias vi=nvim
+      alias vim=nvim
+    '';
+
+    sessionVariables = {
+      BAT_THEME = "Sublime Snazzy";
+      EDITOR = "${pkgs.neovim}/bin/nvim";
+      VISUAL = "${pkgs.neovim}/bin/nvim";
+      GPG_TTY = "$(tty)";
+    };
+
+    prezto = {
+      enable = true;
+      editor.keymap = "vi";
+      prompt.theme = "pure";
+
+      pmodules = [
+        "environment"
+        "editor"
+        "history"
+        "directory"
+        "spectrum"
+        "utility"
+        "completion"
+        "fasd"
+        "fzf-tab"
+        "syntax-highlighting"
+        "history-substring-search"
+        "prompt"
+        "tmux"
+      ];
+      pmoduleDirs = [ ../zprezto-modules ];
+      extraConfig = ''
+        # fzf-tab https://github.com/Aloxaf/fzf-tab
+        zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+        # disable sort when completing `git checkout`
+        zstyle ':completion:*:git-checkout:*' sort false
+        # set descriptions format to enable group support
+        zstyle ':completion:*:descriptions' format '[%d]'
+        # set list-colors to enable filename colorizing
+        #zstyle ':completion:*' list-colors \$\{("s.:.")LS_COLORS\}
+        # preview directory's content with exa when completing cd
+        # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+        # switch group using `,` and `.`
+        zstyle ':fzf-tab:*' switch-group ',' '.'
+      '';
+
+      tmux.autoStartLocal = true;
+      tmux.defaultSessionName = "local";
+
+    };
+
+  };
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultCommand = "rg --files --hidden --follow --glob '!.git/*'";
+    defaultOptions = let
+      # Base16 Tomorrow Night
+      # Author: Chris Kempson (http://chriskempson.com)
+      color00 = "#1d1f21";
+      color01 = "#282a2e";
+      color02 = "#373b41";
+      color03 = "#969896";
+      color04 = "#b4b7b4";
+      color05 = "#c5c8c6";
+      color06 = "#e0e0e0";
+      color07 = "#ffffff";
+      color08 = "#cc6666";
+      color09 = "#de935f";
+      color0A = "#f0c674";
+      color0B = "#b5bd68";
+      color0C = "#8abeb7";
+      color0D = "#81a2be";
+      color0E = "#b294bb";
+      color0F = "#a3685a";
+    in [
+      "--height 40%"
+      "--border"
+      "--color=bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D}"
+      "--color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C}"
+      "--color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
+    ];
+  };
 
   programs.git = {
     enable = true;
@@ -94,9 +199,6 @@
 
     };
 
-    # local: TODO - manage via Nix
-    includes = [{ path = "~/.gitconfig_local"; }];
-
     lfs.enable = true;
 
     signing = {
@@ -106,95 +208,6 @@
 
   };
 
-  programs.zsh = {
-    enable = true;
-
-    envExtra = ''
-      function zet {
-        nvim "+Zet $*"
-      }
-    '';
-
-    sessionVariables = {
-      BAT_THEME = "Sublime Snazzy";
-      EDITOR = "nvim";
-      GPG_TTY = "$(tty)";
-    };
-    prezto = {
-      enable = true;
-      editor.keymap = "vi";
-      prompt.theme = "pure";
-
-      pmodules = [
-        "environment"
-        "editor"
-        "history"
-        "directory"
-        "spectrum"
-        "utility"
-        "completion"
-        "fasd"
-        "fzf-tab"
-        "syntax-highlighting"
-        "history-substring-search"
-        "prompt"
-        "tmux"
-      ];
-      pmoduleDirs = [ ../../zprezto-modules ];
-      extraConfig = ''
-        # fzf-tab https://github.com/Aloxaf/fzf-tab
-        zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
-        # disable sort when completing `git checkout`
-        zstyle ':completion:*:git-checkout:*' sort false
-        # set descriptions format to enable group support
-        zstyle ':completion:*:descriptions' format '[%d]'
-        # set list-colors to enable filename colorizing
-        #zstyle ':completion:*' list-colors \$\{("s.:.")LS_COLORS\}
-        # preview directory's content with exa when completing cd
-        # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
-        # switch group using `,` and `.`
-        zstyle ':fzf-tab:*' switch-group ',' '.'
-      '';
-
-      tmux.autoStartLocal = true;
-      tmux.defaultSessionName = "local";
-
-    };
-
-  };
-
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-    defaultCommand = ''rg --files --hidden --follow --glob "!.git/*"'';
-    defaultOptions = let
-      # Base16 Tomorrow Night
-      # Author: Chris Kempson (http://chriskempson.com)
-      color00 = "#1d1f21";
-      color01 = "#282a2e";
-      color02 = "#373b41";
-      color03 = "#969896";
-      color04 = "#b4b7b4";
-      color05 = "#c5c8c6";
-      color06 = "#e0e0e0";
-      color07 = "#ffffff";
-      color08 = "#cc6666";
-      color09 = "#de935f";
-      color0A = "#f0c674";
-      color0B = "#b5bd68";
-      color0C = "#8abeb7";
-      color0D = "#81a2be";
-      color0E = "#b294bb";
-      color0F = "#a3685a";
-    in [
-      "--height 40%"
-      "--border"
-      "--color=bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D}"
-      "--color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C}"
-      "--color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
-    ];
-  };
-
   programs.direnv = {
     enable = true;
     enableZshIntegration = true;
@@ -202,11 +215,14 @@
   };
 
   programs.gpg = { enable = true; };
+  home.file.".gnupg/gpg-agent.conf".text = ''
+    use-standard-socket
+    pinentry-program ${pkgs.pinentry}/bin/pinentry
+  '';
 
   programs.keychain = {
     enable = true;
     enableZshIntegration = true;
   };
 
-  # home.file.".".source = dotfiles/pspqconf
 }

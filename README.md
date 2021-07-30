@@ -9,8 +9,6 @@ cd .zprezto
 home-manager switch
 ```
 
-iTerm2 theme: [https://github.com/sindresorhus/iterm2-snazzy](https://github.com/sindresorhus/iterm2-snazzy)
-
 ## Performance tweaks
 
 ```bash
