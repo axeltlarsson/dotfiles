@@ -141,6 +141,11 @@
     ];
   };
 
+  programs.alacritty = {
+    enable = true;
+    settings = import ./alacritty.nix;
+  };
+
   programs.git = {
     enable = true;
     userName = "AxelTLarsson";
