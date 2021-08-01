@@ -20,6 +20,7 @@
   home.stateVersion = "21.11";
 
   home.packages = with pkgs; [
+    exa
     nixfmt
     ripgrep
     diff-so-fancy
@@ -57,6 +58,7 @@
     initExtra = ''
       alias vi=nvim
       alias vim=nvim
+      alias ls=exa
     '';
 
     sessionVariables = {
@@ -97,7 +99,7 @@
         # set list-colors to enable filename colorizing
         #zstyle ':completion:*' list-colors \$\{("s.:.")LS_COLORS\}
         # preview directory's content with exa when completing cd
-        # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+         zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always \$realpath'
         # switch group using `,` and `.`
         zstyle ':fzf-tab:*' switch-group ',' '.'
       '';
@@ -139,11 +141,36 @@
       "--color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C}"
       "--color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
     ];
+
+    tmux.enableShellIntegration = true;
   };
 
   programs.alacritty = {
     enable = true;
     settings = import ./alacritty.nix;
+  };
+
+  programs.tmux = {
+    enable = true;
+
+    clock24 = true;
+    escapeTime = 0;
+    extraConfig = ''
+      set-option -ga terminal-overrides ",xterm-256color:Tc"
+      set -s default-terminal "xterm-256color"
+      set -g mouse on
+      set -g focus-events off
+      # Match postgresql URLs, default url_search doesn't
+      set -g @copycat_search_C-p '(https?://|git@|git://|ssh://|ftp://|postgresql://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'
+    '';
+    keyMode = "vi";
+    plugins = with pkgs; [
+      { plugin = tmuxPlugins.pain-control; }
+      { plugin = tmuxPlugins.yank; }
+      { plugin = tmuxPlugins.open; }
+      { plugin = tmuxPlugins.copycat; }
+    ];
+    shell = "${pkgs.zsh}/bin/zsh";
   };
 
   programs.git = {
