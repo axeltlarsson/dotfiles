@@ -197,10 +197,11 @@ let g:nv_create_note_key = 'ctrl-x'
 " Searching for notes from anywhere
 nnoremap <silent> <Leader>ns :Notes<CR>
 
+" TODO: don't die if $NOTES_DIR not defined
 command! -bang -nargs=* Notes
   \ call fzf#vim#grep(
   \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview({'dir': '~/notes'}), <bang>0)
+  \   fzf#vim#with_preview({'dir': '${NOTES_DIR}/'}), <bang>0)
 
 
 " Fern

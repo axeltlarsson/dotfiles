@@ -5,7 +5,8 @@ func! local#zettel#edit(...)
   if len(a:000) > 0
     let l:sep = '-'
   endif
-  let l:fname = expand('~/notes/') . strftime("%Y%m%d%H%M") . l:sep . join(a:000, '_') . '.md'
+  # TODO: default value if $NOTES_DIR not defined
+  let l:fname = expand('${NOTES_DIR}/') . strftime("%Y%m%d%H%M") . l:sep . join(a:000, '_') . '.md'
 
   " edit the new file
   exec "e " . l:fname
