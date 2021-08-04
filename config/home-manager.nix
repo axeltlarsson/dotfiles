@@ -23,6 +23,7 @@
     exa
     nixfmt
     ripgrep
+    jq
     diff-so-fancy
     bat
     elmPackages.elm-format
@@ -35,7 +36,7 @@
     neovim
   ];
 
-  home.sessionPath = [ "${config.home.homeDirectory}.npm-packages/bin" ];
+  home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
 
   home.file.".npmrc".source = ./npmrc.conf;
   home.file.".config/pgcli/config".source = ./pgcli.conf;
@@ -44,6 +45,7 @@
 
   programs.zsh = {
     enable = true;
+    initExtraFirst = "";
 
     envExtra = ''
       function zet {
