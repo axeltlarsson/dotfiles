@@ -14,6 +14,7 @@
 # Any items in the `env` entry below will be added as
 # environment variables. Some entries may override variables
 # set by alacritty itself.
+{ pkgs, ... }:
 
 {
   env =
@@ -394,10 +395,7 @@
   #   - (macOS) /bin/bash --login
   #   - (Linux/BSD) user login shell
   #   - (Windows) powershell
-  shell = {
-    # TODO
-    program = "/usr/local/bin/zsh";
-  };
+  shell = { program = "${pkgs.zsh}/bin/zsh"; };
   #  args =
   #    - --login
 
