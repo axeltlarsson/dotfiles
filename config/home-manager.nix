@@ -45,9 +45,22 @@
 
   programs.zsh = {
     enable = true;
-    initExtraFirst = "";
+    # .zshrc
+    # initExtraFirst = ''
+    # zmodload zsh/datetime
+    # setopt PROMPT_SUBST
+    # PS4='+$EPOCHREALTIME %N:%i> '
 
+    # logfile=$(mktemp zsh_profile.XXXXXXXX)
+    # echo "Logging to $logfile"
+    # exec 3>&2 2>$logfile
+
+    # setopt XTRACE
+    # '';
+
+    # .zshenv
     envExtra = ''
+      # TODO: autoload
       function zet {
         nvim "+Zet $*"
       }
@@ -57,10 +70,14 @@
       fi
     '';
 
+    # .zshrc
     initExtra = ''
       alias vi=nvim
       alias vim=nvim
       alias ls=exa
+
+      # unsetopt XTRACE
+      # exec 2>&3 3>&-
     '';
 
     sessionVariables = {
@@ -88,39 +105,40 @@
         "history-substring-search"
         "prompt"
         "tmux"
-        "fzf-tab"
       ];
-      pmoduleDirs = [ ../zprezto-modules ];
-      extraConfig = ''
-        # fzf-tab https://github.com/Aloxaf/fzf-tab
-        # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
-        # disable sort when completing `git checkout`
-        # set descriptions format to enable group support
-        zstyle ':completion:*:descriptions' format '[%d]'
-        # set list-colors to enable filename colorizing
-        #zstyle ':completion:*' list-colors \$\{("s.:.")LS_COLORS\}
-        # preview directory's content with exa when completing cd
-        zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
-        zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
-        # switch group using `,` and `.`
-        # TODO: not all of this works as expected
-        zstyle ':fzf-tab:*' switch-group ',' '.'
-        zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
-          'git diff $word | delta'|
-        zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
-          'git log --color=always $word'
-        zstyle ':fzf-tab:complete:git-show:*' fzf-preview \
-          'case "$group" in
-          "commit tag") git show --color=always $word ;;
-          *) git show --color=always $word | delta ;;
-          esac'
-        zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
-          'case "$group" in
-          "modified file") git diff $word | delta ;;
-          "recent commit object name") git show --color=always $word | delta ;;
-          *) git log --color=always $word ;;
-          esac'
-      '';
+      # "fzf-tab"
+      # pmoduleDirs = [ ../zprezto-modules ];
+      # .zpreztorc
+      # extraConfig = ''
+      # # fzf-tab https://github.com/Aloxaf/fzf-tab
+      # # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+      # # disable sort when completing `git checkout`
+      # # set descriptions format to enable group support
+      # zstyle ':completion:*:descriptions' format '[%d]'
+      # # set list-colors to enable filename colorizing
+      # #zstyle ':completion:*' list-colors \$\{("s.:.")LS_COLORS\}
+      # # preview directory's content with exa when completing cd
+      # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+      # zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
+      # # switch group using `,` and `.`
+      # # TODO: not all of this works as expected
+      # zstyle ':fzf-tab:*' switch-group ',' '.'
+      # zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
+      # 'git diff $word | delta'|
+      # zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
+      # 'git log --color=always $word'
+      # zstyle ':fzf-tab:complete:git-show:*' fzf-preview \
+      # 'case "$group" in
+      # "commit tag") git show --color=always $word ;;
+      # *) git show --color=always $word | delta ;;
+      # esac'
+      # zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
+      # 'case "$group" in
+      # "modified file") git diff $word | delta ;;
+      # "recent commit object name") git show --color=always $word | delta ;;
+      # *) git log --color=always $word ;;
+      # esac'
+      # '';
 
       tmux.autoStartLocal = true;
       tmux.defaultSessionName = "local";
@@ -270,9 +288,9 @@
     pinentry-program ${pkgs.pinentry}/bin/pinentry
   '';
 
-  programs.keychain = {
-    enable = true;
-    enableZshIntegration = true;
-  };
+  # programs.keychain = {
+  # enable = true;
+  # enableZshIntegration = true;
+  # };
 
 }
