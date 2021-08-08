@@ -34,6 +34,7 @@
     pinentry_mac
     pinentry
     neovim
+    docker
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
