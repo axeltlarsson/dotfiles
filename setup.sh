@@ -180,17 +180,10 @@ fullpath() {
   echo "$dirname"
 }
 
-# Always set up zsh + prezto and nvim w. with plugins
 print_info "Setting up dotfiles"
-# symlink_dotfiles_in_dir dotfiles "$HOME"
 
 execute "mkdir -p $HOME/.config/nixpkgs"
 symlink "$(fullpath config/home-manager.nix)" "$HOME/.config/nixpkgs/home.nix"
 
 execute "mkdir -p $HOME/.config/nvim"
 symlink "$(fullpath config/nvim)" "$HOME/.config/nvim"
-exit 0
-
-execute "mkdir -p $HOME/.config/alacritty"
-symlink "$(fullpath config/alacritty)" "$HOME/.config/alacritty"
-

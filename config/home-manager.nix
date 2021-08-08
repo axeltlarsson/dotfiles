@@ -45,13 +45,13 @@
 
   programs.zsh = {
     enable = true;
-    initExtraFirst = "";
 
     envExtra = ''
+      # TODO: autolaod
       function zet {
         nvim "+Zet $*"
       }
-      # TODO: why this required?
+
       if [ -e ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
         . ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh;
       fi
@@ -74,6 +74,8 @@
       enable = true;
       editor.keymap = "vi";
       prompt.theme = "pure";
+      # ensures performant shell https://github.com/nix-community/home-manager/issues/2255
+      caseSensitive = true;
 
       pmodules = [
         "environment"
@@ -88,39 +90,7 @@
         "history-substring-search"
         "prompt"
         "tmux"
-        "fzf-tab"
       ];
-      pmoduleDirs = [ ../zprezto-modules ];
-      extraConfig = ''
-        # fzf-tab https://github.com/Aloxaf/fzf-tab
-        # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
-        # disable sort when completing `git checkout`
-        # set descriptions format to enable group support
-        zstyle ':completion:*:descriptions' format '[%d]'
-        # set list-colors to enable filename colorizing
-        #zstyle ':completion:*' list-colors \$\{("s.:.")LS_COLORS\}
-        # preview directory's content with exa when completing cd
-        zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
-        zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
-        # switch group using `,` and `.`
-        # TODO: not all of this works as expected
-        zstyle ':fzf-tab:*' switch-group ',' '.'
-        zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
-          'git diff $word | delta'|
-        zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
-          'git log --color=always $word'
-        zstyle ':fzf-tab:complete:git-show:*' fzf-preview \
-          'case "$group" in
-          "commit tag") git show --color=always $word ;;
-          *) git show --color=always $word | delta ;;
-          esac'
-        zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
-          'case "$group" in
-          "modified file") git diff $word | delta ;;
-          "recent commit object name") git show --color=always $word | delta ;;
-          *) git log --color=always $word ;;
-          esac'
-      '';
 
       tmux.autoStartLocal = true;
       tmux.defaultSessionName = "local";
@@ -269,10 +239,4 @@
     use-standard-socket
     pinentry-program ${pkgs.pinentry}/bin/pinentry
   '';
-
-  programs.keychain = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
 }
