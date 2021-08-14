@@ -1,12 +1,10 @@
+# Home Manager common config for all my machines
 { config, pkgs, ... }: {
+
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
   home.username = "axel";
-  home.homeDirectory = "/Users/axel";
-
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
   # when a new Home Manager release introduces backwards
@@ -18,38 +16,31 @@
   home.stateVersion = "21.11";
 
   home.packages = with pkgs; [
+    # common pacakges I always want
     exa
     nixfmt
     ripgrep
     jq
     diff-so-fancy
     bat
-    elmPackages.elm-format
-    elmPackages.elm-json
-    elmPackages.elm-test
-    elmPackages.create-elm-app
-    nodejs
-    pinentry_mac
-    pinentry
     neovim
   ];
 
-  home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
-
-  home.file.".npmrc".source = ./npmrc.conf;
   home.file.".config/pgcli/config".source = ./pgcli.conf;
   home.file.".pspgconf".source = ./pspg.conf;
   home.file.".psqlrc".source = ./psqlrc.conf;
-  home.file.".gnupg/gpg-agent.conf".text = ''
-    use-standard-socket
-    pinentry-program ${pkgs.pinentry}/bin/pinentry
-  '';
-
   home.file.".config/nvim" = {
     source = ./nvim;
     recursive = true;
   };
-  imports = [ ./fzf.nix ./alacritty.nix ./zsh.nix ./tmux.nix ./git.nix ];
+
+  imports = [
+
+    ./fzf.nix
+    ./zsh.nix
+    ./tmux.nix
+    ./git.nix
+  ];
 
   programs = {
 
@@ -59,6 +50,5 @@
       nix-direnv.enable = true;
     };
 
-    gpg = { enable = true; };
   };
 }

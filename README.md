@@ -5,7 +5,11 @@ Install Nix, Home Manager.
 ```sh
 git clone https://github.com/AxelTLarsson/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-ln -s "$(pwd)/config/home-manager.nix" "$HOME/.config/nixpkgs/home.nix"
+# for axel-mbp16 setup
+ln -s "$(pwd)/axel-mbp16.nix" "$HOME/.config/nixpkgs/home.nix"
+# for andrimner
+ln -s "$(pwd)/andrimner.nix" "$HOME/.config/nixpkgs/home.nix"
+
 home-manager -j 16 switch
 ```
 
