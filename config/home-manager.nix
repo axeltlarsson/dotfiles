@@ -47,6 +47,11 @@
     pinentry-program ${pkgs.pinentry}/bin/pinentry
   '';
 
+  home.file.".config/nvim" = {
+    source = ./nvim;
+    recursive = true;
+  };
+
   programs = {
 
     alacritty = import ./alacritty.nix pkgs;

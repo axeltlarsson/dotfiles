@@ -5,7 +5,7 @@ Install Nix, Home Manager.
 ```sh
 git clone https://github.com/AxelTLarsson/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./setup.sh
+ln -s "$(pwd)/config/home-manager.nix" "$HOME/.config/nixpkgs/home.nix"
 home-manager -j 16 switch
 ```
 
@@ -20,4 +20,3 @@ References:
 - https://carlosbecker.com/posts/speeding-up-zsh
 - https://htr3n.github.io/2018/07/faster-zsh/
 - https://blog.jonlu.ca/posts/speeding-up-zsh
-
