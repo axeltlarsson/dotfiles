@@ -17,7 +17,6 @@
 
   home.packages = with pkgs; [
     # common pacakges I always want
-    exa
     nixfmt
     ripgrep
     jq
@@ -43,6 +42,11 @@
   ];
 
   programs = {
+
+    exa = {
+      enable = true;
+      enableAliases = true;
+    };
 
     direnv = {
       enable = true;

@@ -16,7 +16,6 @@
     initExtra = ''
       alias vi=nvim
       alias vim=nvim
-      alias ls=exa
     '';
 
     sessionVariables = {
