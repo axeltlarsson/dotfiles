@@ -1,6 +1,4 @@
-{ config, pkgs, ... }:
-
-{
+{ config, pkgs, ... }: {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
@@ -51,24 +49,15 @@
     source = ./nvim;
     recursive = true;
   };
+  imports = [ ./fzf.nix ./alacritty.nix ./zsh.nix ./tmux.nix ./git.nix ];
 
   programs = {
-
-    alacritty = import ./alacritty.nix pkgs;
-
-    zsh = (import ./zsh.nix) { inherit pkgs config; };
-
-    tmux = import ./tmux.nix pkgs;
 
     direnv = {
       enable = true;
       enableZshIntegration = true;
       nix-direnv.enable = true;
     };
-
-    fzf = import ./fzf.nix;
-
-    git = import ./git.nix pkgs;
 
     gpg = { enable = true; };
   };
