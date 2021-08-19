@@ -15,6 +15,8 @@
     elmPackages.elm-test
     elmPackages.create-elm-app
 
+    black
+
     nodejs
 
     pinentry_mac
