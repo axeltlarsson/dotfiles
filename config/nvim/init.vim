@@ -19,7 +19,6 @@ call plug#begin('~/.vim/plugged')
 let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
 let g:elm_setup_keybindings = 0
 
-Plug 'Alok/notational-fzf-vim'
 Plug 'Chiel92/vim-autoformat'
 Plug 'LnL7/vim-nix'
 Plug 'SirVer/ultisnips'
@@ -190,10 +189,6 @@ nmap <Leader>u :Unicodemoji<CR>
 nnoremap <Leader>ni :e $NOTES_DIR/index.md<CR>:cd $NOTES_DIR<CR>
 nnoremap <leader>nz :Zet<space>
 
-" TODO: remove NV
-let g:nv_search_paths = ['../notes', './notes', '~/notes']
-let g:nv_create_note_key = 'ctrl-x'
-
 " Searching for notes from anywhere
 nnoremap <silent> <Leader>ns :Notes<CR>
 
@@ -292,6 +287,7 @@ let g:NERDSpaceDelims = 1
 " vim-markdown
 let g:vim_markdown_folding_disabled = 0
 let g:vim_markdown_new_list_item_indent = 2
+let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_math = 1
 
 " Zen Mode
