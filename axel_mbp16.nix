@@ -7,7 +7,6 @@
     ./config/alacritty.nix
   ];
 
-  home.homeDirectory = "/Users/axel";
   home.packages = with pkgs; [
 
     elmPackages.elm-format

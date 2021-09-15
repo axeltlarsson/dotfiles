@@ -5,8 +5,8 @@ Install Nix, Home Manager.
 ```sh
 git clone https://github.com/AxelTLarsson/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-# for axel-mbp16 setup
-ln -s "$(pwd)/axel-mbp16.nix" "$HOME/.config/nixpkgs/home.nix"
+# for axel_mbp16 setup
+ln -s "$(pwd)/axel_mbp16.nix" "$HOME/.config/nixpkgs/home.nix"
 # for andrimner
 ln -s "$(pwd)/andrimner.nix" "$HOME/.config/nixpkgs/home.nix"
 
