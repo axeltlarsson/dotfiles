@@ -33,9 +33,17 @@
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
-  services.resolved = {
+  services.avahi = {
     enable = true;
-    dnssec = "false";
+    nssmdns = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      domain = true;
+      hinfo = true;
+      userServices = true;
+      workstation = true;
+    };
   };
 
   # packages to install
