@@ -4,30 +4,52 @@
     enableZshIntegration = true;
     defaultCommand = "rg --files --hidden --follow --glob '!.git/*'";
     defaultOptions = let
-      # Base16 Tomorrow Night
-      # Author: Chris Kempson (http://chriskempson.com)
-      color00 = "#1d1f21";
-      color01 = "#282a2e";
-      color02 = "#373b41";
-      color03 = "#969896";
-      color04 = "#b4b7b4";
-      color05 = "#c5c8c6";
-      color06 = "#e0e0e0";
-      color07 = "#ffffff";
-      color08 = "#cc6666";
-      color09 = "#de935f";
-      color0A = "#f0c674";
-      color0B = "#b5bd68";
-      color0C = "#8abeb7";
-      color0D = "#81a2be";
-      color0E = "#b294bb";
-      color0F = "#a3685a";
+      # Rose Pine palette https://rosepinetheme.com/palette.html#rose-pine
+      base = "#191724";
+      surface = "#1f1d2e";
+      overlay = "#26233a";
+      inactive = "#555169";
+      subtle = "#6e6a86";
+      text = "#e0def4";
+      love = "#eb6f92";
+      gold = "#f6c177";
+      rose = "#ebbcba";
+      pine = "#31748f";
+      foam = "#9ccfd8";
+      iris = "#c4a7e7";
+      highlight = "#2a2837";
+      highlightInactive = "#211f2d";
+      highlightOverlay = "#3a384a";
+
+      # fzf COLOR NAMES:
+      # fg         Text
+      # bg         Background
+      # preview-fg Preview window text
+      # preview-bg Preview window background
+      # hl         Highlighted substrings
+      # fg+        Text (current line)
+      # bg+        Background (current line)
+      # gutter     Gutter on the left (defaults to bg+)
+      # hl+        Highlighted substrings (current line)
+      # query      Query string
+      # disabled   Query string when search is disabled
+      # info       Info line (match counters)
+      # border     Border around the window (--border and --preview)
+      # prompt     Prompt
+      # pointer    Pointer to the current line
+      # marker     Multi-select marker
+      # spinner    Streaming input indicator
+      # header     Header
     in [
       "--height 40%"
       "--border"
-      "--color=bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D}"
-      "--color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C}"
-      "--color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
+      "--color=fg:${text},bg:${surface}"
+      "--color=hl:${foam},fg+:${text},bg+:${highlight}"
+      "--color=hl+:${gold}"
+      "--color=query:${gold}"
+      "--color=spinner:${foam},header:${gold}"
+      "--color=info:${pine},pointer:${gold}"
+      "--color=marker:${pine},prompt:${iris}"
     ];
 
     tmux.enableShellIntegration = true;
