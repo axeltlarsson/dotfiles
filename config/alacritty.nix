@@ -16,58 +16,7 @@
 # set by alacritty itself.
 { pkgs, ... }:
 
-let
-  colors = {
-    # Hybrid https://github.com/w0ng/vim-hybrid
-    primary = {
-      background = "0x27292c";
-      foreground = "0xd0d2d1";
-    };
-
-    cursor = {
-      text = "0x000000";
-      cursor = "0xffffff";
-    };
-
-    # Normal colors
-    normal = {
-      black = "0x35383b";
-      red = "0xb05655";
-      green = "0x769972";
-      yellow = "0xe1a574";
-      blue = "0x7693ac";
-      magenta = "0x977ba0";
-      cyan = "0x749e99";
-      white = "0x848b92";
-    };
-
-    # Bright colors
-    bright = {
-      red = "0xd27c7b";
-      black = "0x484c52";
-      green = "0xdffebe";
-      yellow = "0xf0d189";
-      blue = "0x96b1c9";
-      magenta = "0xbfa5c7";
-      cyan = "0x9fc9c3";
-      white = "0xfcf7e2";
-    };
-
-    # Dim colors
-
-    # If the dim colors are not set, they will be calculated automatically based
-    # on the `normal` colors.
-    dim = {
-      black = "0x000000";
-      red = "0x8c3336";
-      green = "0x7a8530";
-      yellow = "0x97822e";
-      blue = "0x506d8f";
-      magenta = "0x80638e";
-      cyan = "0x497e7a";
-      white = "0x9a9a9a";
-    };
-  };
+let colors = import ./rose-pine.nix;
 
 in {
 
