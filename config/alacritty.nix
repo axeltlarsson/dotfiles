@@ -16,7 +16,61 @@
 # set by alacritty itself.
 { pkgs, ... }:
 
-{
+let
+  colors = {
+    # Hybrid https://github.com/w0ng/vim-hybrid
+    primary = {
+      background = "0x27292c";
+      foreground = "0xd0d2d1";
+    };
+
+    cursor = {
+      text = "0x000000";
+      cursor = "0xffffff";
+    };
+
+    # Normal colors
+    normal = {
+      black = "0x35383b";
+      red = "0xb05655";
+      green = "0x769972";
+      yellow = "0xe1a574";
+      blue = "0x7693ac";
+      magenta = "0x977ba0";
+      cyan = "0x749e99";
+      white = "0x848b92";
+    };
+
+    # Bright colors
+    bright = {
+      red = "0xd27c7b";
+      black = "0x484c52";
+      green = "0xdffebe";
+      yellow = "0xf0d189";
+      blue = "0x96b1c9";
+      magenta = "0xbfa5c7";
+      cyan = "0x9fc9c3";
+      white = "0xfcf7e2";
+    };
+
+    # Dim colors
+
+    # If the dim colors are not set, they will be calculated automatically based
+    # on the `normal` colors.
+    dim = {
+      black = "0x000000";
+      red = "0x8c3336";
+      green = "0x7a8530";
+      yellow = "0x97822e";
+      blue = "0x506d8f";
+      magenta = "0x80638e";
+      cyan = "0x497e7a";
+      white = "0x9a9a9a";
+    };
+  };
+
+in {
+
   programs.alacritty = {
     enable = true;
     settings = {
@@ -163,7 +217,7 @@
         #style = Bold Italic
 
         # Point size
-        size = 12.0;
+        size = 13.0;
 
         # Offset is the extra space around each character. `offset.y` can be thought
         # of as modifying the line spacing, and `offset.x` as modifying the letter
@@ -189,104 +243,7 @@
       # If `true`, bold text is drawn using the bright color variants.
       draw_bold_text_with_bright_colors = true;
 
-      # Colors (Tomorrow Night)
-      #colors =
-      # Default colors
-      #primary =
-      #  background = '#1d1f21'
-      #  foreground = '#c5c8c6'
-
-      # Bright and dim foreground colors
-      #
-      # The dimmed foreground color is calculated automatically if it is not
-      # present. If the bright foreground color is not set, or
-      # `draw_bold_text_with_bright_colors` is `false`, the normal foreground
-      # color will be used.
-      #dim_foreground = '#828482'
-      #bright_foreground = '#eaeaea'
-
-      # Cursor colors
-      #
-      # Colors which should be used to draw the terminal cursor.
-      #
-      # Allowed values are CellForeground/CellBackground, which reference the
-      # affected cell, or hexadecimal colors like #ff00ff.
-      #cursor =
-      #  text = CellBackground
-      #  cursor = CellForeground
-
-      # Vi mode cursor colors
-      #
-      # Colors for the cursor when the vi mode is active.
-      #
-      # Allowed values are CellForeground/CellBackground, which reference the
-      # affected cell, or hexadecimal colors like #ff00ff.
-      #vi_mode_cursor =
-      #  text = CellBackground
-      #  cursor = CellForeground
-
-      # Colors (Hybrid)
-      colors = {
-        # Default colors
-        primary = {
-          background = "0x27292c";
-          foreground = "0xd0d2d1";
-        };
-
-        cursor = {
-          text = "0x000000";
-          cursor = "0xffffff";
-        };
-
-        # Normal colors
-        normal = {
-          black = "0x35383b";
-          red = "0xb05655";
-          green = "0x769972";
-          yellow = "0xe1a574";
-          blue = "0x7693ac";
-          magenta = "0x977ba0";
-          cyan = "0x749e99";
-          white = "0x848b92";
-        };
-
-        # Bright colors
-        bright = {
-          red = "0xd27c7b";
-          black = "0x484c52";
-          green = "0xdffebe";
-          yellow = "0xf0d189";
-          blue = "0x96b1c9";
-          magenta = "0xbfa5c7";
-          cyan = "0x9fc9c3";
-          white = "0xfcf7e2";
-        };
-
-        # Dim colors
-
-        # If the dim colors are not set, they will be calculated automatically based
-        # on the `normal` colors.
-        dim = {
-          black = "0x000000";
-          red = "0x8c3336";
-          green = "0x7a8530";
-          yellow = "0x97822e";
-          blue = "0x506d8f";
-          magenta = "0x80638e";
-          cyan = "0x497e7a";
-          white = "0x9a9a9a";
-        };
-
-      };
-      # Indexed Colors
-      #
-      # The indexed colors include all colors from 16 to 256.
-      # When these are not set, they're filled with sensible defaults.
-      #
-      # Example =
-      #   `- { index = 16, color: '#ff00ff' }`
-      #
-      #indexed_colors = []
+      colors = colors;
 
       # Bell
       #
