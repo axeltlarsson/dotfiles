@@ -48,7 +48,8 @@ Plug 'tpope/vim-unimpaired'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/bats.vim'
-Plug 'w0ng/vim-hybrid'                  " Colorscheme
+Plug 'rose-pine/neovim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 Plug 'w0rp/ale'                         " For LSP
 Plug 'yazgoo/unicodemoji'
 call plug#end()
@@ -70,8 +71,7 @@ set t_8b=[48;2;%lu;%lu;%lum
 " Theme
 syntax enable
 set background=dark
-colorscheme hybrid
-" let g:hybrid_custom_term_colors = 1
+colorscheme rose-pine
 
 " always show the status bar
 set laststatus=2

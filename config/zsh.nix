@@ -19,7 +19,7 @@
     '';
 
     sessionVariables = {
-      BAT_THEME = "Sublime Snazzy";
+      BAT_THEME = "Sublime Snazzy"; # TODO: fix this...
       EDITOR = "${pkgs.neovim}/bin/nvim";
       VISUAL = "${pkgs.neovim}/bin/nvim";
       GPG_TTY = "$(tty)";

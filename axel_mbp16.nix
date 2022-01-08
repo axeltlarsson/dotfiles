@@ -8,15 +8,15 @@
   ];
 
   home.packages = with pkgs; [
-
+    elmPackages.elm
     elmPackages.elm-format
-    elmPackages.elm-json
-    elmPackages.elm-test
-    elmPackages.create-elm-app
 
+    python310
     black
 
     nodejs
+
+    nixfmt
 
     pinentry_mac
   ];

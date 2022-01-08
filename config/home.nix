@@ -9,7 +9,7 @@
     nixfmt
     ripgrep
     jq
-    diff-so-fancy
+    diff-so-fancy # TODO: switch to delta and tweak theme?
     bat
     neovim
   ];
