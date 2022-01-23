@@ -11,7 +11,6 @@
     elmPackages.elm
     elmPackages.elm-format
 
-    python310
     black
 
     nodejs

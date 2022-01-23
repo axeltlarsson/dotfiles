@@ -7,6 +7,7 @@
   home.packages = with pkgs; [
     # common pacakges I always want
     nixfmt
+    niv
     ripgrep
     jq
     diff-so-fancy # TODO: switch to delta and tweak theme?

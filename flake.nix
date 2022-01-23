@@ -1,8 +1,9 @@
 {
-  description = "Axel's Home Manger Configurations";
+  description = "Axel's Home Manager Configurations";
 
   inputs = {
     nixpkgs.url = "flake:nixpkgs";
+    # TODO use "github:nixos/nixpkgs/nixos-unstable"?
     homeManager = {
       url = "github:nix-community/home-manager";
       inputs.nixkpkgs.follows = "nixpkgs";
@@ -18,7 +19,14 @@
         username = "axel";
         stateVersion = "21.11";
       };
+      "andrimner" = homeManager.lib.homeManagerConfiguration {
+        configuration = import ./andrimner.nix;
+        system = "x86_64-linux";
+        homeDirectory = "/home/axel";
+        username = "axel";
+        stateVersion = "21.11";
+      };
     };
-
   };
+  # TODO: nixpi nixos configuration (including home-manager conf)
 }

@@ -1,16 +1,14 @@
 ## Setup
 
-Install Nix, Home Manager.
+- Install Nix
+- `nix run home-manager --no-write-lock-file -- switch --flake <system>` where system is e.g '.#axel_mbp16'
+- On subsequent runs home-manager should be available without having to nix run it
+
+## Update Packages
 
 ```sh
-git clone https://github.com/AxelTLarsson/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-# for axel_mbp16 setup
-ln -s "$(pwd)/axel_mbp16.nix" "$HOME/.config/nixpkgs/home.nix"
-# for andrimner
-ln -s "$(pwd)/andrimner.nix" "$HOME/.config/nixpkgs/home.nix"
-
-home-manager -j 16 switch
+nix flake update
+home-manager switch --flake '.#axel_mbp16'
 ```
 
 ## Performance tweaks
