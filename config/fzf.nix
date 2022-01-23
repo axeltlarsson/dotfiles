@@ -4,23 +4,7 @@
     enableZshIntegration = true;
     defaultCommand = "rg --files --hidden --follow --glob '!.git/*'";
     defaultOptions = let
-      # Rose Pine palette https://rosepinetheme.com/palette.html#rose-pine
-      base = "#191724";
-      surface = "#1f1d2e";
-      overlay = "#26233a";
-      inactive = "#555169";
-      subtle = "#6e6a86";
-      text = "#e0def4";
-      love = "#eb6f92";
-      gold = "#f6c177";
-      rose = "#ebbcba";
-      pine = "#31748f";
-      foam = "#9ccfd8";
-      iris = "#c4a7e7";
-      highlight = "#2a2837";
-      highlightInactive = "#211f2d";
-      highlightOverlay = "#3a384a";
-
+      theme = import ./rose-pine.nix;
       # fzf COLOR NAMES:
       # fg         Text
       # bg         Background
@@ -40,7 +24,7 @@
       # marker     Multi-select marker
       # spinner    Streaming input indicator
       # header     Header
-    in [
+    in with theme; [
       "--height 40%"
       "--border"
       "--color=fg:${text},bg:${surface}"

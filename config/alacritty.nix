@@ -16,7 +16,7 @@
 # set by alacritty itself.
 { pkgs, ... }:
 
-let colors = import ./rose-pine.nix;
+let colors = import ./alacritty-rose-pine.nix;
 
 in {
 
