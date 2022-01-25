@@ -1,9 +1,8 @@
 {
-  description = "Axel's Home Manager Configurations";
+  description = "Axel's Home Manager/NixOS Configurations";
 
   inputs = {
     nixpkgs.url = "flake:nixpkgs";
-    # TODO use "github:nixos/nixpkgs/nixos-unstable"?
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixkpkgs.follows = "nixpkgs";

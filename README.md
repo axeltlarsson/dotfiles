@@ -1,8 +1,9 @@
 ## Setup
 
 - Install Nix 2.4+ and enable flakes (`echo "experimental-features = nix-command flakes" > ~/.config/nix/nix.conf`)
-- `nix run home-manager --no-write-lock-file -- switch --flake <system>` where `<system>` is e.g `'.#axel_mbp16'`
-- On subsequent runs `home-manager` should be available without having to `nix run` it
+- For home-manager setups: `nix run home-manager --no-write-lock-file -- switch --flake <system>` where `<system>` is e.g `'.#axel_mbp16'`
+  - On subsequent runs `home-manager` should be available without having to `nix run` it
+- For NixOS (nixpi): `nixos-rebuild switch --flake '.#nixpi'`
 
 ## Update Packages
 
