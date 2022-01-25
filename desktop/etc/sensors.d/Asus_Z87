@@ -1,6 +1,0 @@
-chip "nct6791-*"
-	label fan1 "Bakre chassifläkt"
-	label fan2 "CPU-fläkt"
-	label fan3 "Främre, nedre chassifläkt"
-	label fan4 "Främre, övre chassifläkt"
-

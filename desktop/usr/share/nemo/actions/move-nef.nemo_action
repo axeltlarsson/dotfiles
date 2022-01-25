@@ -1,8 +1,0 @@
-[Nemo Action]
-Active=true
-Name=Move .nef files in %N to "RAW"
-Comment=Moves all .nef files in %N into their own "RAW" subdirectory
-Exec=/usr/local/bin/nefCopyToFolder.sh "%F"
-Icon-Name=gtk-execute
-Selection=S
-Extensions=dir;
