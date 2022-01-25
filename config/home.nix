@@ -13,6 +13,7 @@
     diff-so-fancy # TODO: switch to delta and tweak theme?
     bat
     neovim
+    git
   ];
 
   home.file.".config/pgcli/config".source = ./pgcli.conf;
