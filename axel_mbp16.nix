@@ -24,8 +24,7 @@
 
   home.file.".npmrc".source = ./config/npmrc.conf;
   home.file.".gnupg/gpg-agent.conf".text = ''
-    use-standard-socket
-    pinentry-program ${pkgs.pinentry}/bin/pinentry
+    pinentry-program ${pkgs.pinentry_mac}/Applications/pinentry-mac.app/Contents/MacOS/pinentry-mac
   '';
 
   programs = {
