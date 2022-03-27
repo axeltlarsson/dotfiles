@@ -6,11 +6,11 @@
 
   home.packages = with pkgs; [
     # common pacakges I always want
+    nix
     nixfmt
-    niv
     ripgrep
     jq
-    diff-so-fancy # TODO: switch to delta and tweak theme?
+    diff-so-fancy
     bat
     neovim
     git
