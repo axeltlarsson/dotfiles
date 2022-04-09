@@ -4,8 +4,10 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  nixpkgs.overlays = [ (import ../overlays/python.nix) ];
+
   home.packages = with pkgs; [
-    # common pacakges I always want
+    # common packages I always want
     nix
     nixfmt
     ripgrep
@@ -14,6 +16,8 @@
     bat
     neovim
     git
+
+    pkgs.pythonEnv
   ];
 
   home.file.".config/pgcli/config".source = ./pgcli.conf;
@@ -46,4 +50,5 @@
     };
 
   };
+
 }

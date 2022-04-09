@@ -31,5 +31,4 @@
 
     gpg = { enable = true; };
   };
-
 }
