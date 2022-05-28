@@ -1,4 +1,4 @@
-# My macbook pro 16" config
+# My macbook pro config
 { config, pkgs, ... }: {
   imports = [
     # Common home manager conf
@@ -6,18 +6,17 @@
 
     ./config/alacritty.nix
   ];
+  fonts.fontconfig.enable = true;
 
   home.packages = with pkgs; [
     elmPackages.elm
     elmPackages.elm-format
 
     black
-
     nodejs
-
     nixfmt
-
     pinentry_mac
+    (pkgs.nerdfonts.override { fonts = [ "Hasklig" ]; })
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
