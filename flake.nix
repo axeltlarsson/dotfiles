@@ -12,25 +12,16 @@
   outputs = { self, nixpkgs, home-manager }: {
     homeConfigurations = {
       "axel_mbp14" = home-manager.lib.homeManagerConfiguration {
-        configuration = import ./axel_mbp14.nix;
-        system = "aarch64-darwin";
-        homeDirectory = "/Users/axel";
-        username = "axel";
-        stateVersion = "21.11";
+        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+        modules = [ ./axel_mbp14.nix ];
       };
       "axel_mbp16" = home-manager.lib.homeManagerConfiguration {
-        configuration = import ./axel_mbp16.nix;
-        system = "x86_64-darwin";
-        homeDirectory = "/Users/axel";
-        username = "axel";
-        stateVersion = "21.11";
+        pkgs = nixpkgs.legacyPackages.x86_64-darwin;
+        modules = [ ./axel_mbp16.nix ];
       };
       "andrimner" = home-manager.lib.homeManagerConfiguration {
-        configuration = import ./andrimner.nix;
-        system = "x86_64-linux";
-        homeDirectory = "/home/axel";
-        username = "axel";
-        stateVersion = "21.11";
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        modules = [ ./andrimner.nix ];
       };
     };
     nixosConfigurations = {

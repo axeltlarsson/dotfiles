@@ -1,8 +1,14 @@
 # Common macOS configuration
 { config, pkgs, ... }: {
   imports = [ ./config/home.nix ./config/alacritty.nix ];
-  fonts.fontconfig.enable = true;
 
+  home = {
+    username = "axel";
+    homeDirectory = "/Users/axel";
+    stateVersion = "21.11";
+  };
+
+  fonts.fontconfig.enable = true;
   home.packages = with pkgs; [
     elmPackages.elm
     elmPackages.elm-format
