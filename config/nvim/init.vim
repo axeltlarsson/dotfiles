@@ -306,9 +306,6 @@ endfun
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 
 
-let g:python3_host_prog='/Users/axel/.pyenv/versions/py3neovim/bin/python'
-let g:python_host_prog='/Users/axel/.pyenv/versions/py2neovim/bin/python'
-
 " snippets
 let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
 

@@ -13,9 +13,7 @@
     ripgrep
     jq
     diff-so-fancy
-    bat
     neovim
-    git
 
     pkgs.pythonEnv
   ];
@@ -35,8 +33,9 @@
     ./tmux.nix
     ./git.nix
   ];
-
   programs = {
+
+    bat = { enable = true; };
 
     exa = {
       enable = true;

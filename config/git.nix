@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, config, ... }: {
   programs.git = {
     enable = true;
     userName = "AxelTLarsson";
@@ -59,10 +59,7 @@
 
     lfs.enable = true;
 
-    signing = {
-      key = "061876CE2CD14AE0";
-      signByDefault = true;
-    };
+    signing = { signByDefault = true; };
 
   };
 }

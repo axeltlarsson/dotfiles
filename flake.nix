@@ -12,14 +12,14 @@
   outputs = { self, nixpkgs, home-manager }: {
     homeConfigurations = {
       "axel_mbp14" = home-manager.lib.homeManagerConfiguration {
-        configuration = import ./mbp.nix;
+        configuration = import ./axel_mbp14.nix;
         system = "aarch64-darwin";
         homeDirectory = "/Users/axel";
         username = "axel";
         stateVersion = "21.11";
       };
       "axel_mbp16" = home-manager.lib.homeManagerConfiguration {
-        configuration = import ./mbp.nix;
+        configuration = import ./axel_mbp16.nix;
         system = "x86_64-darwin";
         homeDirectory = "/Users/axel";
         username = "axel";

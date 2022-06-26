@@ -1,18 +1,13 @@
-# My macbook pro config
+# Common macOS configuration
 { config, pkgs, ... }: {
-  imports = [
-    # Common home manager conf
-    ./config/home.nix
-
-    ./config/alacritty.nix
-  ];
+  imports = [ ./config/home.nix ./config/alacritty.nix ];
   fonts.fontconfig.enable = true;
 
   home.packages = with pkgs; [
     elmPackages.elm
     elmPackages.elm-format
 
-    black
+    # black - currently broken...
     nodejs
     nixfmt
     pinentry_mac
