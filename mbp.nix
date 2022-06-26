@@ -24,5 +24,14 @@
   programs = {
 
     gpg = { enable = true; };
+
+    ssh = {
+      enable = true;
+      extraConfig = ''
+        AddKeysToAgent yes
+        UseKeychain yes
+        IdentityFile ~/.ssh/id_ed25519
+      '';
+    };
   };
 }
