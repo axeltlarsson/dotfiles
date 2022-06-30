@@ -13,9 +13,10 @@
     ripgrep
     jq
     diff-so-fancy
+    shellcheck
     neovim
 
-    # pkgs.pythonEnv
+    pkgs.pythonEnv
   ];
 
   home.file.".config/pgcli/config".source = ./pgcli.conf;
