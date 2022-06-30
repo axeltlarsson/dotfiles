@@ -14,6 +14,8 @@
     jq
     diff-so-fancy
     shellcheck
+    # wget required by unicodemoji
+    wget
     pandoc
     neovim
 
