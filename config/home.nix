@@ -14,6 +14,7 @@
     jq
     diff-so-fancy
     shellcheck
+    pandoc
     neovim
 
     pkgs.pythonEnv
