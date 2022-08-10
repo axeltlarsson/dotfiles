@@ -18,6 +18,7 @@
     nixfmt
     pinentry_mac
     (pkgs.nerdfonts.override { fonts = [ "Hasklig" ]; })
+    cachix
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
