@@ -35,21 +35,21 @@
     ssh = {
       enable = true;
       extraConfig = ''
+        ServerAliveInterval 15
+        ServerAliveCountMax 3
+        # `ssh-add --apple-load-keychain` might be required after reboot
         AddKeysToAgent yes
         UseKeychain yes
+
         IdentityFile ~/.ssh/id_ed25519
 
         HOST andrimner
           HostName andrimner.axellarsson.nu
           Port 512
-          AddKeysToAgent yes
-          UseKeyChain yes
           IdentityFile ~/.ssh/id_ed25519
 
         HOST andrimner_local
           HostName 192.168.0.160
-          AddKeysToAgent yes
-          UseKeyChain yes
           IdentityFile ~/.ssh/id_ed25519
 
         HOST unlock_andrimner_local
