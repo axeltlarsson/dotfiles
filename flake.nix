@@ -60,13 +60,14 @@
           runtimeInputs = [ pkgs.nvd pkgs.home-manager ];
           text = ''
             current=$(home-manager generations | head -n 1 | awk '{ print $7 }')
-            home-manager build --flake ".#$(hostname)" && nvd diff "$current" result
+            home-manager build --flake ".#$(hostname -s | awk '{ print tolower($1) }')" && nvd diff "$current" result
           '';
         };
         switch = pkgs.writeShellApplication {
           name = "switch";
           runtimeInputs = [ pkgs.home-manager ];
-          text = ''home-manager switch --flake ".#$(hostname)"'';
+          text = ''
+            home-manager switch --flake ".#$(hostname -s | awk '{ print tolower($1) }')"'';
         };
       in {
         devShell = pkgs.mkShell { buildInputs = [ update build switch ]; };
