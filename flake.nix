@@ -7,39 +7,68 @@
       url = "github:nix-community/home-manager";
       inputs.nixkpkgs.follows = "nixpkgs";
     };
-  };
 
-  outputs = { self, nixpkgs, home-manager }: {
-    homeConfigurations = {
-      "axel_mbp14" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
-        modules = [ ./axel_mbp14.nix ];
-      };
-      "axel_mbp16" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-darwin;
-        modules = [ ./axel_mbp16.nix ];
-      };
-      "andrimner" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        modules = [ ./andrimner.nix ];
-      };
-    };
-    nixosConfigurations = {
-      nixpi = nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        modules = [
-          ./nixpi/configuration.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.axel = import ./config/home.nix;
-
-            # Optionally, use home-manager.extraSpecialArgs to pass
-            # arguments to home.nix
-          }
-        ];
-      };
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      # TODO follow home-manager's flake-utils
+      #inputs.nixpkgs.follows = "home-manager";
     };
   };
+
+  outputs = { self, nixpkgs, home-manager, flake-utils }:
+    # home-manager and nixOS configuration
+    {
+      homeConfigurations = {
+        "axel-mbp14" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+          modules = [ ./axel_mbp14.nix ];
+        };
+        "axel-mbp16" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-darwin;
+          modules = [ ./axel_mbp16.nix ];
+        };
+        "andrimner" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+          modules = [ ./andrimner.nix ];
+        };
+      };
+      nixosConfigurations = {
+        nixpi = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          modules = [
+            ./nixpi/configuration.nix
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.axel = import ./config/home.nix;
+
+              # Optionally, use home-manager.extraSpecialArgs to pass
+              # arguments to home.nix
+            }
+          ];
+        };
+      };
+    }
+    # devShells
+    // flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        update = pkgs.writeScriptBin "update" "nix flake update";
+        build = pkgs.writeShellApplication {
+          name = "build";
+          runtimeInputs = [ pkgs.nvd pkgs.home-manager ];
+          text = ''
+            current=$(home-manager generations | head -n 1 | awk '{ print $7 }')
+            home-manager build --flake ".#$(hostname)" && nvd diff "$current" result
+          '';
+        };
+        switch = pkgs.writeShellApplication {
+          name = "switch";
+          runtimeInputs = [ pkgs.home-manager ];
+          text = ''home-manager switch --flake ".#$(hostname)"'';
+        };
+      in {
+        devShell = pkgs.mkShell { buildInputs = [ update build switch ]; };
+      });
 }

@@ -12,6 +12,8 @@
     nixfmt
     ripgrep
     jq
+    fd
+    nvd
     diff-so-fancy
     shellcheck
     # wget required by unicodemoji
