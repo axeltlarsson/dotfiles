@@ -305,7 +305,6 @@ endfun
 
 autocmd BufEnter,WinEnter * call SyntaxErrorOnNbsp()
 
-
 " snippets
 let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
 
@@ -320,7 +319,14 @@ let g:UltiSnipsEditSplit="vertical"
 " Edit vimrc with :Vimrc (change to :vs to open in a new split)
 command! Vimrc :e $MYVIMRC
 
-" Macro to convert Nordnet "Depåöversikt" to csv
-" First copy-paste from Nordnet.se, include headers for "Börshandlat", not for
-" "Fonder", exclude "Totalt" row
-let @g = ':%s/$/;:g/Byt/dgg:g/.*/,/^KöpSälj\|\%$/join:%s/KöpSälj;/'
+" TreeSitter
+lua <<EOF
+require('nvim-treesitter.configs').setup {
+  -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ensure_installed = { "javascript", "comment", "sql", "lua", "nix" },
+
+  highlight = {
+    enable = true;
+  },
+}
+EOF
