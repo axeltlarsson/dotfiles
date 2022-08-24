@@ -322,9 +322,26 @@ command! Vimrc :e $MYVIMRC
 
 " TreeSitter
 lua <<EOF
+-- N.B! CC needs to be unset (not set to clang as in nix shells)
+vim.env.CC = ''
 require('nvim-treesitter.configs').setup {
   -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ensure_installed = { "javascript", "comment", "sql", "lua", "nix" },
+  ensure_installed = {
+    "bash",
+    "comment",
+    "css",
+    "elm",
+    "haskell",
+    "html",
+    "javascript",
+    "json",
+    "lua",
+    "nix",
+    "python",
+    "ruby",
+    "sql",
+    "vim",
+  },
 
   highlight = {
     enable = true;
