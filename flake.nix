@@ -5,7 +5,7 @@
     nixpkgs.url = "flake:nixpkgs";
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixkpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     flake-utils = {
