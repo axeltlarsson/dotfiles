@@ -9,7 +9,7 @@
       set-option -ga terminal-overrides ",xterm-256color:Tc"
       set -s default-terminal "xterm-256color"
       set -g mouse on
-      set -g focus-events off
+      set -g focus-events on
       # Match postgresql URLs, default url_search doesn't
       set -g @copycat_search_C-p '(https?://|git@|git://|ssh://|ftp://|postgresql://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'
       # Theme
