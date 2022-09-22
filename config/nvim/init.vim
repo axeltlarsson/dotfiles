@@ -89,6 +89,7 @@ set encoding=utf8
 set hlsearch
 set incsearch
 set number
+set relativenumber
 set cursorline     " highlight current line
 set conceallevel=2
 set nocompatible   " be iMproved, required
