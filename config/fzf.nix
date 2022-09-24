@@ -1,10 +1,4 @@
 {
-  # TODO: use https://github.com/rose-pine/fzf
-  # basically it's just:
-  # --color=fg:#e0def4,bg:#1f1d2e,hl:#6e6a86
-  # --color=fg+:#908caa,bg+:#191724,hl+:#908caa
-  # --color=info:#9ccfd8,prompt:#f6c177,pointer:#c4a7e7
-  # --color=marker:#ebbcba,spinner:#eb6f92,header:#ebbcba"
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
@@ -34,14 +28,15 @@
       "--height 40%"
       "--border"
       "--color=fg:${text},bg:${surface}"
-      "--color=hl:${foam},fg+:${text},bg+:${highlight}"
-      "--color=hl+:${gold}"
+      "--color=hl:${muted},fg+:${subtle},bg+:${base}"
+      "--color=hl+:${subtle}"
       "--color=query:${gold}"
-      "--color=spinner:${foam},header:${gold}"
-      "--color=info:${pine},pointer:${gold}"
-      "--color=marker:${pine},prompt:${iris}"
+      "--color=spinner:${love},header:${rose}"
+      "--color=info:${foam},pointer:${iris}"
+      "--color=marker:${rose},prompt:${gold}"
     ];
 
     tmux.enableShellIntegration = true;
+
   };
 }
