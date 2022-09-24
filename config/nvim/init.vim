@@ -48,8 +48,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
 Plug 'vim-scripts/bats.vim'
 Plug 'w0rp/ale'                         " For LSP
 Plug 'yazgoo/unicodemoji'
@@ -76,10 +76,6 @@ colorscheme rose-pine
 
 " always show the status bar
 set laststatus=2
-
-" Airline
-let g:airline_powerline_fonts = 1
-let g:airline_theme='hybrid'
 
 " gitgutter
 set updatetime=100
@@ -266,11 +262,11 @@ set directory=$HOME/.vim/history/swap//
 
 
 " Autoformat
-let g:ale_enable = 0
 let g:autoformat_verbosemode = 0
 let g:formatters_python = ['black']
 
 " ALE
+let g:ale_enable = 0
 let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'nix': ['nixfmt'], 'ruby': ['rufo']}
 let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
@@ -281,7 +277,6 @@ let g:ale_fix_on_save = 1
 " let g:ale_set_loclist = 0
 " let g:ale_set_quickfix = 1
 " let g:ale_open_list = 1
-let g:airline#extensions#ale#enabled = 1
 
 " NERDCommenter adds spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
@@ -394,3 +389,7 @@ require('lspconfig')['solargraph'].setup{}
 require('lspconfig')['elmls'].setup{}
 
 EOF
+
+lua << END
+require('lualine').setup()
+END
