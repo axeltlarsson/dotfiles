@@ -36,9 +36,6 @@ Plug 'lambdalisue/glyph-palette.vim'
 Plug 'lambdalisue/nerdfont.vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
-" Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'arch -arm64 make' }
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
@@ -395,28 +392,5 @@ local lsp_flags = {
 }
 require('lspconfig')['solargraph'].setup{}
 require('lspconfig')['elmls'].setup{}
-
-EOF
-
-" Telescope
-lua <<EOF
-
--- You dont need to set any of these options. These are the default ones. Only
--- the loading is important
-require('telescope').setup {
-  extensions = {
-    fzf = {
-      fuzzy = true,                    -- false will only do exact matching
-      override_generic_sorter = true,  -- override the generic sorter
-      override_file_sorter = true,     -- override the file sorter
-      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
-                                       -- the default case_mode is "smart_case"
-    }
-  }
-}
--- To get fzf loaded and working with telescope, you need to call
--- load_extension, somewhere after setup function:
--- TODO: doesn't work properly for whatever reasone
---require('telescope').load_extension('fzf')
 
 EOF
