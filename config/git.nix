@@ -4,6 +4,11 @@
     userName = "AxelTLarsson";
     userEmail = "mail@axellarsson.nu";
 
+    delta = {
+      enable = true;
+      options = { };
+    };
+
     aliases = {
       co = "checkout";
       ignore = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi";
@@ -14,7 +19,6 @@
     extraConfig = {
       core = {
         editor = "nvim";
-        pager = "diff-so-fancy | less --tabs=4 -RFX";
         excludesFile = "~/.gitignore"; # TODO: inline?
       };
 
@@ -36,23 +40,7 @@
         };
       };
 
-      color = {
-        diff-highlight = {
-          oldNormal = "red bold";
-          oldHighlight = "red bold 52";
-          newNormal = "green bold";
-          newHighlight = "green bold 22";
-        };
-
-        diff = {
-          meta = "227";
-          frag = "magenta bold";
-          commit = "227 bold";
-          old = "red bold";
-          new = "green bold";
-          whitespace = "red reverse";
-        };
-      };
+      color = { };
       submodule.recurse = true;
 
     };
