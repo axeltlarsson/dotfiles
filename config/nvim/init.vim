@@ -337,6 +337,8 @@ require('nvim-treesitter.configs').setup {
     "ruby",
     "sql",
     "vim",
+    "markdown",
+    "markdown_inline",
   },
 
   highlight = {
