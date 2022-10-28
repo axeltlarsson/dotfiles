@@ -16,6 +16,7 @@
     nvd
     diff-so-fancy
     shellcheck
+    shfmt
     # wget required by unicodemoji
     wget
     pandoc
