@@ -38,7 +38,7 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 Plug 'pangloss/vim-javascript'
-Plug 'plasticboy/vim-markdown'
+Plug 'preservim/vim-markdown'
 Plug 'reedes/vim-pencil'
 Plug 'rose-pine/neovim'
 Plug 'scrooloose/nerdcommenter'
@@ -286,6 +286,7 @@ let g:vim_markdown_folding_disabled = 0
 let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_math = 1
+let g:vim_markdown_conceal = 0
 
 " Zen Mode
 autocmd! User GoyoEnter Limelight
@@ -337,8 +338,6 @@ require('nvim-treesitter.configs').setup {
     "ruby",
     "sql",
     "vim",
-    "markdown",
-    "markdown_inline",
   },
 
   highlight = {
@@ -389,9 +388,11 @@ local lsp_flags = {
 }
 require('lspconfig')['solargraph'].setup{}
 require('lspconfig')['elmls'].setup{}
+require('lspconfig')['bashls'].setup{}
 
 EOF
 
 lua << END
 require('lualine').setup()
 END
+
