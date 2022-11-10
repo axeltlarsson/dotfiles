@@ -27,6 +27,10 @@
           pkgs = nixpkgs.legacyPackages.x86_64-darwin;
           modules = [ ./axel_mbp16.nix ];
         };
+        "axel-mbp14-ja" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+          modules = [ ./axel_mbp14_ja.nix ];
+        };
         "andrimner" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           modules = [ ./andrimner.nix ];
@@ -59,7 +63,8 @@
           name = "build";
           runtimeInputs = [ pkgs.nvd pkgs.home-manager ];
           text = ''
-            current=$(home-manager generations | head -n 1 | awk '{ print $7 }')
+            # first run: no current generation exists so use ./result (diff against oneself)
+            current=$( (home-manager generations 2> /dev/null || echo result) | head -n 1 | awk '{ print $7 }')
             home-manager build --flake ".#$(hostname -s | awk '{ print tolower($1) }')" && nvd diff "$current" result
           '';
         };
