@@ -32,6 +32,10 @@
     source = ./nvim;
     recursive = true;
   };
+  home.file."dev" = {
+    source = ./dev;
+    recursive = true;
+  };
 
   imports = [
 

@@ -23,6 +23,7 @@
       VISUAL = "${pkgs.neovim}/bin/nvim";
       GPG_TTY = "$(tty)";
       KEYTIMEOUT = 1;
+      NOTES_DIR = "${config.home.homeDirectory}/Google Drive/My Drive/notes";
     };
 
     prezto = {
