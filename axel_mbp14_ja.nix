@@ -8,5 +8,8 @@
     source = ./config/work;
   };
 
+  # https://github.com/nix-community/home-manager/issues/2942
+  nixpkgs.config.allowUnfreePredicate = (pkg: true);
+  home.packages = with pkgs; [ _1password-gui ];
   programs.git.signing = { key = "381AE25298A4EFF6"; };
 }
