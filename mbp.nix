@@ -1,6 +1,10 @@
 # Common macOS configuration
 { config, pkgs, ... }: {
-  imports = [ ./config/home.nix ./config/alacritty.nix ];
+  imports = [
+    ./config/home.nix
+    ./config/alacritty.nix
+    ./darwin_application_activation.nix
+  ];
 
   home = {
     username = "axel";
