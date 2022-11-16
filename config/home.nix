@@ -49,6 +49,7 @@
     bat = {
       enable = true;
       themes = {
+        # do `bat cache --build` for bat to pick this up
         rose-pine = builtins.readFile (pkgs.fetchFromGitHub {
           owner = "rose-pine";
           repo = "sublime-text"; # Bat uses sublime syntax for its themes
