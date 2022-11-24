@@ -64,6 +64,20 @@
           HostKeyAlias unlock_andrimner
           User root
           IdentityFile ~/.ssh/andrimner_rsa_dropbear
+
+        HOST leif
+          HostName leif.arthro.ai
+          Port 1022
+          User axel
+          IdentityFile ~/.ssh/id_ed25519
+
+        HOST unlock_leif
+          HostName 192.168.128.94
+          HostName leif.arthro.ai
+          User root
+          HostKeyAlias unlock_leif
+          UserKnownHostsFile ~/.ssh/known_hosts.initramfs
+          IdentityFile ~/.ssh/leif_id_rsa_dropbear
       '';
     };
   };
