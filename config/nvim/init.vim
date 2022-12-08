@@ -328,6 +328,7 @@ require('nvim-treesitter.configs').setup {
     "comment",
     "css",
     "elm",
+    "go",
     "haskell",
     "html",
     "javascript",
