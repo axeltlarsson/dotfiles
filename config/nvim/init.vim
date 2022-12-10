@@ -392,7 +392,7 @@ local lsp_flags = {
 require('lspconfig')['solargraph'].setup{}
 require('lspconfig')['elmls'].setup{}
 require('lspconfig')['bashls'].setup{}
-require'lspconfig'['gopls'].setup{}
+require('lspconfig')['gopls'].setup{}
 
 EOF
 
@@ -401,7 +401,7 @@ require('lualine').setup()
 END
 
 lua << END
-require'regexplainer'.setup {
+require('regexplainer').setup {
   auto = true,
 }
 END
