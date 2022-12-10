@@ -24,6 +24,7 @@ Plug 'LnL7/vim-nix'
 Plug 'SirVer/ultisnips'
 " Plug 'Zaptic/elm-vim'
 Plug 'airblade/vim-gitgutter'
+Plug 'bennypowers/nvim-regexplainer' | Plug 'MunifTanjim/nui.nvim'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'godlygeek/tabular'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } } " Installs fzf as system command
@@ -336,6 +337,7 @@ require('nvim-treesitter.configs').setup {
     "lua",
     "nix",
     "python",
+    "regex",
     "ruby",
     "sql",
     "vim",
@@ -398,3 +400,8 @@ lua << END
 require('lualine').setup()
 END
 
+lua << END
+require'regexplainer'.setup {
+  auto = true,
+}
+END
