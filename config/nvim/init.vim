@@ -193,6 +193,8 @@ command! -bang -nargs=* Notes
 " Map leader g to Ctrl-] - to follow links in vim docs
 nnoremap <Leader>g <C-]>
 
+nnoremap <Leader>t :TableFormat<CR>
+
 " Fern
 let g:fern#renderer = "nerdfont"
 noremap <silent> <Leader>d :Fern . -drawer -width=35 -toggle<CR><C-w>=
