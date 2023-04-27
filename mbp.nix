@@ -13,7 +13,7 @@
     elmPackages.elm
     elmPackages.elm-format
 
-    # black - currently broken...
+    black
     nodejs
     nixfmt
     pinentry_mac
