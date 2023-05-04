@@ -56,14 +56,14 @@
           HostName 192.168.0.160
           User root
           HostKeyAlias unlock_andrimner
-          IdentityFile ~/.ssh/andrimner_rsa_dropbear
+          IdentityFile ~/.ssh/andrimner_dropbear
 
         HOST unlock_andrimner
           HostName andrimner.axellarsson.nu
           Port 512
           HostKeyAlias unlock_andrimner
           User root
-          IdentityFile ~/.ssh/andrimner_rsa_dropbear
+          IdentityFile ~/.ssh/andrimner_dropbear
 
         HOST leif
           HostName leif.arthro.ai
@@ -76,7 +76,6 @@
           HostName leif.arthro.ai
           User root
           HostKeyAlias unlock_leif
-          UserKnownHostsFile ~/.ssh/known_hosts.initramfs
           IdentityFile ~/.ssh/leif_id_rsa_dropbear
       '';
     };
