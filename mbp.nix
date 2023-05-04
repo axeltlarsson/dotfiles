@@ -76,7 +76,7 @@
           HostName leif.arthro.ai
           User root
           HostKeyAlias unlock_leif
-          IdentityFile ~/.ssh/leif_id_rsa_dropbear
+          IdentityFile ~/.ssh/leif_dropbear
       '';
     };
   };
