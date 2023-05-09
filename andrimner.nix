@@ -2,6 +2,8 @@
 { config, pkgs, ... }: {
   imports = [ ./config/home.nix ];
   programs.git.signing = { key = "52F093DF8ECCB62A"; };
+  programs.git.userEmail = "mail@axellarsson.nu";
+
   home = {
     homeDirectory = "/home/axel";
     username = "axel";

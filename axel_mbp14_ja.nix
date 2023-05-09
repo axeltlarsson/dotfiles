@@ -9,4 +9,5 @@
   };
 
   programs.git.signing = { key = "381AE25298A4EFF6"; };
+  programs.git.userEmail = "axel@arthro.ai";
 }

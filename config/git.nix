@@ -2,7 +2,6 @@
   programs.git = {
     enable = true;
     userName = "AxelTLarsson";
-    userEmail = "mail@axellarsson.nu";
 
     delta = {
       enable = true;
