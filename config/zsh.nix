@@ -16,6 +16,8 @@
     initExtra = ''
       alias vi=nvim
       alias vim=nvim
+      # allows e.g. `nix run nixpkgs#whatever`
+      setopt nonomatch
     '';
 
     sessionVariables = {
