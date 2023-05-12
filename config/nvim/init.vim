@@ -262,8 +262,8 @@ let g:formatters_python = ['black']
 
 " ALE
 let g:ale_enable = 0
-let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'nix': ['nixfmt'], 'ruby': ['rufo'], 'go': ['gofmt']}
-let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop']}
+let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'nix': ['nixfmt'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
+let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop'], 'sh': ['shellcheck']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_python_auto_pipenv = 1
 let g:ale_python_mypy_options = '--follow-imports skip'
