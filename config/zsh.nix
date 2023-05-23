@@ -18,6 +18,9 @@
       alias vim=nvim
       # allows e.g. `nix run nixpkgs#whatever`
       setopt nonomatch
+
+      # fzf: make alt-c cd work https://github.com/junegunn/fzf/issues/164
+      bindkey "ç" fzf-cd-widget
     '';
 
     sessionVariables = {

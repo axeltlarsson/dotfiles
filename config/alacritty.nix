@@ -724,7 +724,7 @@ in {
           key = "Comma";
           mods = "Command";
           command = {
-            program = "open";
+            program = "vim";
             args = [ "~/.config/alacritty/alacritty.yml" ];
           };
         }
@@ -1384,7 +1384,6 @@ in {
           mods = "Command";
           action = "IncreaseFontSize";
         }
-
       ];
     };
     #debug =
