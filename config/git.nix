@@ -24,6 +24,7 @@
       push = {
         default = "simple";
         helper = "cache --timeout=18000";
+        autoSetupRemote = true;
       };
 
       pull.rebase = false;
