@@ -11,10 +11,9 @@ call plug#begin('~/.vim/plugged')
 let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
 " let g:elm_setup_keybindings = 0
 
-Plug 'Chiel92/vim-autoformat'
+" Plug 'Zaptic/elm-vim'
 Plug 'LnL7/vim-nix'
 Plug 'SirVer/ultisnips'
-" Plug 'Zaptic/elm-vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'bennypowers/nvim-regexplainer' | Plug 'MunifTanjim/nui.nvim'
 Plug 'editorconfig/editorconfig-vim'
@@ -23,12 +22,14 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } } " Installs 
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'                " Distraction-free writing
 Plug 'junegunn/limelight.vim'           " Hyperfocus-writing
+Plug 'kyazdani42/nvim-web-devicons'
 Plug 'lambdalisue/fern-renderer-nerdfont.vim'
 Plug 'lambdalisue/fern.vim'
 Plug 'lambdalisue/glyph-palette.vim'
 Plug 'lambdalisue/nerdfont.vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-lualine/lualine.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 Plug 'pangloss/vim-javascript'
 Plug 'preservim/vim-markdown'
@@ -41,10 +42,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'kyazdani42/nvim-web-devicons'
 Plug 'vim-scripts/bats.vim'
-Plug 'w0rp/ale'                         " For LSP
+Plug 'w0rp/ale'
 Plug 'yazgoo/unicodemoji'
 call plug#end()
 
@@ -114,12 +113,10 @@ set mouse=n
 " Search current word with Rg
 set keywordprg=:Rg
 
+
 " override polyglot's vim-ruby "ri"
 autocmd FileType ruby,eruby,haml set keywordprg=:Rg
 
-" FZF: invoke the :Files with Ctrl+P
-nnoremap <C-p> :Files<cr>
-nnoremap <silent> <Leader><Space> :Files<CR>
 if has('nvim-0.4.0') || has("patch-8.2.0191")
     let g:fzf_layout = { 'window': {
                 \ 'width': 0.9,
@@ -130,8 +127,11 @@ else
     let g:fzf_layout = { "window": "silent botright 16split enew" }
 endif
 
+
+" FZF
 map <Leader>r :Rg<CR>
 nnoremap <Leader>b :Buffers<CR>
+nnoremap <silent> <Leader><Space> :Files<CR>
 
 " Customize fzf colors to match your color scheme
 let g:fzf_colors =
@@ -169,8 +169,6 @@ nnoremap <Leader>x :x<CR>
 nnoremap <Leader>q :q<CR>
 nnoremap <Leader>Q :q!<CR>
 
-nnoremap <Leader>l :ALEFix<CR>
-
 map ö [
 map ä ]
 
@@ -199,7 +197,6 @@ nnoremap <Leader>t :TableFormat<CR>
 let g:fern#renderer = "nerdfont"
 noremap <silent> <Leader>d :Fern . -drawer -width=35 -toggle<CR><C-w>=
 noremap <silent> <Leader>f :Fern . -drawer -reveal=% -width=35<CR><C-w>=
-noremap <silent> <Leader>. :Fern %:h -drawer -width=35<CR><C-w>=
 
 function! FernInit() abort
   set nonu
@@ -256,22 +253,17 @@ set updatecount=100
 set directory=$HOME/.vim/history/swap//
 
 
-" Autoformat
-let g:autoformat_verbosemode = 0
-let g:formatters_python = ['black']
-
-" ALE
-let g:ale_enable = 0
-let g:ale_fixers = {'python': ['black', 'isort'], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'nix': ['nixfmt'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
-let g:ale_linters = {'python': ['flake8', 'mypy'], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop'], 'sh': ['shellcheck']}
+" ALE vs nvim-lspconfig/LSP
+" Use ALE as fallback where nvim-lspconfig doesn't provide a solution
+" For example Python: black for with ALE, but pyright and lsp-ruff with
+" lsp-config
+nnoremap <Leader>l :ALEFix<CR>
+let g:ale_enable = 1
+let g:ale_fixers = {'python': [ 'black' ], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'nix': ['nixfmt'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
+let g:ale_linters = {'python': [], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop'], 'sh': ['shellcheck']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
-let g:ale_python_auto_pipenv = 1
-let g:ale_python_mypy_options = '--follow-imports skip'
-
 let g:ale_fix_on_save = 1
-" let g:ale_set_loclist = 0
-" let g:ale_set_quickfix = 1
-" let g:ale_open_list = 1
+
 
 " NERDCommenter adds spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
@@ -345,48 +337,58 @@ EOF
 
 " LSP
 lua <<EOF
--- Mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap=true, silent=true }
-vim.keymap.set('n', ',e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', ',q', vim.diagnostic.setloclist, opts)
-
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-  -- Mappings.
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', ',wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', ',wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set('n', ',wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts)
-  vim.keymap.set('n', ',D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', ',rn', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', ',ca', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', ',f', vim.lsp.buf.formatting, bufopts)
-end
-
-local lsp_flags = {
-  -- This is the default in Nvim 0.7+
-  debounce_text_changes = 150,
+-- Setup language servers.
+local lspconfig = require('lspconfig')
+lspconfig.solargraph.setup{}
+lspconfig.elmls.setup{}
+lspconfig.bashls.setup{}
+lspconfig.gopls.setup{}
+lspconfig.ruff_lsp.setup{
+  on_attach = function(client, bufnr)
+    -- Disable hover in favor of Pyright
+    client.server_capabilities.hoverProvider = false
+  end
 }
-require('lspconfig')['solargraph'].setup{}
-require('lspconfig')['elmls'].setup{}
-require('lspconfig')['bashls'].setup{}
-require('lspconfig')['gopls'].setup{}
+lspconfig.pyright.setup{}
+
+
+-- Global mappings.
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+vim.keymap.set('n', ',e', vim.diagnostic.open_float)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
+vim.keymap.set('n', ',q', vim.diagnostic.setloclist)
+
+-- Use LspAttach autocommand to only map the following keys
+-- after the language server attaches to the current buffer
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+    -- Buffer local mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local opts = { buffer = ev.buf }
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+    vim.keymap.set('n', '<Leader>wa', vim.lsp.buf.add_workspace_folder, opts)
+    vim.keymap.set('n', '<Leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
+    vim.keymap.set('n', '<Leader>wl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, opts)
+    vim.keymap.set('n', '<Leader>D', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('n', '<Leader>rn', vim.lsp.buf.rename, opts)
+    vim.keymap.set({ 'n', 'v' }, '<Leader>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+    vim.keymap.set('n', '<Leader>f', function()
+      vim.lsp.buf.format { async = true }
+    end, opts)
+  end,
+})
 
 EOF
 
