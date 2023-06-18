@@ -76,6 +76,8 @@ set noshowmode     " do not display" -- INSERT -- " since that is unnecessary wi
 set encoding=utf8
 set hlsearch
 set incsearch
+set ignorecase
+set smartcase
 set number
 set relativenumber
 set cursorline     " highlight current line
