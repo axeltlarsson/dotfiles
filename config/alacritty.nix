@@ -136,7 +136,7 @@ in {
           #
           # If the bold family is not specified, it will fall back to the
           # value specified for the normal font.
-          family = "Hasklug Nerd Font";
+          # family = "Hasklug Nerd Font";
 
           # The `style` can be specified to pick a specific face.
           style = "Bold";
@@ -148,7 +148,7 @@ in {
           #
           # If the italic family is not specified, it will fall back to the
           # value specified for the normal font.
-          family = "Hasklug Nerd Font";
+          # family = "Hasklug Nerd Font";
 
           # The `style` can be specified to pick a specific face.
           style = "Italic";
