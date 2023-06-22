@@ -261,7 +261,7 @@ set directory=$HOME/.vim/history/swap//
 " lsp-config
 nnoremap <Leader>l :ALEFix<CR>
 let g:ale_enable = 1
-let g:ale_fixers = {'python': [ 'black' ], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'nix': ['nixfmt'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
+let g:ale_fixers = {'python': [ 'black' ], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
 let g:ale_linters = {'python': [], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop'], 'sh': ['shellcheck']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_fix_on_save = 1
@@ -352,7 +352,7 @@ lspconfig.ruff_lsp.setup{
   end
 }
 lspconfig.pyright.setup{}
-
+lspconfig.rnix.setup{}
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
