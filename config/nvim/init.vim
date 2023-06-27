@@ -265,6 +265,7 @@ let g:ale_fixers = {'python': [ 'black' ], 'sql': ['pgformatter'], 'json': ['jq'
 let g:ale_linters = {'python': [], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop'], 'sh': ['shellcheck']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_fix_on_save = 1
+let g:ale_disable_lsp = 1
 
 
 " NERDCommenter adds spaces after comment delimiters by default
