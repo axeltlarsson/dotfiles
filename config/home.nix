@@ -23,6 +23,8 @@
     neovim
 
     pkgs.pythonEnv
+
+    git
   ];
 
   home.file.".config/pgcli/config".source = ./pgcli.conf;
