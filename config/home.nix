@@ -63,7 +63,7 @@
       config = { theme = "rose-pine"; };
     };
 
-    exa = {
+    eza = {
       enable = true;
       enableAliases = true;
     };
