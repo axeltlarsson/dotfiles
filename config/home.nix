@@ -25,6 +25,7 @@
     pkgs.pythonEnv
 
     git
+    pspg
   ];
 
   home.file.".config/pgcli/config".source = ./pgcli.conf;
