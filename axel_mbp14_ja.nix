@@ -15,4 +15,9 @@
     enable = true;
     skin = builtins.fromJSON (builtins.readFile ./config/k9s-rose-pine.json);
   };
+
+  home.packages = [
+    pkgs.kubie
+  ];
+
 }
