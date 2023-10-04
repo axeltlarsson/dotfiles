@@ -15,9 +15,9 @@
       # Theme
       set-window-option -g window-status-current-style fg='${base}',bg='${gold}'
 
-      # prefix + h/l swaps window left/right
-      bind-key h swap-window -t -1 -d
-      bind-key l swap-window -t +1 -d
+      # prefix + left/right swaps window left/right
+      bind-key left swap-window -t -1 -d
+      bind-key right swap-window -t +1 -d
       # prefix + t swaps window to "top"
       bind-key t swap-window -t 0 -d
     '';
