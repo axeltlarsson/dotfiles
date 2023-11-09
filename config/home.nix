@@ -53,12 +53,16 @@
       enable = true;
       themes = {
         # do `bat cache --build` for bat to pick this up
-        rose-pine = builtins.readFile (pkgs.fetchFromGitHub {
-          owner = "rose-pine";
-          repo = "sublime-text"; # Bat uses sublime syntax for its themes
-          rev = "ed9ace4c571426070e1046853c13c45d9f12441c";
-          sha256 = "sha256-d5CCk15KaIEXFd1LP7q82tcX9evE5G/ZS2GxPCA1K0I=";
-        } + "/rose-pine.tmTheme");
+        rose-pine = {
+          src = pkgs.fetchFromGitHub
+            {
+              owner = "rose-pine";
+              repo = "sublime-text"; # Bat uses sublime syntax for its themes
+              rev = "ed9ace4c571426070e1046853c13c45d9f12441c";
+              sha256 = "sha256-d5CCk15KaIEXFd1LP7q82tcX9evE5G/ZS2GxPCA1K0I=";
+            };
+          file = "/rose-pine.tmTheme";
+        };
       };
       config = { theme = "rose-pine"; };
     };
