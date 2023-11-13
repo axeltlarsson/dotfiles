@@ -72,7 +72,7 @@ in {
         # Values for `decorations` (macOS only) =
         #     - transparent = Title bar, transparent background and title bar buttons
         #     - buttonless = Title bar, transparent background and no title bar buttons
-        # decorations = "full";
+        decorations = "buttonless";
 
         # Startup Mode (changes require restart)
         #
