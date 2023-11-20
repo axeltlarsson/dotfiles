@@ -1,4 +1,10 @@
 { pkgs, config, ... }: {
+
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.zsh = {
     enable = true;
 
@@ -47,7 +53,6 @@
         "spectrum"
         "utility"
         "completion"
-        "fasd"
         "syntax-highlighting"
         "history-substring-search"
         "prompt"
