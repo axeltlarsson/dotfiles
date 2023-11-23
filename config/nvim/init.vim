@@ -257,11 +257,9 @@ set directory=$HOME/.vim/history/swap//
 
 " ALE vs nvim-lspconfig/LSP
 " Use ALE as fallback where nvim-lspconfig doesn't provide a solution
-" For example Python: black for with ALE, but pyright and lsp-ruff with
-" lsp-config
 nnoremap <Leader>l :ALEFix<CR>
 let g:ale_enable = 1
-let g:ale_fixers = {'python': [ 'black' ], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
+let g:ale_fixers = {'python': [ ], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
 let g:ale_linters = {'python': [], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop'], 'sh': ['shellcheck']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_fix_on_save = 1

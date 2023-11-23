@@ -10,10 +10,14 @@
 
   fonts.fontconfig.enable = true;
   home.packages = with pkgs; [
-    elmPackages.elm
-    elmPackages.elm-format
+    # shell
+    shellcheck
+    shfmt
 
-    black
+    # python
+    ruff
+    ruff-lsp
+
     nodejs
     nixfmt
     pinentry_mac
