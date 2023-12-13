@@ -58,7 +58,7 @@
     // flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        update = pkgs.writeScriptBin "update" "nix flake update";
+        update = pkgs.writeScriptBin "update" "nix flake update --commit-lock-file";
         build = pkgs.writeShellApplication {
           name = "build";
           runtimeInputs = [ pkgs.nvd pkgs.home-manager ];
