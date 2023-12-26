@@ -49,7 +49,7 @@
 
         HOST andrimner
           HostName andrimner.axellarsson.nu
-          Port 512
+          Port 1022
           IdentityFile ~/.ssh/id_ed25519
 
         HOST andrimner_local
@@ -64,7 +64,7 @@
 
         HOST unlock_andrimner
           HostName andrimner.axellarsson.nu
-          Port 512
+          Port 1022
           HostKeyAlias unlock_andrimner
           User root
           IdentityFile ~/.ssh/andrimner_dropbear
