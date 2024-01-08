@@ -1,6 +1,20 @@
 # Home Manager common config for all my machines
 { config, pkgs, ... }: {
 
+  nix.registry = {
+    nixpkgs-master = {
+      from = {
+        id = "nixpkgs-master";
+        type = "indirect";
+      };
+      to = {
+        type = "github";
+        owner = "NixOS";
+        repo = "nixpkgs";
+        ref = "master";
+      };
+    };
+  };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
