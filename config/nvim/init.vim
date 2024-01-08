@@ -259,7 +259,7 @@ set directory=$HOME/.vim/history/swap//
 " Use ALE as fallback where nvim-lspconfig doesn't provide a solution
 nnoremap <Leader>l :ALEFix<CR>
 let g:ale_enable = 1
-let g:ale_fixers = {'python': [ ], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['prettier'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
+let g:ale_fixers = {'python': [ ], 'sql': ['pgformatter'], 'json': ['jq'], 'haskell': ['ormolu'], 'javascript': ['eslint'], 'markdown': ['pandoc'], 'ruby': ['rufo'], 'go': ['gofmt'], 'sh': ['shfmt']}
 let g:ale_linters = {'python': [], 'sql': ['sqlint'], 'javascript': ['prettier', 'eslint'], 'ruby': ['rubocop'], 'sh': ['shellcheck']}
 let g:ale_sql_pgformatter_options = '-g -s 2 -U 1 -u 1 -w 100'
 let g:ale_json_jq_options = '--indent 4'
