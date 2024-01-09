@@ -10,8 +10,6 @@
 
     flake-utils = {
       url = "github:numtide/flake-utils";
-      # TODO follow home-manager's flake-utils
-      #inputs.nixpkgs.follows = "home-manager";
     };
   };
 
