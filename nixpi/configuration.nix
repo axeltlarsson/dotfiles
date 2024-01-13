@@ -15,15 +15,17 @@
   boot.loader.generic-extlinux-compatible.enable = true;
 
   i18n.defaultLocale = "sv_SE.UTF-8";
-  console = {
-    font = "Lat2-Terminus16";
-    keyMap = "sv";
-    # useXkbConfig = true; # use xkb.options in tty.
-  };
+  #console = {
+  #  font = "Lat2-Terminus16";
+  #  keyMap = "se";
+  # useXkbConfig = true; # use xkb.options in tty.
+  #};
 
   time.timeZone = "Europe/Stockholm";
 
   system.autoUpgrade.enable = true;
+
+  programs.zsh.enable = true;
 
   users = {
     mutableUsers = false;
@@ -36,7 +38,7 @@
         password = "duh"; # or initialHashedPassword?
         description = "Axel Larsson";
         openssh.authorizedKeys.keys = [
-          "ssh-ed25519 SHA256:NxFObp6OlYzDV4tmA2maEtd7l4nEDQampDMMAg0Va3U axel_mbp14"
+          "ssh-ed25519 NxFObp6OlYzDV4tmA2maEtd7l4nEDQampDMMAg0Va3U axel@axel_mbp14"
         ];
       };
     };
@@ -47,7 +49,7 @@
 
   services.avahi = {
     enable = true;
-    nssmdns = true;
+    nssmdns4 = true;
     publish = {
       enable = true;
       addresses = true;
@@ -65,7 +67,7 @@
   networking.hostName = "nixpi";
 
   nix = {
-    autoOptimiseStore = true;
+    settings.auto-optimise-store = true;
     gc = {
       automatic = true;
       dates = "weekly";
