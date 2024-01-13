@@ -6,18 +6,20 @@
     "${
       builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }
     }/raspberry-pi/4"
+    ./hardware-configuration.nix
   ];
 
-  fileSystems = {
-    "/" = {
-      device = "/dev/disk/by-label/NIXOS_SD";
-      fsType = "ext4";
-      options = [ "noatime" ];
-    };
-  };
+  # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
+  boot.loader.grub.enable = false;
+  # Enables the generation of /boot/extlinux/extlinux.conf
+  boot.loader.generic-extlinux-compatible.enable = true;
 
-  # Enable OpenSSH out of the box.
-  services.sshd.enable = true;
+  i18n.defaultLocale = "sv_SE.UTF-8";
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "sv";
+    # useXkbConfig = true; # use xkb.options in tty.
+  };
 
   time.timeZone = "Europe/Stockholm";
 
@@ -34,7 +36,7 @@
         password = "duh"; # or initialHashedPassword?
         description = "Axel Larsson";
         openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID8afXGSxXnnz5ydf/AHGH65b2SpHvd1bEE6Q5JASQIM axel@axel-mbp16 "
+          "ssh-ed25519 SHA256:NxFObp6OlYzDV4tmA2maEtd7l4nEDQampDMMAg0Va3U axel_mbp14"
         ];
       };
     };
@@ -76,15 +78,9 @@
     '';
   };
 
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking.useDHCP = false;
-  networking.interfaces.eth0.useDHCP = true;
-  networking.interfaces.wlan0.useDHCP = true;
 
-  # NTP time sync.
-  services.timesyncd.enable = true;
+
+  hardware.enableRedistributableFirmware = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -92,6 +88,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "21.03"; # Did you read the comment?
+  system.stateVersion = "24.05"; # Did you read the comment?
 }
 
