@@ -2,10 +2,6 @@
 
 {
   imports = [
-    # Use Nixos/nixos-hardware to configure the RPI 4 hw
-    "${
-      builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }
-    }/raspberry-pi/4"
     ./hardware-configuration.nix
   ];
 

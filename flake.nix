@@ -7,13 +7,13 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-utils = {
       url = "github:numtide/flake-utils";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, flake-utils }:
+  outputs = { self, nixpkgs, home-manager, flake-utils, nixos-hardware }:
     # home-manager and nixOS configuration
     {
       homeConfigurations = {
@@ -39,6 +39,7 @@
           system = "aarch64-linux";
           modules = [
             ./nixpi/configuration.nix
+            nixos-hardware.nixosModules.raspberry-pi-4
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
