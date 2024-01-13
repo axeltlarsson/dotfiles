@@ -44,6 +44,11 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.axel = import ./config/home.nix;
+              home-manager.home = {
+                username = "axel";
+                homeDirectory = "/home/axel";
+                stateVersion = "24.05";
+              };
 
               # Optionally, use home-manager.extraSpecialArgs to pass
               # arguments to home.nix

@@ -14,7 +14,7 @@
   # Enables the generation of /boot/extlinux/extlinux.conf
   boot.loader.generic-extlinux-compatible.enable = true;
 
-  i18n.defaultLocale = "sv_SE.UTF-8";
+  i18n.defaultLocale = "en_GB.UTF-8";
   #console = {
   #  font = "Lat2-Terminus16";
   #  keyMap = "se";
@@ -35,8 +35,9 @@
         isNormalUser = true;
         extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
         home = "/home/axel";
-        password = "duh"; # or initialHashedPassword?
+        hashedPassword = "$y$j9T$4R7nkA77ZhIHj2mEk4hpN.$oUVs1c6.SeDiFrmR0KEjNNZjTfoDv01wg0bNRY9dEO/";
         description = "Axel Larsson";
+        # TODO, why this no work?
         openssh.authorizedKeys.keys = [
           "ssh-ed25519 NxFObp6OlYzDV4tmA2maEtd7l4nEDQampDMMAg0Va3U axel@axel_mbp14"
         ];
@@ -60,6 +61,11 @@
     };
   };
 
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 22 ];
+  };
+
   # packages to install
   environment.systemPackages = with pkgs; [ vim ];
   environment.variables = { EDITOR = "vim"; };
@@ -68,6 +74,7 @@
 
   nix = {
     settings.auto-optimise-store = true;
+    settings.experimental-features = [ "nix-command" "flakes" ];
     gc = {
       automatic = true;
       dates = "weekly";
