@@ -2,7 +2,7 @@
   description = "Axel's Home Manager/NixOS Configurations";
 
   inputs = {
-    nixpkgs.url = "flake:nixpkgs";
+    nixpkgs.url = "github:NixOS/Nixpkgs/nixpkgs-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -10,8 +10,6 @@
 
     flake-utils = {
       url = "github:numtide/flake-utils";
-      # TODO follow home-manager's flake-utils
-      #inputs.nixpkgs.follows = "home-manager";
     };
   };
 
