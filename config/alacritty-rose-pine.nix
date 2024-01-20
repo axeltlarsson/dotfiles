@@ -13,8 +13,8 @@
     cursor = "0x796268";
   };
   line_indicator = {
-    foreground = null;
-    background = null;
+    foreground = "None";
+    background = "None";
   };
   selection = {
     text = "CellForeground";
