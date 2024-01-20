@@ -23,7 +23,7 @@
   home.packages = with pkgs; [
     # common packages I always want
     nix
-    rnix-lsp
+    nixd
     ripgrep
     jq
     fd
