@@ -38,7 +38,7 @@
             nixos-hardware.nixosModules.raspberry-pi-4
             home-manager.nixosModules.home-manager
             {
-              home-manager.useGlobalPkgs = true;
+              home-manager.useGlobalPkgs = false;
               home-manager.useUserPackages = true;
               home-manager.users.axel = import ./nixpi/nixpi.nix;
 
