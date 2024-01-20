@@ -27,6 +27,7 @@
       { plugin = tmuxPlugins.rose-pine;
         extraConfig = ''
           set -g @rose_pine_variant 'main'
+          set -g @rose_pine_date_time '%H:%M'
         '';
       }
     ];
