@@ -4,16 +4,13 @@
 
     clock24 = true;
     escapeTime = 0;
-    extraConfig = let theme = import ./rose-pine.nix;
-    in with theme; ''
+    extraConfig = ''
       set-option -ga terminal-overrides ",xterm-256color:Tc"
       set -s default-terminal "xterm-256color"
       set -g mouse on
       set -g focus-events on
       # Match postgresql URLs, default url_search doesn't
       set -g @copycat_search_C-p '(https?://|git@|git://|ssh://|ftp://|postgresql://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'
-      # Theme
-      set-window-option -g window-status-current-style fg='${base}',bg='${gold}'
 
       # prefix + left/right swaps window left/right
       bind-key left swap-window -t -1 -d
@@ -27,6 +24,11 @@
       { plugin = tmuxPlugins.yank; }
       { plugin = tmuxPlugins.open; }
       { plugin = tmuxPlugins.copycat; }
+      { plugin = tmuxPlugins.rose-pine;
+        extraConfig = ''
+          set -g @rose_pine_variant 'main'
+        '';
+      }
     ];
     shell = "${pkgs.zsh}/bin/zsh";
   };

@@ -18,7 +18,7 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  nixpkgs.overlays = [ (import ../overlays/python.nix) ];
+  nixpkgs.overlays = [ (import ../overlays/python.nix) (import ../overlays/tmux-rose-pine.nix) ];
 
   home.packages = with pkgs; [
     # common packages I always want

@@ -1,8 +1,8 @@
 # https://github.com/rose-pine/alacritty/blob/2c00071b3ee60b523c367b45de2a5c60f7cb7b74/rose-pine.yml
 {
   primary = {
-    background = "0x191724";
     foreground = "0xe0def4";
+    background = "0x191724";
   };
   cursor = {
     text = "0x191724";

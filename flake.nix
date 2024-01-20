@@ -21,10 +21,6 @@
           pkgs = nixpkgs.legacyPackages.aarch64-darwin;
           modules = [ ./axel_mbp14.nix ];
         };
-        "axel-mbp16" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.x86_64-darwin;
-          modules = [ ./axel_mbp16.nix ];
-        };
         "axel-mbp14-ja" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.aarch64-darwin;
           modules = [ ./axel_mbp14_ja.nix ];
