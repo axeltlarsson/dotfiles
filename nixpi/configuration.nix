@@ -33,9 +33,8 @@
         home = "/home/axel";
         hashedPassword = "$y$j9T$4R7nkA77ZhIHj2mEk4hpN.$oUVs1c6.SeDiFrmR0KEjNNZjTfoDv01wg0bNRY9dEO/";
         description = "Axel Larsson";
-        # TODO, why this no work?
         openssh.authorizedKeys.keys = [
-          "ssh-ed25519 NxFObp6OlYzDV4tmA2maEtd7l4nEDQampDMMAg0Va3U axel@axel_mbp14"
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTagaZ9d/J57JmYQja2uUiDj6PKctEJCvHg/vhkEuIN axel@mbp_14"
         ];
       };
     };
