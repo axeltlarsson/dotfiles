@@ -18,6 +18,10 @@
 
   programs = {
     gpg = { enable = true; };
+    ssh = {
+      enable = true;
+      addKeysToAgent = "confirm";
+    };
   };
 
   services.gpg-agent = {
@@ -27,4 +31,8 @@
       pinentry-program ${pkgs.pinentry-curses}/bin/pinentry-curses
     '';
   };
+
+  services.ssh-agent.enable = true;
+
+  systemd.user.startServices = "sd-switch";
 }

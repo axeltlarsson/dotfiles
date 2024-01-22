@@ -22,6 +22,7 @@
   system.autoUpgrade.enable = true;
 
   programs.zsh.enable = true;
+  programs.ssh.startAgent = true;
 
   users = {
     mutableUsers = false;
@@ -41,7 +42,13 @@
   };
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = false;
+    };
+  };
 
   services.avahi = {
     enable = true;
