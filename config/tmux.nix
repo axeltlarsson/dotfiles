@@ -27,7 +27,9 @@
       { plugin = tmuxPlugins.rose-pine;
         extraConfig = ''
           set -g @rose_pine_variant 'main'
-          set -g @rose_pine_date_time '%H:%M'
+          set -g @rose_pine_date_time '%Y-%m-%d %H:%M'
+          set -g @rose_pine_directory 'on'
+          set -g @rose_pine_disable_active_window_menu 'on'
         '';
       }
     ];
