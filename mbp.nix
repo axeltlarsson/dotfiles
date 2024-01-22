@@ -69,6 +69,11 @@
           User root
           IdentityFile ~/.ssh/andrimner_dropbear
 
+        HOST nixpi
+          HostName nixpi.local
+          User axel
+          IdentityFile ~/.ssh/id_ed25519
+
         HOST leif
           HostName leif.arthro.ai
           Port 1022
