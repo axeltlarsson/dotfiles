@@ -3,7 +3,6 @@
   imports = [ ../config/home.nix ];
 
   programs.git.signing = { key = "89006B84F7EC0084"; };
-  programs.git.userEmail = "mail@axellarsson.nu";
 
   home = {
     username = "axel";

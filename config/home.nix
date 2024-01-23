@@ -1,5 +1,13 @@
 # Home Manager common config for all my machines
-{ config, pkgs, ... }: {
+{ config, pkgs, lib, ... }: {
+
+  imports = [
+
+    ./fzf.nix
+    ./zsh.nix
+    ./tmux.nix
+    ./git.nix
+  ];
 
   nix.registry = {
     nixpkgs-master = {
@@ -17,6 +25,8 @@
   };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  programs.git.userEmail = lib.mkDefault "mail@axellarsson.nu";
 
   nixpkgs.overlays = [ (import ../overlays/python.nix) (import ../overlays/tmux-rose-pine.nix) ];
 
@@ -54,13 +64,6 @@
     recursive = true;
   };
 
-  imports = [
-
-    ./fzf.nix
-    ./zsh.nix
-    ./tmux.nix
-    ./git.nix
-  ];
   programs = {
 
     bat = {

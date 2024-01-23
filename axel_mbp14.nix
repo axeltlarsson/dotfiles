@@ -2,5 +2,4 @@
 { config, pkgs, ... }: {
   imports = [ ./mbp.nix ];
   programs.git.signing = { key = "3AE85E14F3123D07"; };
-  programs.git.userEmail = "mail@axellarsson.nu";
 }
