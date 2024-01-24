@@ -19,7 +19,8 @@
 
   time.timeZone = "Europe/Stockholm";
 
-  system.autoUpgrade.enable = true;
+  # https://search.nixos.org/options?channel=unstable&show=system.autoUpgrade.flake&from=0&size=50&sort=relevance&type=packages&query=system.autoupgrade
+  system.autoUpgrade.enable = false;
 
   programs.zsh.enable = true;
   programs.ssh.startAgent = true;
