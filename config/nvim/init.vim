@@ -11,12 +11,12 @@ call plug#begin('~/.vim/plugged')
 let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
 " let g:elm_setup_keybindings = 0
 
-" Plug 'Zaptic/elm-vim'
 Plug 'LnL7/vim-nix'
 Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
 Plug 'bennypowers/nvim-regexplainer' | Plug 'MunifTanjim/nui.nvim'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'github/copilot.vim'
 Plug 'godlygeek/tabular'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } } " Installs fzf as system command
 Plug 'junegunn/fzf.vim'
