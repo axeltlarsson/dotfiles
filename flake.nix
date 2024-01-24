@@ -40,7 +40,7 @@
             {
               home-manager.useGlobalPkgs = false;
               home-manager.useUserPackages = true;
-              home-manager.users.axel = import ./nixpi/nixpi.nix;
+              home-manager.users.axel = import ./nixpi/home.nix;
 
               # Optionally, use home-manager.extraSpecialArgs to pass
               # arguments to home.nix
