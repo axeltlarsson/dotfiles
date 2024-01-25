@@ -33,7 +33,8 @@
   home.packages = with pkgs; [
     # common packages I always want
     nix
-    nixd
+    nil
+    alejandra
     ripgrep
     jq
     fd
