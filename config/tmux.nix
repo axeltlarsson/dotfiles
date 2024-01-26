@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   programs.tmux = {
     enable = true;
 
@@ -20,11 +20,12 @@
     '';
     keyMode = "vi";
     plugins = with pkgs; [
-      { plugin = tmuxPlugins.pain-control; }
-      { plugin = tmuxPlugins.yank; }
-      { plugin = tmuxPlugins.open; }
-      { plugin = tmuxPlugins.copycat; }
-      { plugin = tmuxPlugins.rose-pine;
+      {plugin = tmuxPlugins.pain-control;}
+      {plugin = tmuxPlugins.yank;}
+      {plugin = tmuxPlugins.open;}
+      {plugin = tmuxPlugins.copycat;}
+      {
+        plugin = tmuxPlugins.rose-pine;
         extraConfig = ''
           set -g @rose_pine_variant 'main'
           set -g @rose_pine_date_time '%Y-%m-%d %H:%M'

@@ -1,10 +1,8 @@
-{ pkgs, config, ... }: {
-
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
+{
+  pkgs,
+  config,
+  ...
+}: {
   programs.zsh = {
     enable = true;
 
@@ -38,6 +36,8 @@
       XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
     };
 
+    enableAutosuggestions = true;
+
     prezto = {
       enable = true;
       editor.keymap = "vi";
@@ -61,8 +61,6 @@
 
       tmux.autoStartLocal = true;
       tmux.defaultSessionName = "local";
-
     };
-
   };
 }

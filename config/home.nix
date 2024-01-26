@@ -1,8 +1,11 @@
 # Home Manager common config for all my machines
-{ config, pkgs, lib, ... }: {
-
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
-
     ./fzf.nix
     ./zsh.nix
     ./tmux.nix
@@ -28,7 +31,7 @@
 
   programs.git.userEmail = lib.mkDefault "mail@axellarsson.nu";
 
-  nixpkgs.overlays = [ (import ../overlays/python.nix) (import ../overlays/tmux-rose-pine.nix) ];
+  nixpkgs.overlays = [(import ../overlays/python.nix) (import ../overlays/tmux-rose-pine.nix)];
 
   home.packages = with pkgs; [
     # common packages I always want
@@ -66,13 +69,13 @@
   };
 
   programs = {
-
     bat = {
       enable = true;
       themes = {
         # do `bat cache --build` for bat to pick this up
         rose-pine = {
-          src = pkgs.fetchFromGitHub
+          src =
+            pkgs.fetchFromGitHub
             {
               owner = "rose-pine";
               repo = "sublime-text"; # Bat uses sublime syntax for its themes
@@ -82,7 +85,7 @@
           file = "/rose-pine.tmTheme";
         };
       };
-      config = { theme = "rose-pine"; };
+      config = {theme = "rose-pine";};
     };
 
     eza = {
@@ -96,6 +99,9 @@
       nix-direnv.enable = true;
     };
 
+    zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+    };
   };
-
 }

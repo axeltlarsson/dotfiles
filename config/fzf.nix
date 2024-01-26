@@ -24,19 +24,19 @@
       # marker     Multi-select marker
       # spinner    Streaming input indicator
       # header     Header
-    in with theme; [
-      "--height 40%"
-      "--border"
-      "--color=fg:${text},bg:${surface}"
-      "--color=hl:${muted},fg+:${subtle},bg+:${base}"
-      "--color=hl+:${subtle}"
-      "--color=query:${gold}"
-      "--color=spinner:${love},header:${rose}"
-      "--color=info:${foam},pointer:${iris}"
-      "--color=marker:${rose},prompt:${gold}"
-    ];
+    in
+      with theme; [
+        "--height 40%"
+        "--border"
+        "--color=fg:${text},bg:${surface}"
+        "--color=hl:${muted},fg+:${subtle},bg+:${base}"
+        "--color=hl+:${subtle}"
+        "--color=query:${gold}"
+        "--color=spinner:${love},header:${rose}"
+        "--color=info:${foam},pointer:${iris}"
+        "--color=marker:${rose},prompt:${gold}"
+      ];
 
     tmux.enableShellIntegration = true;
-
   };
 }

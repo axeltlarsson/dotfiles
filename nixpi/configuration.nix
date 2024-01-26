@@ -1,6 +1,9 @@
-{ config, lib, pkgs, ... }:
-
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
   ];
@@ -31,7 +34,7 @@
       axel = {
         shell = pkgs.zsh;
         isNormalUser = true;
-        extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+        extraGroups = ["wheel"]; # Enable ‘sudo’ for the user.
         home = "/home/axel";
         hashedPassword = "$y$j9T$4R7nkA77ZhIHj2mEk4hpN.$oUVs1c6.SeDiFrmR0KEjNNZjTfoDv01wg0bNRY9dEO/";
         description = "Axel Larsson";
@@ -66,18 +69,18 @@
 
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 22 ];
+    allowedTCPPorts = [22];
   };
 
   # packages to install
-  environment.systemPackages = with pkgs; [ vim ];
-  environment.variables = { EDITOR = "vim"; };
+  environment.systemPackages = with pkgs; [vim];
+  environment.variables = {EDITOR = "vim";};
 
   networking.hostName = "nixpi";
 
   nix = {
     settings.auto-optimise-store = true;
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings.experimental-features = ["nix-command" "flakes"];
     gc = {
       automatic = true;
       dates = "weekly";
@@ -90,8 +93,6 @@
     '';
   };
 
-
-
   hardware.enableRedistributableFirmware = true;
 
   # This value determines the NixOS release from which the default
@@ -102,4 +103,3 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
 }
-

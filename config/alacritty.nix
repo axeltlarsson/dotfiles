@@ -1,20 +1,15 @@
-{ pkgs, ... }:
-
-let colors = builtins.fromTOML (builtins.readFile ./alacritty-rose-pine.toml);
-# let colors = import ./alacritty-rose-pine.nix;
-
+{pkgs, ...}: let
+  colors = builtins.fromTOML (builtins.readFile ./alacritty-rose-pine.toml);
+  # let colors = import ./alacritty-rose-pine.nix;
 in {
-
   programs.alacritty = {
     enable = true;
     settings = {
-      env =
-        {
-          "TERM" = "xterm-256color";
-        };
+      env = {
+        "TERM" = "xterm-256color";
+      };
 
       window = {
-
         # Window decorations
         #
         # Values for `decorations` =
@@ -126,15 +121,14 @@ in {
         # Thin strokes are suitable for retina displays, but for non-retina screens
         # it is recommended to set `use_thin_strokes` to `false`.
         #use_thin_strokes = true
-
       };
 
-      colors = colors // {
-        # If `true`, bold text is drawn using the bright color variants.
-        draw_bold_text_with_bright_colors = true;
-      };
-
-
+      colors =
+        colors
+        // {
+          # If `true`, bold text is drawn using the bright color variants.
+          draw_bold_text_with_bright_colors = true;
+        };
 
       # Bell
       bell = {
@@ -161,7 +155,6 @@ in {
 
         # Visual bell animation color.
         color = "#ffffff";
-
       };
       selection = {
         # This string contains all characters that are used as separators for
@@ -176,10 +169,9 @@ in {
         # If this is `true`, the cursor will be rendered as a hollow box when the
         # window is not focused.
         unfocused_hollow = true;
-
       };
 
-      shell = { program = "${pkgs.zsh}/bin/zsh"; };
+      shell = {program = "${pkgs.zsh}/bin/zsh";};
 
       mouse = {
         hide_when_typing = true;
