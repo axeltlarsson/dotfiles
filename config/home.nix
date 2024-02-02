@@ -31,7 +31,7 @@
 
   programs.git.userEmail = lib.mkDefault "mail@axellarsson.nu";
 
-  nixpkgs.overlays = [(import ../overlays/python.nix) (import ../overlays/tmux-rose-pine.nix)];
+  nixpkgs.overlays = [(import ../overlays/python.nix) ];
 
   home.packages = with pkgs; [
     # common packages I always want
