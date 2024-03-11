@@ -5,7 +5,7 @@
 }: {
   programs.git = {
     enable = true;
-    userName = "AxelTLarsson";
+    userName = "axeltlarsson";
 
     delta = {
       enable = true;
