@@ -1,13 +1,12 @@
-{pkgs, ...}: let
+{ pkgs, ... }:
+let
   colors = builtins.fromTOML (builtins.readFile ./alacritty-rose-pine.toml);
   # let colors = import ./alacritty-rose-pine.nix;
 in {
   programs.alacritty = {
     enable = true;
     settings = {
-      env = {
-        "TERM" = "xterm-256color";
-      };
+      env = { "TERM" = "xterm-256color"; };
 
       window = {
         # Window decorations
@@ -123,12 +122,10 @@ in {
         #use_thin_strokes = true
       };
 
-      colors =
-        colors
-        // {
-          # If `true`, bold text is drawn using the bright color variants.
-          draw_bold_text_with_bright_colors = true;
-        };
+      colors = colors // {
+        # If `true`, bold text is drawn using the bright color variants.
+        draw_bold_text_with_bright_colors = true;
+      };
 
       # Bell
       bell = {
@@ -171,19 +168,15 @@ in {
         unfocused_hollow = true;
       };
 
-      shell = {program = "${pkgs.zsh}/bin/zsh";};
+      shell = { program = "${pkgs.zsh}/bin/zsh"; };
 
-      mouse = {
-        hide_when_typing = true;
-      };
+      mouse = { hide_when_typing = true; };
 
-      keyboard.bindings = [
-        {
-          key = "Return";
-          mods = "Command";
-          action = "ToggleFullscreen";
-        }
-      ];
+      keyboard.bindings = [{
+        key = "Return";
+        mods = "Command";
+        action = "ToggleFullscreen";
+      }];
     };
   };
 }

@@ -1,12 +1,8 @@
 # nixpi server config
-{
-  config,
-  pkgs,
-  ...
-}: {
-  imports = [../config/home.nix];
+{ config, pkgs, ... }: {
+  imports = [ ../config/home.nix ];
 
-  programs.git.signing = {key = "89006B84F7EC0084";};
+  programs.git.signing = { key = "89006B84F7EC0084"; };
 
   home = {
     username = "axel";
@@ -14,12 +10,10 @@
     stateVersion = "24.05";
   };
 
-  home.packages = [
-    pkgs.pinentry-curses
-  ];
+  home.packages = [ pkgs.pinentry-curses ];
 
   programs = {
-    gpg = {enable = true;};
+    gpg = { enable = true; };
     ssh = {
       enable = true;
       addKeysToAgent = "confirm";

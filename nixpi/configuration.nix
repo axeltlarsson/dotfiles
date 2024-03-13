@@ -1,12 +1,5 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
-  imports = [
-    ./hardware-configuration.nix
-  ];
+{ config, lib, pkgs, ... }: {
+  imports = [ ./hardware-configuration.nix ];
 
   # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
   boot.loader.grub.enable = false;
@@ -34,9 +27,10 @@
       axel = {
         shell = pkgs.zsh;
         isNormalUser = true;
-        extraGroups = ["wheel"]; # Enable ‘sudo’ for the user.
+        extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
         home = "/home/axel";
-        hashedPassword = "$y$j9T$4R7nkA77ZhIHj2mEk4hpN.$oUVs1c6.SeDiFrmR0KEjNNZjTfoDv01wg0bNRY9dEO/";
+        hashedPassword =
+          "$y$j9T$4R7nkA77ZhIHj2mEk4hpN.$oUVs1c6.SeDiFrmR0KEjNNZjTfoDv01wg0bNRY9dEO/";
         description = "Axel Larsson";
         openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTagaZ9d/J57JmYQja2uUiDj6PKctEJCvHg/vhkEuIN axel@mbp_14"
@@ -69,18 +63,18 @@
 
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [22];
+    allowedTCPPorts = [ 22 ];
   };
 
   # packages to install
-  environment.systemPackages = with pkgs; [vim];
-  environment.variables = {EDITOR = "vim";};
+  environment.systemPackages = with pkgs; [ vim ];
+  environment.variables = { EDITOR = "vim"; };
 
   networking.hostName = "nixpi";
 
   nix = {
     settings.auto-optimise-store = true;
-    settings.experimental-features = ["nix-command" "flakes"];
+    settings.experimental-features = [ "nix-command" "flakes" ];
     gc = {
       automatic = true;
       dates = "weekly";

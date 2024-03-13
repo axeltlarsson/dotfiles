@@ -1,10 +1,6 @@
 # Common macOS configuration
-{
-  config,
-  pkgs,
-  ...
-}: {
-  imports = [./config/home.nix ./config/alacritty.nix];
+{ config, pkgs, ... }: {
+  imports = [ ./config/home.nix ./config/alacritty.nix ];
 
   home = {
     username = "axel";
@@ -23,13 +19,12 @@
     ruff-lsp
 
     nodejs
-    nixfmt
     pinentry_mac
-    (pkgs.nerdfonts.override {fonts = ["Hasklig"];})
+    (pkgs.nerdfonts.override { fonts = [ "Hasklig" ]; })
     cachix
   ];
 
-  home.sessionPath = ["${config.home.homeDirectory}/.npm-packages/bin"];
+  home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
 
   home.file.".npmrc".source = ./config/npmrc.conf;
   home.file.".gnupg/gpg-agent.conf".text = ''
@@ -37,7 +32,7 @@
   '';
 
   programs = {
-    gpg = {enable = true;};
+    gpg = { enable = true; };
 
     ssh = {
       enable = true;

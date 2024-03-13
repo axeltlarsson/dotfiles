@@ -1,16 +1,6 @@
 # Home Manager common config for all my machines
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}: {
-  imports = [
-    ./fzf.nix
-    ./zsh.nix
-    ./tmux.nix
-    ./git.nix
-  ];
+{ config, pkgs, lib, ... }: {
+  imports = [ ./fzf.nix ./zsh.nix ./tmux.nix ./git.nix ];
 
   nix.registry = {
     nixpkgs-master = {
@@ -31,13 +21,13 @@
 
   programs.git.userEmail = lib.mkDefault "mail@axellarsson.nu";
 
-  nixpkgs.overlays = [(import ../overlays/python.nix) ];
+  nixpkgs.overlays = [ (import ../overlays/python.nix) ];
 
   home.packages = with pkgs; [
     # common packages I always want
     nix
     nil
-    alejandra
+    nixfmt
     ripgrep
     jq
     fd
@@ -74,18 +64,16 @@
       themes = {
         # do `bat cache --build` for bat to pick this up
         rose-pine = {
-          src =
-            pkgs.fetchFromGitHub
-            {
-              owner = "rose-pine";
-              repo = "sublime-text"; # Bat uses sublime syntax for its themes
-              rev = "ed9ace4c571426070e1046853c13c45d9f12441c";
-              sha256 = "sha256-d5CCk15KaIEXFd1LP7q82tcX9evE5G/ZS2GxPCA1K0I=";
-            };
+          src = pkgs.fetchFromGitHub {
+            owner = "rose-pine";
+            repo = "sublime-text"; # Bat uses sublime syntax for its themes
+            rev = "ed9ace4c571426070e1046853c13c45d9f12441c";
+            sha256 = "sha256-d5CCk15KaIEXFd1LP7q82tcX9evE5G/ZS2GxPCA1K0I=";
+          };
           file = "/rose-pine.tmTheme";
         };
       };
-      config = {theme = "rose-pine";};
+      config = { theme = "rose-pine"; };
     };
 
     eza = {

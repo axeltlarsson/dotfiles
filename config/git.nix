@@ -1,15 +1,11 @@
-{
-  pkgs,
-  config,
-  ...
-}: {
+{ pkgs, config, ... }: {
   programs.git = {
     enable = true;
     userName = "axeltlarsson";
 
     delta = {
       enable = true;
-      options = {};
+      options = { };
     };
 
     aliases = {
@@ -44,12 +40,12 @@
         };
       };
 
-      color = {};
+      color = { };
       submodule.recurse = true;
     };
 
     lfs.enable = true;
 
-    signing = {signByDefault = true;};
+    signing = { signByDefault = true; };
   };
 }
