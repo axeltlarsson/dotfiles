@@ -1,10 +1,10 @@
-# Common macOS configuration
-{ config, pkgs, ... }: {
-  imports = [ ./config/home.nix ./config/alacritty.nix ];
+# home-manager common macOS configuration
+{ config, pkgs, lib, ... }: {
+  imports = [ ../config/home.nix ../config/alacritty.nix ];
 
   home = {
     username = "axel";
-    homeDirectory = "/Users/axel";
+    homeDirectory = lib.mkForce "/Users/axel";
     stateVersion = "21.11";
   };
 
@@ -26,14 +26,16 @@
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
 
-  home.file.".npmrc".source = ./config/npmrc.conf;
+  home.file.".npmrc".source = ../config/npmrc.conf;
   home.file.".gnupg/gpg-agent.conf".text = ''
     pinentry-program ${pkgs.pinentry_mac}/Applications/pinentry-mac.app/Contents/MacOS/pinentry-mac
   '';
 
   programs = {
+    # TODO: use SSH keys for GH instead
     gpg = { enable = true; };
 
+    # TODO: probably want this ssh config for all my machines, so could move to config/home.nix
     ssh = {
       enable = true;
       extraConfig = ''

@@ -1,6 +1,6 @@
 # andrimner server config
 { config, pkgs, ... }: {
-  imports = [ ./config/home.nix ];
+  imports = [ ../config/home.nix ];
   programs.git.signing = { key = "52F093DF8ECCB62A"; };
 
   home = {
@@ -8,4 +8,6 @@
     username = "axel";
     stateVersion = "21.11";
   };
+
+  nixpkgs.overlays = [ (import ../overlays/python.nix) ];
 }

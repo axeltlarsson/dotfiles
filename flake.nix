@@ -9,23 +9,47 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-utils = { url = "github:numtide/flake-utils"; };
+    nix-darwin.url = "github:LnL7/nix-darwin";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, flake-utils, nixos-hardware, }:
+  outputs = inputs@{ self, nixpkgs, home-manager, flake-utils, nixos-hardware
+    , nix-darwin }:
     # home-manager and nixOS configuration
     {
+      darwinConfigurations = {
+        "axel-mbp14" = nix-darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./darwin/configuration.nix
+            home-manager.darwinModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.axel = import ./darwin/axel_mbp14.nix;
+            }
+          ];
+        };
+        "axel-mbp14-ja" = nix-darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./darwin/configuration.nix
+            home-manager.darwinModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.axel = import ./darwin/axel_mbp14_ja.nix;
+            }
+          ];
+        };
+      };
+
       homeConfigurations = {
-        "axel-mbp14" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.aarch64-darwin;
-          modules = [ ./axel_mbp14.nix ];
-        };
-        "axel-mbp14-ja" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.aarch64-darwin;
-          modules = [ ./axel_mbp14_ja.nix ];
-        };
         "andrimner" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
-          modules = [ ./andrimner.nix ];
+          modules = [ ./andrimner/home.nix ];
         };
       };
       nixosConfigurations = {
@@ -55,18 +79,24 @@
           pkgs.writeScriptBin "update" "nix flake update --commit-lock-file";
         build = pkgs.writeShellApplication {
           name = "build";
-          runtimeInputs = [ pkgs.nvd pkgs.home-manager ];
+          runtimeInputs = [ nix-darwin ];
           text = ''
             # first run: no current generation exists so use ./result (diff against oneself)
-            current=$( (home-manager generations 2> /dev/null || echo result) | head -n 1 | awk '{ print $7 }')
-            home-manager build --flake ".#$(hostname -s | awk '{ print tolower($1) }')" && nvd diff "$current" result
+            # current=$( (home-manager generations 2> /dev/null || echo result) | head -n 1 | awk '{ print $7 }')
+            # home-manager build --flake ".#$(hostname -s | awk '{ print tolower($1) }')" && nvd diff "$current" result
+            ${
+              nix-darwin.packages.${system}.default
+            }/bin/darwin-rebuild build --flake .
           '';
         };
         switch = pkgs.writeShellApplication {
           name = "switch";
-          runtimeInputs = [ pkgs.home-manager ];
+          runtimeInputs = [ nix-darwin ];
           text = ''
-            home-manager switch --flake ".#$(hostname -s | awk '{ print tolower($1) }')"'';
+            ${
+              nix-darwin.packages.${system}.default
+            }/bin/darwin-rebuild switch --flake .
+          '';
         };
       in {
         devShell = pkgs.mkShell { buildInputs = [ update build switch ]; };

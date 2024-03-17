@@ -5,7 +5,7 @@
   # folder "work"
   home.file."work" = {
     recursive = true;
-    source = ./config/work;
+    source = ../config/work;
   };
 
   programs.git.signing = { key = "381AE25298A4EFF6"; };
