@@ -14,7 +14,7 @@
   programs.k9s = {
     enable = true;
     skins = {
-      skin = builtins.fromJSON (builtins.readFile ./config/k9s-rose-pine.json);
+      skin = builtins.fromJSON (builtins.readFile ../config/k9s-rose-pine.json);
     };
   };
 
