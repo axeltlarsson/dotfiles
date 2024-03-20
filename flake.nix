@@ -89,6 +89,7 @@
             }/bin/darwin-rebuild build --flake .
           '';
         };
+        # TODO: switch doesn't apply the configuration...
         switch = pkgs.writeShellApplication {
           name = "switch";
           runtimeInputs = [ nix-darwin ];
