@@ -197,7 +197,7 @@ nnoremap <Leader>t :TableFormat<CR>
 " Fern
 let g:fern#renderer = "nerdfont"
 noremap <silent> <Leader>d :Fern . -drawer -width=35 -toggle<CR><C-w>=
-noremap <silent> <Leader>f :Fern . -drawer -reveal=% -width=35<CR><C-w>=
+noremap <silent> <Leader>F :Fern . -drawer -reveal=% -width=35<CR><C-w>=
 
 function! FernInit() abort
   set nonu
