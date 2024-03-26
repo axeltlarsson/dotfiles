@@ -33,6 +33,7 @@
     diff-so-fancy
     shellcheck
     shfmt
+    pgformatter
     # wget required by unicodemoji
     wget
     pandoc
