@@ -13,7 +13,7 @@
     package = pkgs.nix;
     settings.experimental-features = "nix-command flakes";
     settings.trusted-users = [ "axel" ];
-    settings.system-features = [ "nixos-test" "apple-virt" "big-parallel" ];
+    settings.system-features = [ "nixos-test" "apple-virt" ];
     linux-builder = {
       enable = true;
       ephemeral = true;
