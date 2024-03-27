@@ -132,6 +132,8 @@ endif
 " FZF
 map <Leader>r :Rg<CR>
 nnoremap <Leader>b :Buffers<CR>
+nnoremap <Leader>C :Commits<CR>
+nnoremap <Leader>B :BCommits<CR>
 nnoremap <silent> <Leader><Space> :Files<CR>
 
 " Customize fzf colors to match your color scheme
@@ -306,6 +308,11 @@ let g:UltiSnipsEditSplit="vertical"
 
 " Edit vimrc with :Vimrc (change to :vs to open in a new split)
 command! Vimrc :e $MYVIMRC
+
+
+let g:copilot_filetypes = {
+      \ 'markdown': v:false,
+      \ }
 
 " TreeSitter
 lua <<EOF
