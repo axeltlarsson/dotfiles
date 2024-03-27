@@ -79,26 +79,16 @@
           pkgs.writeScriptBin "update" "nix flake update --commit-lock-file";
         build = pkgs.writeShellApplication {
           name = "build";
-          runtimeInputs = [ nix-darwin ];
           text = ''
             # first run: no current generation exists so use ./result (diff against oneself)
             # current=$( (home-manager generations 2> /dev/null || echo result) | head -n 1 | awk '{ print $7 }')
             # home-manager build --flake ".#$(hostname -s | awk '{ print tolower($1) }')" && nvd diff "$current" result
-            ${
-              nix-darwin.packages.${system}.default
-            }/bin/darwin-rebuild build --flake .
+            darwin-rebuild build --flake .
           '';
         };
-        # TODO: switch doesn't apply the configuration...
-        switch = pkgs.writeShellApplication {
-          name = "switch";
-          runtimeInputs = [ nix-darwin ];
-          text = ''
-            ${
-              nix-darwin.packages.${system}.default
-            }/bin/darwin-rebuild switch --flake .
-          '';
-        };
+        switch = pkgs.writeScriptBin "switch" ''
+          darwin-rebuild switch --flake .
+        '';
       in {
         devShell = pkgs.mkShell { buildInputs = [ update build switch ]; };
         formatter = pkgs.nixfmt;
