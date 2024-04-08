@@ -25,7 +25,7 @@
     # common packages I always want
     nix
     nil
-    nixfmt
+    nixfmt-rfc-style
     ripgrep
     jq
     fd
@@ -77,7 +77,7 @@
 
     eza = {
       enable = true;
-      enableAliases = true;
+      enableZshIntegration = true;
     };
 
     direnv = {

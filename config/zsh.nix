@@ -32,7 +32,7 @@
       XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
     };
 
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
 
     prezto = {
       enable = true;
