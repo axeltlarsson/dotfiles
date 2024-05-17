@@ -91,6 +91,6 @@
         '';
       in {
         devShell = pkgs.mkShell { buildInputs = [ update build switch ]; };
-        formatter = pkgs.nixfmt;
+        formatter = pkgs.nixfmt-rfc-style;
       });
 }

@@ -31,4 +31,5 @@
   services.ssh-agent.enable = true;
 
   systemd.user.startServices = "sd-switch";
+  nixpkgs.overlays = [ (import ../overlays/python.nix) ];
 }
