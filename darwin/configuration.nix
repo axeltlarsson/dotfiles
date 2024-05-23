@@ -1,11 +1,11 @@
 # common nix-darwin configuration.nix
-{ pkgs, inputs, ... }: {
+{ pkgs, inputs, ... }:
+{
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
   nixpkgs.hostPlatform = "aarch64-darwin";
   system.stateVersion = 4;
-  system.configurationRevision =
-    inputs.self.rev or inputs.self.dirtyRev or null;
+  system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
   programs.zsh.enable = true;
 
@@ -13,10 +13,18 @@
     package = pkgs.nix;
     settings.experimental-features = "nix-command flakes";
     settings.trusted-users = [ "axel" ];
-    settings.system-features = [ "nixos-test" "apple-virt" ];
-    settings.substituters = [ "https://cache.garnix.io" ];
-    settings.trusted-public-keys =
-      [ "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=" ];
+    settings.system-features = [
+      "nixos-test"
+      "apple-virt"
+    ];
+    settings.substituters = [
+      "https://cache.garnix.io"
+      "https://postgrest.cachix.org"
+    ];
+    settings.trusted-public-keys = [
+      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "postgrest.cachix.org-1:icgW4R15fz1+LqvhPjt4EnX/r19AaqxiVV+1olwlZtI="
+    ];
     linux-builder = {
       enable = true;
       ephemeral = true;
