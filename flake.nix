@@ -8,19 +8,30 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    flake-utils = { url = "github:numtide/flake-utils"; };
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+    };
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, flake-utils, nixos-hardware
-    , nix-darwin }:
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      home-manager,
+      flake-utils,
+      nixos-hardware,
+      nix-darwin,
+    }:
     # home-manager and nixOS configuration
     {
       darwinConfigurations = {
         "axel-mbp14" = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = { inherit inputs; };
+          specialArgs = {
+            inherit inputs;
+          };
           modules = [
             ./darwin/configuration.nix
             home-manager.darwinModules.home-manager
@@ -33,7 +44,9 @@
         };
         "axel-mbp14-ja" = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = { inherit inputs; };
+          specialArgs = {
+            inherit inputs;
+          };
           modules = [
             ./darwin/configuration.nix
             home-manager.darwinModules.home-manager
@@ -42,6 +55,24 @@
               home-manager.useUserPackages = true;
               home-manager.users.axel = import ./darwin/axel_mbp14_ja.nix;
             }
+            (
+              # darwin module for axel_mbp14_ja: extra binary caches
+              { pkgs, ... }:
+              {
+                nix = {
+                  settings.substituters = [
+                    "https://jojnts.cachix.org"
+                    "https://nixpkgs-python.cachix.org"
+                    "https://leif-gpt.cachix.org"
+                  ];
+                  settings.trusted-public-keys = [
+                    "jojnts.cachix.org-1:+HXC6tk/lRE4nMyG3KJ92KfJ0gd/NyoTwAKb1xrzMQw="
+                    "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU="
+                    "leif-gpt.cachix.org-1:h5qgyt1oEi4szJ3HU2IhIi8Ptfq3YeT6U4Yk97t43Gg="
+                  ];
+                };
+              }
+            )
           ];
         };
       };
@@ -72,11 +103,11 @@
       };
     }
     # devShells
-    // flake-utils.lib.eachDefaultSystem (system:
+    // flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        update =
-          pkgs.writeScriptBin "update" "nix flake update --commit-lock-file";
+        update = pkgs.writeScriptBin "update" "nix flake update --commit-lock-file";
         build = pkgs.writeShellApplication {
           name = "build";
           text = ''
@@ -89,8 +120,16 @@
         switch = pkgs.writeScriptBin "switch" ''
           darwin-rebuild switch --flake .
         '';
-      in {
-        devShell = pkgs.mkShell { buildInputs = [ update build switch ]; };
+      in
+      {
+        devShell = pkgs.mkShell {
+          buildInputs = [
+            update
+            build
+            switch
+          ];
+        };
         formatter = pkgs.nixfmt-rfc-style;
-      });
+      }
+    );
 }

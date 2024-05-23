@@ -89,4 +89,8 @@
       '';
     };
   };
+
+  nix.settings = {
+    netrc-file = "${config.home.homeDirectory}/.config/nix/.netrc";
+  };
 }
