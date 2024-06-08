@@ -338,8 +338,10 @@ require('nvim-treesitter.configs').setup {
     "ruby",
     "sql",
     "vim",
+    "vimdoc",
   },
-
+  -- explicitly disable markdown as I use vim-markdown for that instead and it seems neovim from nixpkgs bundles markdown
+  disable = { "markdown", "markdown_inline"},
   highlight = {
     enable = true;
   },
