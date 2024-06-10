@@ -8,8 +8,7 @@ endif
 " ---- Plugins ----
 call plug#begin('~/.vim/plugged')
 
-let g:polyglot_disabled = ['elm'] " Zaptic/elm-vim covers this better
-" let g:elm_setup_keybindings = 0
+let g:polyglot_disabled = ['markdown'] " might conflict with vim-markdown
 
 Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
@@ -278,7 +277,6 @@ let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_strikethrough = 1
 let g:vim_markdown_math = 1
 let g:vim_markdown_conceal = 0
-let g:vim_markdown_new_list_item_indent = 2
 
 " Zen Mode
 autocmd! User GoyoEnter Limelight
@@ -340,10 +338,10 @@ require('nvim-treesitter.configs').setup {
     "vim",
     "vimdoc",
   },
-  -- explicitly disable markdown as I use vim-markdown for that instead and it seems neovim from nixpkgs bundles markdown
-  disable = { "markdown", "markdown_inline"},
   highlight = {
     enable = true;
+    -- explicitly disable markdown as I use vim-markdown for that instead and it seems nixpkgs#neovim bundles markdown
+    disable = { "markdown", "markdown_inline"},
   },
 }
 EOF
