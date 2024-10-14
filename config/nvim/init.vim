@@ -355,7 +355,7 @@ lspconfig.solargraph.setup{}
 lspconfig.elmls.setup{}
 lspconfig.bashls.setup{}
 lspconfig.gopls.setup{}
-lspconfig.ruff_lsp.setup{
+lspconfig.ruff.setup{
   on_attach = function(client, bufnr)
     -- Disable hover in favor of Pyright
     client.server_capabilities.hoverProvider = false

@@ -16,7 +16,6 @@
 
     # python
     ruff
-    ruff-lsp
 
     nodejs
     pinentry_mac
