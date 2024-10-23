@@ -1,12 +1,15 @@
 { pkgs, ... }:
 let
   colors = builtins.fromTOML (builtins.readFile ./alacritty-rose-pine.toml);
-  # let colors = import ./alacritty-rose-pine.nix;
-in {
+in
+# let colors = import ./alacritty-rose-pine.nix;
+{
   programs.alacritty = {
     enable = true;
     settings = {
-      env = { "TERM" = "xterm-256color"; };
+      env = {
+        "TERM" = "xterm-256color";
+      };
 
       window = {
         # Window decorations
@@ -168,15 +171,21 @@ in {
         unfocused_hollow = true;
       };
 
-      shell = { program = "${pkgs.zsh}/bin/zsh"; };
+      terminal.shell = {
+        program = "${pkgs.zsh}/bin/zsh";
+      };
 
-      mouse = { hide_when_typing = true; };
+      mouse = {
+        hide_when_typing = true;
+      };
 
-      keyboard.bindings = [{
-        key = "Return";
-        mods = "Command";
-        action = "ToggleFullscreen";
-      }];
+      keyboard.bindings = [
+        {
+          key = "Return";
+          mods = "Command";
+          action = "ToggleFullscreen";
+        }
+      ];
     };
   };
 }
