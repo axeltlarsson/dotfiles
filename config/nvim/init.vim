@@ -333,6 +333,7 @@ require('nvim-treesitter.configs').setup {
     "nix",
     "python",
     "regex",
+    "roc",
     "ruby",
     "sql",
     "vim",
@@ -347,6 +348,12 @@ require('nvim-treesitter.configs').setup {
 }
 EOF
 
+lua <<EOF
+-- associate .roc extension with roc filetype
+vim.api.nvim_command('autocmd BufNewFile,BufRead *.roc set filetype=roc')
+
+EOF
+
 " LSP
 lua <<EOF
 -- Setup language servers.
@@ -355,6 +362,7 @@ lspconfig.solargraph.setup{}
 lspconfig.elmls.setup{}
 lspconfig.bashls.setup{}
 lspconfig.gopls.setup{}
+lspconfig.roc_ls.setup{}
 lspconfig.ruff.setup{
   on_attach = function(client, bufnr)
     -- Disable hover in favor of Pyright
