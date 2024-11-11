@@ -16,7 +16,7 @@
   };
 
   programs.git.signing = {
-    key = "381AE25298A4EFF6";
+    key = "935032DCD5C2BAEF";
   };
   programs.git.userEmail = lib.mkForce "axel@arthro.ai";
 
