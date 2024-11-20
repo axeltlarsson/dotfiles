@@ -55,24 +55,6 @@
               home-manager.useUserPackages = true;
               home-manager.users.axel = import ./darwin/axel_mbp14_ja.nix;
             }
-            (
-              # darwin module for axel_mbp14_ja: extra binary caches
-              { pkgs, ... }:
-              {
-                nix = {
-                  settings.substituters = [
-                    "https://jojnts.cachix.org"
-                    "https://nixpkgs-python.cachix.org"
-                    "https://leif-gpt.cachix.org"
-                  ];
-                  settings.trusted-public-keys = [
-                    "jojnts.cachix.org-1:+HXC6tk/lRE4nMyG3KJ92KfJ0gd/NyoTwAKb1xrzMQw="
-                    "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU="
-                    "leif-gpt.cachix.org-1:h5qgyt1oEi4szJ3HU2IhIi8Ptfq3YeT6U4Yk97t43Gg="
-                  ];
-                };
-              }
-            )
           ];
         };
       };
