@@ -17,6 +17,10 @@
       bind-key right swap-window -t +1 -d
       # prefix + t swaps window to "top"
       bind-key t swap-window -t 0 -d
+
+      # https://github.com/tmux/tmux/issues/4240
+      set -gu default-command
+      set -g default-shell "${pkgs.zsh}/bin/zsh"
     '';
     keyMode = "vi";
     plugins = with pkgs; [

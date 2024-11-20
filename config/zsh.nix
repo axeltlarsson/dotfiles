@@ -1,4 +1,5 @@
-{ pkgs, config, ... }: {
+{ pkgs, config, ... }:
+{
   programs.zsh = {
     enable = true;
 
@@ -7,10 +8,6 @@
       function zet {
         nvim "+Zet $*"
       }
-
-      if [ -e ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
-        . ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh;
-      fi
     '';
 
     initExtra = ''

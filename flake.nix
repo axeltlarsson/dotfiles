@@ -11,8 +11,10 @@
     flake-utils = {
       url = "github:numtide/flake-utils";
     };
-    nix-darwin.url = "github:LnL7/nix-darwin";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
