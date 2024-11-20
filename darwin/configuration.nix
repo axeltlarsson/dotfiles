@@ -20,6 +20,7 @@
     settings.substituters = [
       "https://cache.garnix.io"
       "https://postgrest.cachix.org"
+      "https://aseipp-nix-cache.global.ssl.fastly.net"
     ];
     settings.trusted-public-keys = [
       "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
@@ -44,6 +45,8 @@
   };
 
   nixpkgs.overlays = [ (import ../overlays/python.nix) ];
+
+
 
   security.pam.enableSudoTouchIdAuth = true;
 }
