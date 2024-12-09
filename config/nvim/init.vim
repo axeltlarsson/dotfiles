@@ -336,6 +336,7 @@ require('nvim-treesitter.configs').setup {
     "roc",
     "ruby",
     "sql",
+    "typst",
     "vim",
     "vimdoc",
     "yaml",
@@ -351,6 +352,8 @@ EOF
 lua <<EOF
 -- associate .roc extension with roc filetype
 vim.api.nvim_command('autocmd BufNewFile,BufRead *.roc set filetype=roc')
+-- associate .typ extension with typst filetype
+vim.api.nvim_command('autocmd BufNewFile,BufRead *.typ set filetype=typst')
 
 EOF
 
@@ -381,6 +384,12 @@ lspconfig.nil_ls.setup{
   },
 }
 lspconfig.lua_ls.setup{}
+lspconfig.tinymist.setup{
+  settings = {
+    exportPdf = "onSave";
+    formatterMode = "typstyle";
+  };
+}
 
 
 -- Global mappings.
