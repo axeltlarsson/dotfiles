@@ -386,7 +386,7 @@ lspconfig.nil_ls.setup{
 lspconfig.lua_ls.setup{}
 lspconfig.tinymist.setup{
   settings = {
-    exportPdf = "onSave";
+    exportPdf = "onType";
     formatterMode = "typstyle";
   };
 }
