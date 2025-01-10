@@ -60,7 +60,6 @@ in
           #   - (Linux/BSD) monospace
           #   - (Windows) Consolas
           family = "Hasklug Nerd Font";
-          # family = Menlo
 
           # The `style` can be specified to pick a specific face.
           style = "Regular";
@@ -91,15 +90,16 @@ in
         };
 
         # Bold italic font face
-        #bold_italic =
-        # Font family
-        #
-        # If the bold italic family is not specified, it will fall back to the
-        # value specified for the normal font.
-        #family = monospace
+        bold_italic = {
+          # Font family
+          #
+          # If the bold italic family is not specified, it will fall back to the
+          # value specified for the normal font.
+          #family = monospace
 
-        # The `style` can be specified to pick a specific face.
-        #style = Bold Italic
+          # The `style` can be specified to pick a specific face.
+          style = "Bold Italic";
+        };
 
         # Point size
         size = 13.0;

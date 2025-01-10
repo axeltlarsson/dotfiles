@@ -19,8 +19,7 @@
 
     nodejs
     pinentry_mac
-    (pkgs.nerdfonts.override { fonts = [ "Hasklig" ]; })
-    cachix
+    pkgs.nerd-fonts.hasklug
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
