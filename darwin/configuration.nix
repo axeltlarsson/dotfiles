@@ -1,8 +1,6 @@
 # common nix-darwin configuration.nix
 { pkgs, inputs, ... }:
 {
-  # Auto upgrade nix package and the daemon service.
-  services.nix-daemon.enable = true;
   nixpkgs.hostPlatform = "aarch64-darwin";
   system.stateVersion = 4;
   system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
