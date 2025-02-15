@@ -19,7 +19,7 @@
 
     nodejs
     pinentry_mac
-    (pkgs.nerdfonts.override { fonts = [ "Hasklig" ]; })
+    pkgs.nerd-fonts.hasklug
     cachix
   ];
 
