@@ -20,7 +20,6 @@
     nodejs
     pinentry_mac
     pkgs.nerd-fonts.hasklug
-    cachix
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
