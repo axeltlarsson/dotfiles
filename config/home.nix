@@ -45,6 +45,7 @@
     shellcheck
     shfmt
     pgformatter
+    uv
     # wget required by unicodemoji
     wget
     pandoc
