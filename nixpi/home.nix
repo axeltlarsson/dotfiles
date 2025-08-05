@@ -10,22 +10,13 @@
     stateVersion = "24.05";
   };
 
-  home.packages = [ pkgs.pinentry-curses ];
+  home.packages = [];
 
   programs = {
-    gpg = { enable = true; };
     ssh = {
       enable = true;
       addKeysToAgent = "confirm";
     };
-  };
-
-  services.gpg-agent = {
-    enable = true;
-    enableZshIntegration = true;
-    extraConfig = ''
-      pinentry-program ${pkgs.pinentry-curses}/bin/pinentry-curses
-    '';
   };
 
   services.ssh-agent.enable = true;

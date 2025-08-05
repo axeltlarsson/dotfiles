@@ -27,16 +27,11 @@
     ruff
 
     nodejs
-    pinentry_mac
     pkgs.nerd-fonts.hasklug
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
   home.file.".npmrc".source = ../config/npmrc.conf;
-
-  home.file.".gnupg/gpg-agent.conf".text = ''
-    pinentry-program ${pkgs.pinentry_mac}/Applications/pinentry-mac.app/Contents/MacOS/pinentry-mac
-  '';
 
   programs = {
 
