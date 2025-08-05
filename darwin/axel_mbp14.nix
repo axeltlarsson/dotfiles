@@ -4,7 +4,12 @@
 { config, pkgs, ... }:
 {
   imports = [ ./mbp.nix ];
+
   programs.git.signing = {
-    key = "3AE85E14F3123D07";
+    key = "~/.ssh/id_ed25519.pub";
   };
+
+  home.file.".config/git/allowed_signers".text = ''
+    ${config.programs.git.userEmail} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTagaZ9d/J57JmYQja2uUiDj6PKctEJCvHg/vhkEuIN mail@axellarsson.nu
+  '';
 }

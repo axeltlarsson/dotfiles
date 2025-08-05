@@ -1,6 +1,15 @@
 # home-manager common macOS configuration
-{ config, pkgs, lib, ... }: {
-  imports = [ ../config/home.nix ../config/alacritty.nix ];
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+{
+  imports = [
+    ../config/home.nix
+    ../config/alacritty.nix
+  ];
 
   home = {
     username = "axel";
@@ -30,8 +39,6 @@
   '';
 
   programs = {
-    # TODO: use SSH keys for GH instead
-    gpg = { enable = true; };
 
     # TODO: probably want this ssh config for all my machines, so could move to config/home.nix
     ssh = {

@@ -88,5 +88,12 @@
     signing = {
       signByDefault = true;
     };
+
+    extraConfig = {
+      gpg = {
+        format = "ssh"; # Use SSH keys for signing
+        ssh.allowedSignersFile = "~/.config/git/allowed_signers";
+      };
+    };
   };
 }

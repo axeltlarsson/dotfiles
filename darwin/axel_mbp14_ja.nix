@@ -16,9 +16,14 @@
   };
 
   programs.git.signing = {
-    key = "935032DCD5C2BAEF";
+    key = "~/.ssh/id_ed25519";
   };
+
   programs.git.userEmail = lib.mkForce "axel@arthro.ai";
+
+  home.file.".config/git/allowed_signers".text = ''
+    ${config.programs.git.userEmail} ssh-ed25519 abcTODO
+  '';
 
   programs.k9s = {
     enable = true;
