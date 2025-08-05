@@ -41,7 +41,6 @@
     jq
     fd
     nvd
-    diff-so-fancy
     shellcheck
     shfmt
     pgformatter
