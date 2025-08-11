@@ -22,7 +22,7 @@
   programs.git.userEmail = lib.mkForce "axel@arthro.ai";
 
   home.file.".config/git/allowed_signers".text = ''
-    ${config.programs.git.userEmail} ssh-ed25519 abcTODO
+    ${config.programs.git.userEmail} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaizpKc2t1Oowabm8WuRyOm+Fv50ai+vfpnP+Y0XtZz axel@jointacademy.com
   '';
 
   programs.k9s = {
