@@ -81,19 +81,17 @@
 
       color = { };
       submodule.recurse = true;
+
+      gpg = {
+        format = "ssh"; # Use SSH keys for signing
+        ssh.allowedSignersFile = "~/.config/git/allowed_signers";
+      };
     };
 
     lfs.enable = true;
 
     signing = {
       signByDefault = true;
-    };
-
-    extraConfig = {
-      gpg = {
-        format = "ssh"; # Use SSH keys for signing
-        ssh.allowedSignersFile = "~/.config/git/allowed_signers";
-      };
     };
   };
 }

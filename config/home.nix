@@ -11,6 +11,7 @@
     ./zsh.nix
     ./tmux.nix
     ./git.nix
+    ./ssh.nix
   ];
 
   nix.registry = {
