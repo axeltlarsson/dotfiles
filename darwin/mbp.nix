@@ -28,6 +28,8 @@
 
     nodejs
     pkgs.nerd-fonts.hasklug
+
+    pkgs.claude-code
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];

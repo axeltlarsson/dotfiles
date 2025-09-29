@@ -1,5 +1,10 @@
 # common nix-darwin configuration.nix
-{ pkgs, inputs, ... }:
+{
+  pkgs,
+  inputs,
+  lib,
+  ...
+}:
 {
   nixpkgs.hostPlatform = "aarch64-darwin";
   system.stateVersion = 4;
@@ -43,6 +48,12 @@
   };
 
   nixpkgs.overlays = [ (import ../overlays/python.nix) ];
+
+  nixpkgs.config.allowUnfreePredicate =
+    pkg:
+    builtins.elem (lib.getName pkg) [
+      "claude-code"
+    ];
 
   security.pam.services.sudo_local.touchIdAuth = true;
 }
