@@ -436,7 +436,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
 EOF
 
 lua << END
-require('lualine').setup()
+require('lualine').setup {
+  sections = {
+    lualine_c = {
+      {
+          'filename',
+          path = 1, -- show relative path
+      }
+    }
+  }
+}
 END
 
 lua << END
