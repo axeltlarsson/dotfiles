@@ -57,6 +57,7 @@
     pspg
   ];
 
+  home.file.".kube/kubie.yaml".source = ./kubie.yaml;
   home.file.".config/pgcli/config".source = ./pgcli.conf;
   home.file.".pspgconf".source = ./pspg.conf;
   home.file.".psqlrc".source = ./psqlrc.conf;
