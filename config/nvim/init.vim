@@ -191,6 +191,9 @@ command! -bang -nargs=* Notes
 " Map leader g to Ctrl-] - to follow links in vim docs
 nnoremap <Leader>g <C-]>
 
+" Map leader L to copy current file path and line number to clipboard
+nnoremap <silent> <Leader>L :let @+=expand("%") . ":" . line(".")<CR>
+
 nnoremap <Leader>t :TableFormat<CR>
 
 " Fern
