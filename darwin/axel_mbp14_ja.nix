@@ -19,10 +19,10 @@
     key = "~/.ssh/id_ed25519";
   };
 
-  programs.git.userEmail = lib.mkForce "axel@arthro.ai";
+  programs.git.settings.user.email = lib.mkForce "axel@arthro.ai";
 
   home.file.".config/git/allowed_signers".text = ''
-    ${config.programs.git.userEmail} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaizpKc2t1Oowabm8WuRyOm+Fv50ai+vfpnP+Y0XtZz axel@jointacademy.com
+    ${config.programs.git.settings.user.email} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaizpKc2t1Oowabm8WuRyOm+Fv50ai+vfpnP+Y0XtZz axel@jointacademy.com
   '';
 
   programs.k9s = {

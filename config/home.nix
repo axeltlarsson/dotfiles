@@ -31,7 +31,7 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  programs.git.userEmail = lib.mkDefault "mail@axellarsson.nu";
+  programs.git.settings.user.email = lib.mkDefault "mail@axellarsson.nu";
 
   home.packages = with pkgs; [
     # common packages I always want
@@ -137,5 +137,14 @@
             '';
       };
     };
+
+    delta = {
+      enable = true;
+      options = {
+        navigate = true;
+      };
+      enableGitIntegration = true;
+    };
+
   };
 }

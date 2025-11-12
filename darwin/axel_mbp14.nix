@@ -10,6 +10,6 @@
   };
 
   home.file.".config/git/allowed_signers".text = ''
-    ${config.programs.git.userEmail} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTagaZ9d/J57JmYQja2uUiDj6PKctEJCvHg/vhkEuIN mail@axellarsson.nu
+    ${config.programs.git.settings.user.email} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTagaZ9d/J57JmYQja2uUiDj6PKctEJCvHg/vhkEuIN mail@axellarsson.nu
   '';
 }

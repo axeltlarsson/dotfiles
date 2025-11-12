@@ -2,23 +2,18 @@
 {
   programs.git = {
     enable = true;
-    userName = "axeltlarsson";
 
-    delta = {
-      enable = true;
-      options = {
-        navigate = true;
+    settings = {
+
+      user.name = "axeltlarsson";
+
+      alias = {
+        co = "checkout";
+        ignore = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi";
+        please = "push --force-with-lease";
+        st = "status";
       };
-    };
 
-    aliases = {
-      co = "checkout";
-      ignore = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi";
-      please = "push --force-with-lease";
-      st = "status";
-    };
-
-    extraConfig = {
       core = {
         editor = "nvim";
         excludesFile = "~/.gitignore"; # TODO: inline?
@@ -94,4 +89,5 @@
       signByDefault = true;
     };
   };
+
 }
