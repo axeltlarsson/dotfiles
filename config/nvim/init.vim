@@ -360,26 +360,27 @@ EOF
 
 " LSP
 lua <<EOF
--- Setup language servers.
-local lspconfig = require('lspconfig')
-lspconfig.ruby_lsp.setup{
+
+vim.lsp.enable({
+  'bashls',
+  'elmls',
+  'gopls',
+  'lua_ls',
+  'nil_ls',
+  'roc_ls',
+  'ruby_lsp',
+  'ruff',
+  'tinymist',
+  'ty',
+})
+
+vim.lsp.config('ruby_lsp', {
   init_options = {
     formatting = false, -- disable formatting as I use rubyfmt
     linters = { 'standard' },
   }
-}
-lspconfig.elmls.setup{}
-lspconfig.bashls.setup{}
-lspconfig.gopls.setup{}
-lspconfig.roc_ls.setup{}
-lspconfig.ruff.setup{
-  on_attach = function(client, bufnr)
-    -- Disable hover in favor of Pyright
-    client.server_capabilities.hoverProvider = false
-  end
-}
-lspconfig.pyright.setup{}
-lspconfig.nil_ls.setup{
+})
+vim.lsp.config('nil_ls', {
   settings = {
     ['nil'] = {
       testSetting = 42,
@@ -388,14 +389,13 @@ lspconfig.nil_ls.setup{
       },
     },
   },
-}
-lspconfig.lua_ls.setup{}
-lspconfig.tinymist.setup{
+})
+vim.lsp.config('tinymist', {
   settings = {
-    exportPdf = "onType";
-    formatterMode = "typstyle";
-  };
-}
+    exportPdf = "onType",
+    formatterMode = "typstyle",
+  },
+})
 
 
 -- Global mappings.
