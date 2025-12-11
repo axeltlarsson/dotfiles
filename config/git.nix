@@ -14,10 +14,7 @@
         st = "status";
       };
 
-      core = {
-        editor = "nvim";
-        excludesFile = "~/.gitignore"; # TODO: inline?
-      };
+      core.editor = "nvim";
 
       column.ui = "auto";
       branch.sort = "-committerdate";
@@ -84,6 +81,25 @@
     };
 
     lfs.enable = true;
+
+    ignores = [
+      # Claude Code
+      ".claude/"
+
+      # macOS
+      ".DS_Store"
+      ".AppleDouble"
+      ".LSOverride"
+      "._*"
+      ".Spotlight-V100"
+      ".Trashes"
+
+      # direnv
+      ".direnv"
+
+      # Nix
+      "result"
+    ];
 
     signing = {
       signByDefault = true;
