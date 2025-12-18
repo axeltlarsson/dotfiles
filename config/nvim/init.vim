@@ -16,7 +16,7 @@ Plug 'bennypowers/nvim-regexplainer' | Plug 'MunifTanjim/nui.nvim'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'github/copilot.vim'
 Plug 'godlygeek/tabular'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } } " Installs fzf as system command
+Plug 'junegunn/fzf' " Vim runtime only - binary provided by Nix
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'                " Distraction-free writing
 Plug 'junegunn/limelight.vim'           " Hyperfocus-writing
