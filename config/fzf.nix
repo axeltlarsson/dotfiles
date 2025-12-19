@@ -3,7 +3,7 @@
     # N.B! `tmux kill-server` after changing — tmux caches env vars int is global server environment
     enable = true;
     enableZshIntegration = true;
-    defaultCommand = "fd --type f";
+    defaultCommand = "fd --type f | sort -r";
     defaultOptions =
       let
         theme = import ./rose-pine.nix;
@@ -41,7 +41,7 @@
       ];
 
     # FileWidget Ctrl-T
-    fileWidgetCommand = "fd --type f";
+    fileWidgetCommand = "fd --type f | sort -r";
     fileWidgetOptions = [
       "--preview 'bat --style=numbers --color=always --line-range :500 {}'"
       "--layout=reverse"
