@@ -45,12 +45,9 @@ Plug 'w0rp/ale'
 Plug 'yazgoo/unicodemoji'
 call plug#end()
 
-if (has("termguicolors"))
-  set termguicolors
-endif
-
 " Theme
 syntax enable
+set termguicolors
 set background=dark
 colorscheme rose-pine
 
@@ -61,7 +58,6 @@ set laststatus=2
 set updatetime=100
 
 set noshowmode     " do not display" -- INSERT -- " since that is unnecessary with airline
-set encoding=utf8
 set hlsearch
 set incsearch
 set ignorecase
@@ -70,7 +66,6 @@ set number
 set relativenumber
 set cursorline     " highlight current line
 set conceallevel=2
-set nocompatible   " be iMproved, required
 set hidden         " allow multiple files to be opened in diff buffers, 'hidden' in bg
 
 set nofoldenable
