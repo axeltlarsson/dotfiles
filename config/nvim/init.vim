@@ -376,6 +376,16 @@ vim.lsp.config('tinymist', {
   },
 })
 
+vim.lsp.config('lua_ls', {
+  settings = {
+   Lua = {
+      diagnostics = {
+        globals = { "vim" },
+      },
+    },
+  }
+})
+
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
