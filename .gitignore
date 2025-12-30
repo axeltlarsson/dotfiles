@@ -42,3 +42,4 @@ result
 #.envrc
 
 # End of https://www.toptal.com/developers/gitignore/api/direnv
+lazy-lock.json
