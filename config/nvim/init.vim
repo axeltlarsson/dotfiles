@@ -87,10 +87,9 @@ set scrolloff=2
 
 " Clear highlighting on escape in Normal mode
 nnoremap <esc> :noh<return><esc>
-nnoremap <esc>^[ <esc>^[
 
 " Rebind leader key
-map <space> <Leader>
+let mapleader = " "
 set autoindent
 
 set mouse=n
@@ -102,16 +101,58 @@ set keywordprg=:Rg
 " override polyglot's vim-ruby "ri"
 autocmd FileType ruby,eruby,haml set keywordprg=:Rg
 
-if has('nvim-0.4.0') || has("patch-8.2.0191")
-    let g:fzf_layout = { 'window': {
-                \ 'width': 0.9,
-                \ 'height': 0.7,
-                \ 'highlight': 'Comment',
-                \ 'rounded': v:false } }
-else
-    let g:fzf_layout = { "window": "silent botright 16split enew" }
+" Persistent undo
+if exists('*mkdir') && !isdirectory($HOME.'/.vim/history')
+  call mkdir($HOME.'/.vim/history')
 endif
+set undofile                    " Save undo's after file closes
+set undodir=$HOME/.vim/history  " where to save undo histories
+set undolevels=1000             " How many undos
+set undoreload=10000            " number of lines to save for undo
+set updatecount=100
+set directory=$HOME/.vim/history/swap//
+let g:fzf_layout = { 'window': {
+            \ 'width': 0.9,
+            \ 'height': 0.7,
+            \ 'highlight': 'Comment',
+            \ 'rounded': v:false } }
 
+
+
+" Move lines down with Ctrl-J and up with Ctrl-K
+nnoremap <C-j> :m .+1<CR>==
+nnoremap <C-k> :m .-2<CR>==
+
+vnoremap <C-j> :m '>+1<CR>gv=gv
+vnoremap <C-k> :m '<-2<CR>gv=gv
+
+nnoremap <Leader>w :w<CR>
+nnoremap <Leader>x :x<CR>
+nnoremap <Leader>q :q<CR>
+nnoremap <Leader>Q :q!<CR>
+
+map ö [
+map ä ]
+
+nmap <Leader>u :Unicodemoji<CR>
+
+" Map leader g to Ctrl-] - to follow links in vim docs
+nnoremap <Leader>g <C-]>
+
+" Map leader L to copy current file path and line number to clipboard
+nnoremap <silent> <Leader>L :let @+=expand("%") . ":" . line(".")<CR>
+
+" Copy to clipboard
+vnoremap  <leader>y  "+y
+nnoremap  <leader>Y  "+yg_
+nnoremap  <leader>y  "+y
+nnoremap  <leader>yy  "+yy
+
+" Paste from clipboard
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+vnoremap <leader>p "+p
+vnoremap <leader>P "+P
 
 " FZF
 map <Leader>r :Rg<CR>
@@ -142,23 +183,6 @@ imap <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 " imap <c-x><c-l> <plug>(fzf-complete-line)
 
-" Move lines down with Ctrl-J and up with Ctrl-K
-nnoremap <C-j> :m .+1<CR>==
-nnoremap <C-k> :m .-2<CR>==
-
-vnoremap <C-j> :m '>+1<CR>gv=gv
-vnoremap <C-k> :m '<-2<CR>gv=gv
-
-nnoremap <Leader>w :w<CR>
-nnoremap <Leader>x :x<CR>
-nnoremap <Leader>q :q<CR>
-nnoremap <Leader>Q :q!<CR>
-
-map ö [
-map ä ]
-
-nmap <Leader>u :Unicodemoji<CR>
-
 " Notes
 nnoremap <Leader>ni :e $NOTES_DIR/index.md<CR>:cd $NOTES_DIR<CR>
 nnoremap <Leader>nz :Zet<space>
@@ -172,14 +196,6 @@ command! -bang -nargs=* Notes
   \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview({'dir': '${NOTES_DIR}/'}), <bang>0)
 
-
-" Map leader g to Ctrl-] - to follow links in vim docs
-nnoremap <Leader>g <C-]>
-
-" Map leader L to copy current file path and line number to clipboard
-nnoremap <silent> <Leader>L :let @+=expand("%") . ":" . line(".")<CR>
-
-nnoremap <Leader>t :TableFormat<CR>
 
 " Fern
 let g:fern#renderer = "nerdfont"
@@ -217,28 +233,6 @@ augroup FernGroup
   autocmd FileType fern call glyph_palette#apply()
 augroup END
 
-" Copy to clipboard
-vnoremap  <leader>y  "+y
-nnoremap  <leader>Y  "+yg_
-nnoremap  <leader>y  "+y
-nnoremap  <leader>yy  "+yy
-
-" Paste from clipboard
-nnoremap <leader>p "+p
-nnoremap <leader>P "+P
-vnoremap <leader>p "+p
-vnoremap <leader>P "+P
-
-" Persistent undo
-if exists('*mkdir') && !isdirectory($HOME.'/.vim/history')
-  call mkdir($HOME.'/.vim/history')
-endif
-set undofile                    " Save undo's after file closes
-set undodir=$HOME/.vim/history  " where to save undo histories
-set undolevels=1000             " How many undos
-set undoreload=10000            " number of lines to save for undo
-set updatecount=100
-set directory=$HOME/.vim/history/swap//
 
 
 " ALE vs nvim-lspconfig/LSP
