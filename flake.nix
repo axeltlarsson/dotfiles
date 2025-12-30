@@ -111,6 +111,8 @@
             update
             build
             switch
+
+            pkgs.lua-language-server
           ];
         };
         formatter = pkgs.nixfmt-rfc-style;
