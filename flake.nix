@@ -101,9 +101,49 @@
             darwin-rebuild build --flake .
           '';
         };
+        nixfmt = pkgs.nixfmt-rfc-style;
         switch = pkgs.writeScriptBin "switch" ''
           darwin-rebuild switch --flake .
         '';
+        # CI script that runs linters/static type checkers etc
+        # You can run this locally in the same dev shell with `nix develop -c ci` or nix flake check -L which is how CI runs it as well!
+        ci = pkgs.writeShellApplication {
+          name = "ci";
+          runtimeInputs = [
+            pkgs.lua-language-server
+            nixfmt
+          ];
+          text = ''
+            echo "Checking Lua (lua-language-server)..."
+            # Set writable HOME for lua-language-server cache (needed in nix sandbox)
+            # Use TMPDIR (macOS/dev shell) or TMP (nix sandbox) or /tmp as fallback
+            _tmp="''${TMPDIR:-''${TMP:-/tmp}}"
+            export HOME="$_tmp"
+
+            # Create temporary luarc config (avoids .luarc.json in repo conflicting with lazydev)
+            cat > "$_tmp/.luarc.json" << 'EOF'
+            {
+              "runtime": { "version": "LuaJIT" },
+              "diagnostics": { "globals": ["vim"] },
+              "workspace": { "library": [], "checkThirdParty": false }
+            }
+            EOF
+
+            # lua-language-server --check always exits 0, so we check output for success message
+            lua_output=$(lua-language-server --check="$PWD/config/nvim/lua" --configpath="$_tmp/.luarc.json" --check_format=pretty --checklevel=Warning 2>&1 || true)
+            if echo "$lua_output" | grep -q "no problems found"; then
+              echo "✓ Lua checks passed"
+            else
+              echo "Lua diagnostics found:"
+              echo "$lua_output"
+              exit 1
+            fi
+
+            echo "Checking Nix formatting..."
+            nixfmt --check flake.nix
+            echo "✓ Nix formatting OK"
+          '';
+        };
       in
       {
         devShell = pkgs.mkShell {
@@ -111,11 +151,30 @@
             update
             build
             switch
+            ci
 
             pkgs.lua-language-server
           ];
         };
-        formatter = pkgs.nixfmt-rfc-style;
+
+        checks = {
+          ci = pkgs.runCommand "ci" { } ''
+            # checks expects an out path , so we need to create it explicitly
+            mkdir -p $out
+
+            # copy over source to a temp dir so we can run the `ci` script self-contained
+            # as nix flake check -L without changing the `ci` script itself
+            # inspo https://github.com/numtide/treefmt-nix/blob/2fba33a182602b9d49f0b2440513e5ee091d838b/module-options.nix#L156
+            PRJ=$TMP/dotfiles
+            cp -r ${self} $PRJ
+            chmod -R a+w $PRJ
+            cd $PRJ
+
+            ${ci}/bin/ci
+            echo "✅ All CI checks passed!"
+          '';
+        };
+        formatter = nixfmt;
       }
     );
 }
