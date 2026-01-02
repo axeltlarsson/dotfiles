@@ -41,9 +41,6 @@ keymap.set("n", "<Leader>L", function()
   vim.fn.setreg("+", vim.fn.expand("%") .. ":" .. vim.fn.line("."))
 end, { silent = true, desc = "Copy file:line to clipboard" })
 
--- Unicodemoji (plugin command)
-keymap.set("n", "<Leader>u", "<cmd>Unicodemoji<CR>", { silent = true, desc = "Emoji picker" })
-
 -- Clipboard yanks/pastes
 keymap.set({ "n", "v" }, "<Leader>y", '"+y', { desc = "Yank to clipboard" })
 keymap.set("n", "<Leader>yy", '"+yy', { desc = "Yank line to clipboard" })

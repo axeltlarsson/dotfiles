@@ -36,6 +36,8 @@ o.shiftwidth = 2
 o.softtabstop = -1 -- follow shiftwidth
 o.autoindent = true
 
+vim.g.editorconfig = true
+
 -- Splits / command preview / scrolling
 o.splitbelow = true
 o.splitright = true

@@ -7,3 +7,4 @@ require("options")
 require("keymaps")
 
 require("lsp")
+require("notes").setup()
