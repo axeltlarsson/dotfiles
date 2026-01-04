@@ -105,6 +105,8 @@
         switch = pkgs.writeScriptBin "switch" ''
           darwin-rebuild switch --flake .
         '';
+        # Run nvim against local config w/o having to do `switch` first
+        nvim-local = pkgs.writeScriptBin "nvim-local" "XDG_CONFIG_HOME=$PWD/config  nvim -u config/nvim/init.lua";
         # CI script that runs linters/static type checkers etc
         # You can run this locally in the same dev shell with `nix develop -c ci` or nix flake check -L which is how CI runs it as well!
         ci = pkgs.writeShellApplication {
@@ -151,6 +153,7 @@
             update
             build
             switch
+            nvim-local
             ci
 
             pkgs.lua-language-server
