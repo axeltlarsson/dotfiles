@@ -1,52 +1,46 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    lazy = false,
     build = ":TSUpdate",
-
+    lazy = false,
     config = function()
-      -- N.B! CC needs to be unset (not set to clang as in nix shells)
       vim.env.CC = ""
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = {
-          "bash",
-          "c",
-          "comment",
-          "css",
-          "elm",
-          "go",
-          "haskell",
-          "html",
-          "javascript",
-          "json",
-          "lua",
-          "nix",
-          "python",
-          "regex",
-          "roc",
-          "ruby",
-          "sql",
-          "typst",
-          "vim",
-          "vimdoc",
-          "yaml",
-        },
-        highlight = {
-          enable = true
-        },
-        indent = {
-          enable = true
-        },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = 'gnn',
-            node_incremental = 'grn',
-            scope_incremental = 'grc',
-            node_decremental = 'grm',
-          }
-        }
+
+      local parsers = {
+        "bash",
+        "c",
+        "comment",
+        "css",
+        "elm",
+        "go",
+        "haskell",
+        "html",
+        "javascript",
+        "json",
+        "lua",
+        "markdown",
+        "markdown_inline",
+        "nix",
+        "python",
+        "regex",
+        "roc",
+        "ruby",
+        "sql",
+        "toml",
+        "typst",
+        "vim",
+        "vimdoc",
+        "yaml",
+        "zsh",
+      }
+      require("nvim-treesitter").install(parsers)
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = parsers,
+        callback = function()
+          vim.treesitter.start()
+        end,
       })
-    end
-  }
+    end,
+  },
 }

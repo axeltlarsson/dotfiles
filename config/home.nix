@@ -50,6 +50,7 @@
     wget
     pandoc
     neovim
+    tree-sitter
 
     pkgs.pythonEnv
 
@@ -62,7 +63,10 @@
   home.file.".pspgconf".source = ./pspg.conf;
   home.file.".psqlrc".source = ./psqlrc.conf;
   home.file.".config/nvim" = {
-    source = ./nvim;
+    source = lib.cleanSourceWith {
+      src = ./nvim;
+      filter = path: type: !(lib.hasSuffix "lazy-lock.json" path);
+    };
     recursive = true;
   };
   home.file."dev" = {
