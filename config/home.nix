@@ -12,6 +12,7 @@
     ./tmux.nix
     ./git.nix
     ./ssh.nix
+    ./ghostty.nix
   ];
 
   nix.registry = {
