@@ -8,6 +8,7 @@
 {
   nixpkgs.hostPlatform = "aarch64-darwin";
   system.stateVersion = 4;
+  system.primaryUser = "axel";
   system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
   programs.zsh.enable = true;
@@ -56,4 +57,7 @@
     ];
 
   security.pam.services.sudo_local.touchIdAuth = true;
+
+  # Multi-monitor: each display has its own Spaces (fullscreen won't blank other monitors)
+  system.defaults.spaces.spans-displays = false;
 }

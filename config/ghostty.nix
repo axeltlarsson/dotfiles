@@ -9,6 +9,7 @@
       # Font
       font-family = "Hasklug Nerd Font";
       font-size = 13;
+      font-thicken = true;
 
       # Theme
       theme = "Rose Pine";

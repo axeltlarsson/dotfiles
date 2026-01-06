@@ -50,6 +50,8 @@
     # wget required by unicodemoji
     wget
     pandoc
+    imagemagick
+    ghostscript
     neovim
     tree-sitter
 
