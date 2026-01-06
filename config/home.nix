@@ -50,10 +50,13 @@
     # wget required by unicodemoji
     wget
     pandoc
-    imagemagick
-    ghostscript
+    tectonic
+
     neovim
     tree-sitter
+    imagemagick
+    ghostscript
+    viu
 
     pkgs.pythonEnv
 
