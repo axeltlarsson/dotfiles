@@ -5,8 +5,9 @@
     clock24 = true;
     escapeTime = 0;
     extraConfig = ''
-      set-option -ga terminal-overrides ",xterm-256color:Tc"
-      set -s default-terminal "xterm-256color"
+      set -g default-terminal "tmux-256color"
+      set -ga terminal-overrides ",alacritty:RGB"
+      set -ga terminal-overrides ",xterm-ghostty:RGB"
       set -g mouse on
       set -g focus-events on
       # Match postgresql URLs, default url_search doesn't

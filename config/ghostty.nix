@@ -10,13 +10,13 @@
       font-family = "Hasklug Nerd Font";
       font-size = 13;
       font-thicken = true;
+      font-thicken-strength = 255;
 
       # Theme
       theme = "Rose Pine";
 
       # Window
       window-decoration = false;
-      fullscreen = true;
       macos-non-native-fullscreen = true;
 
       # Scrollback (~10000 lines)
