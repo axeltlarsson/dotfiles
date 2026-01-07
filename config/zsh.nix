@@ -2,6 +2,7 @@
 {
   programs.zsh = {
     enable = true;
+    dotDir = "${config.xdg.configHome}/zsh";
 
     envExtra = ''
       # TODO: autolaod
@@ -26,7 +27,6 @@
       GPG_TTY = "$(tty)";
       KEYTIMEOUT = 1;
       NOTES_DIR = "${config.home.homeDirectory}/Google Drive/My Drive/notes";
-      XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
     };
 
     autosuggestion.enable = true;

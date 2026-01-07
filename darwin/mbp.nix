@@ -11,6 +11,9 @@
     ../config/alacritty.nix
   ];
 
+  # Use XDG paths on macOS (some programs like k9s look in ~/.config/ not ~/Library/Application Support/)
+  xdg.enable = true;
+
   home = {
     username = "axel";
     homeDirectory = lib.mkForce "/Users/axel";
