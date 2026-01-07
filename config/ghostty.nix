@@ -10,7 +10,7 @@
       font-family = "Hasklug Nerd Font";
       font-size = 13;
       font-thicken = true;
-      font-thicken-strength = 255;
+      font-thicken-strength = 200;
 
       # Theme
       theme = "Rose Pine";

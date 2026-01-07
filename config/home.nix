@@ -54,9 +54,6 @@
 
     neovim
     tree-sitter
-    imagemagick
-    ghostscript
-    viu
 
     pkgs.pythonEnv
 
