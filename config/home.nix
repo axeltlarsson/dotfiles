@@ -59,6 +59,7 @@
 
     git
     pspg
+    terminal-notifier
   ];
 
   home.file.".kube/kubie.yaml".source = ./kubie.yaml;

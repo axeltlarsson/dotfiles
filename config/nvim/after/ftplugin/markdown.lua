@@ -1,3 +1,6 @@
+vim.bo.shiftwidth = 2
+vim.bo.tabstop = 2
+
 vim.keymap.set("i", "<C-t>", function()
   require("notes").insert_note_link()
 end, {
