@@ -7,6 +7,7 @@ return {
     config = function()
       require("render-markdown").setup(
         {
+          render_modes = true,
           heading = {
             width = "block",
             right_pad = 1,
@@ -16,6 +17,7 @@ return {
             right_pad = 1,
           },
           checkbox = {
+            bullet = true,
             unchecked = {
               -- Replaces '[ ]' of 'task_list_marker_unchecked'.
               icon = '󰝣 ',
