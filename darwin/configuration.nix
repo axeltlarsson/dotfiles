@@ -56,7 +56,10 @@
       "claude-code"
     ];
 
-  security.pam.services.sudo_local.touchIdAuth = true;
+  security.pam.services.sudo_local = {
+    touchIdAuth = true;
+    reattach = true;  # Needed for TouchID to work in tmux
+  };
 
   # Multi-monitor: each display has its own Spaces (fullscreen won't blank other monitors)
   system.defaults.spaces.spans-displays = false;
