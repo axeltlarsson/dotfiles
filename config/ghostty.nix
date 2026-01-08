@@ -28,6 +28,10 @@
       # Selection
       copy-on-select = "clipboard";
 
+      # Security
+      macos-auto-secure-input = true;
+      macos-secure-input-indication = true;
+
       # Keybindings
       keybind = "cmd+enter=toggle_fullscreen";
     };
