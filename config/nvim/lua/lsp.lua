@@ -75,7 +75,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-
+    -- rn in Normal mode maps to vim.lsp.buf.rename()
+    -- grr in Normal mode maps to vim.lsp.buf.references()
+    -- gri in Normal mode maps to vim.lsp.buf.implementation()
+    -- gO in Normal mode maps to vim.lsp.buf.document_symbol() (this is analogous to the gO mappings in help buffers and :Man page buffers to show a “table of contents”)
+    -- gra in Normal and Visual mode maps to vim.lsp.buf.code_action()
+    -- CTRL-S in Insert and Select mode maps to vim.lsp.buf.signature_help()
+    -- [d and ]d move between diagnostics in the current buffer ([D jumps to the first diagnostic, ]D jumps to the
     -- When LSP K → LSP hover
     vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = ev.buf, desc = "LSP: Hover" })
 

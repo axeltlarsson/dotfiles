@@ -13,7 +13,7 @@ return {
 
       -- LSP keymaps
       { "gd",              function() require("fzf-lua").lsp_definitions() end,       desc = "LSP: Definitions" },
-      { "gr",              function() require("fzf-lua").lsp_references() end,        desc = "LSP: References" },
+      { "grr",              function() require("fzf-lua").lsp_references() end,        desc = "LSP: References" },
       { "gi",              function() require("fzf-lua").lsp_implementations() end,   desc = "LSP: Implementations" },
       { "<Leader>ca",      function() require("fzf-lua").lsp_code_actions() end,      mode = { "n", "v" },             desc = "LSP: Code actions" },
       { "<Leader>ld",      function() require("fzf-lua").diagnostics_document() end,  desc = "Diagnostics (buffer)" },
