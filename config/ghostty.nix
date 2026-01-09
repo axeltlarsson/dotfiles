@@ -7,10 +7,10 @@
     enableZshIntegration = true;
     settings = {
       # Font
-      font-family = "Hasklug Nerd Font";
-      font-size = 13;
-      font-thicken = true;
-      font-thicken-strength = 200;
+      # font-family = "Hasklug Nerd Font";
+      # font-size = 13;
+      # font-thicken = true;
+      # font-thicken-strength = 200;
 
       # Theme
       theme = "Rose Pine";

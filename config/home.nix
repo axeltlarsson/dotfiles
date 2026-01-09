@@ -45,12 +45,7 @@
     nvd
     shellcheck
     shfmt
-    pgformatter
-    uv
-    # wget required by unicodemoji
-    wget
     pandoc
-    tectonic
 
     neovim
     tree-sitter
@@ -59,7 +54,6 @@
 
     git
     pspg
-    terminal-notifier
   ];
 
   home.file.".kube/kubie.yaml".source = ./kubie.yaml;

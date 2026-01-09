@@ -27,8 +27,14 @@
     shellcheck
     shfmt
 
+    pgformatter
+
     # python
+    uv
     ruff
+    ty
+
+    terminal-notifier
 
     nodejs
     pkgs.nerd-fonts.hasklug
