@@ -9,6 +9,7 @@
   imports = [
     ../config/home.nix
     ../config/alacritty.nix
+    ../config/claude-code.nix
   ];
 
   # Use XDG paths on macOS (some programs like k9s look in ~/.config/ not ~/Library/Application Support/)
@@ -31,8 +32,6 @@
 
     nodejs
     pkgs.nerd-fonts.hasklug
-
-    pkgs.claude-code
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];
