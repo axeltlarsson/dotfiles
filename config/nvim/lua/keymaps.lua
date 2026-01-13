@@ -59,4 +59,11 @@ vim.keymap.set("n", "]d", function()
   vim.diagnostic.jump({ count = 1 })
 end, { desc = "Next diagnostic" })
 keymap.set("n", ",q", vim.diagnostic.setloclist, { desc = "Diagnostics to loclist" })
--- Also see plugins/fzf-lua.lua for some more diagnostics keymaps
+
+-- Delete nvim 0.11 default LSP keymaps (we define our own in lsp.lua)
+keymap.del('n', 'grn')
+keymap.del('n', 'grr')
+keymap.del('n', 'gri')
+keymap.del('n', 'grt')
+keymap.del('n', 'gra')
+keymap.del('v', 'gra')
