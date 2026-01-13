@@ -61,6 +61,9 @@ return
       sources = {
         default = { 'lsp', 'path', 'snippets', 'buffer', 'emoji' },
         providers = {
+          snippets = {
+            score_offset = 100, -- Prioritize snippets over other sources
+          },
           emoji = {
             module = "blink-emoji",
             name = "Emoji",
