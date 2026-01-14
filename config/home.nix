@@ -38,7 +38,7 @@
     # common packages I always want
     nix
     nil
-    nixfmt-rfc-style
+    nixfmt
     ripgrep
     jq
     fd
