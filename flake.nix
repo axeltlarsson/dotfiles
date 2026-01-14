@@ -95,15 +95,12 @@
         build = pkgs.writeShellApplication {
           name = "build";
           text = ''
-            # first run: no current generation exists so use ./result (diff against oneself)
-            # current=$( (home-manager generations 2> /dev/null || echo result) | head -n 1 | awk '{ print $7 }')
-            # home-manager build --flake ".#$(hostname -s | awk '{ print tolower($1) }')" && nvd diff "$current" result
-            darwin-rebuild build --flake .
+            nh darwin build .#
           '';
         };
         nixfmt = pkgs.nixfmt;
         switch = pkgs.writeScriptBin "switch" ''
-          darwin-rebuild switch --flake .
+          nh darwin switch .# --ask
         '';
         # Run nvim against local config w/o having to do `switch` first
         nvim-local = pkgs.writeScriptBin "nvim-local" ''XDG_CONFIG_HOME=$PWD/config nvim -u config/nvim/init.lua "$@"'';
@@ -157,6 +154,7 @@
             ci
 
             pkgs.lua-language-server
+            pkgs.nh
           ];
         };
 

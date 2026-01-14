@@ -42,7 +42,7 @@
     ripgrep
     jq
     fd
-    nvd
+    nh
     shellcheck
     shfmt
     pandoc
