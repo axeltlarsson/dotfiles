@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Enter the dev shell first: `nix develop`
 
-- `build` - Build darwin configuration without switching
-- `switch` - Build and activate darwin configuration
+- `build` - Build darwin configuration without switching (uses `nh darwin build` for nicer output)
+- `switch` - Build and activate darwin configuration (uses `nh darwin switch`)
 - `update` - Update flake inputs and commit lock file
 - `ci` - Run linters (lua-language-server for nvim config, nixfmt for nix files)
 - `nvim-local` - Test neovim config changes without switching

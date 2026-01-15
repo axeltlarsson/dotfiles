@@ -100,7 +100,7 @@
         };
         nixfmt = pkgs.nixfmt;
         switch = pkgs.writeScriptBin "switch" ''
-          nh darwin switch .# --ask
+          nh darwin switch .#
         '';
         # Run nvim against local config w/o having to do `switch` first
         nvim-local = pkgs.writeScriptBin "nvim-local" ''XDG_CONFIG_HOME=$PWD/config nvim -u config/nvim/init.lua "$@"'';
