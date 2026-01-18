@@ -48,7 +48,10 @@
     };
   };
 
-  nixpkgs.overlays = [ (import ../overlays/python.nix) ];
+  nixpkgs.overlays = [
+    (import ../overlays/python.nix)
+    (import ../overlays/tmux-plugins.nix)
+  ];
 
   nixpkgs.config.allowUnfreePredicate =
     pkg:
@@ -58,7 +61,7 @@
 
   security.pam.services.sudo_local = {
     touchIdAuth = true;
-    reattach = true;  # Needed for TouchID to work in tmux
+    reattach = true; # Needed for TouchID to work in tmux
   };
 
   # Multi-monitor: each display has its own Spaces (fullscreen won't blank other monitors)
