@@ -19,8 +19,12 @@
       # prefix + t swaps window to "top"
       bind-key t swap-window -t 0 -d
 
-      # prefix + b swaps to last window
+      # prefix + b jumps to last window
       bind-key b last-window
+
+      # prefix + u shows popup terminal
+      bind-key u display-popup -E "$SHELL"
+
 
       # https://github.com/tmux/tmux/issues/4240
       set -gu default-command
