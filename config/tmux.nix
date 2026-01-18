@@ -25,6 +25,17 @@
       # prefix + u shows popup terminal
       bind-key u display-popup -E -w 90% -h 85% -d '#{pane_current_path}' "$SHELL -l"
 
+      # notifications/monitoring for background activity and bells
+      # Windows `other` than the current with activity are highlighted in the status line with symbol "#"
+      setw -g monitor-activity on
+      set -g activity-action other
+      set -g visual-activity on
+
+      # Windows `other` than the current ringing the bell are highlithed in the status line with symbol "!"
+      setw -g monitor-bell on
+      set -g bell-action other
+      set -g bell-on-alert on
+      set -g visual-bell on
 
       # https://github.com/tmux/tmux/issues/4240
       set -gu default-command
