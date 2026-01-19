@@ -8,23 +8,12 @@
     settings = {
       alwaysThinkingEnabled = true;
       hooks = {
-        Notification = [
-          {
-            matcher = "";
-            hooks = [
-              {
-                type = "command";
-                command = "${pkgs.terminal-notifier}/bin/terminal-notifier -title 'Claude Code' -message 'Needs your attention' -sound default";
-              }
-            ];
-          }
-        ];
         Stop = [
           {
             hooks = [
               {
                 type = "command";
-                command = "${pkgs.terminal-notifier}/bin/terminal-notifier -title 'Claude Code' -message 'Ready for input' -sound default";
+                command = "tmux display-message '🤖 Claude ready'";
               }
             ];
           }

@@ -53,7 +53,7 @@ in
       # Windows `other` than the current with activity are highlighted in the status line with symbol "#"
       setw -g monitor-activity on
       set -g activity-action other
-      set -g visual-activity on
+      set -g visual-activity off
 
       # Windows `other` than the current ringing the bell are highlithed in the status line with symbol "!"
       setw -g monitor-bell on
@@ -63,6 +63,9 @@ in
       # https://github.com/tmux/tmux/issues/4240
       set -gu default-command
       set -g default-shell "${pkgs.zsh}/bin/zsh"
+
+      # set 3 s display time for messages by default
+      set -g display-time 3000
 
     '';
     keyMode = "vi";
