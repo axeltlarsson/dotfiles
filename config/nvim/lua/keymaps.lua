@@ -49,6 +49,18 @@ keymap.set({ "n", "v" }, "<Leader>p", '"+p', { desc = "Paste from clipboard" })
 keymap.set("n", "<Leader>P", '"+P', { desc = "Paste before from clipboard" })
 keymap.set("v", "<Leader>P", '"+P', { desc = "Paste before from clipboard" })
 
+-- Sync clipboard yanks to tmux buffer (gives yank history via tmux buffer manager)
+vim.api.nvim_create_autocmd("TextYankPost", {
+  callback = function()
+    if vim.v.event.regname == "+" then
+      local content = vim.fn.getreg("+")
+      if content and content ~= "" then
+        vim.fn.system({ "tmux", "set-buffer", "--", content })
+      end
+    end
+  end,
+})
+
 -- Diagnostics
 keymap.set("n", "gl", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 vim.keymap.set("n", "[d", function()
