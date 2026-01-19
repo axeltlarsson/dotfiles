@@ -12,6 +12,8 @@ Enter the dev shell first: `nix develop`
 - `ci` - Run linters (lua-language-server for nvim config, nixfmt for nix files)
 - `nvim-local` - Test neovim config changes without switching
 
+**Important:** Always run `build` before `switch` to catch errors before activating. Claude should only run `build` - the user will run `switch` themselves.
+
 For NixOS (nixpi): `nixos-rebuild switch --flake '.#nixpi'`
 
 ## Architecture
