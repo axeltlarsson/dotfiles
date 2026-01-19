@@ -78,7 +78,7 @@ in
           set -g @rose_pine_date_time '%Y-%m-%d %H:%M'
           set -g @rose_pine_directory 'on'
           set -g @rose_pine_disable_active_window_menu 'on'
-          set -g @rose_pine_left_separator ' | '
+          set -g @rose_pine_status_left_append_section ' '
         '';
       }
     ];
