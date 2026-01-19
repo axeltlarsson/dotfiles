@@ -1,10 +1,34 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+
+let
+  # Buffer manager: list/preview/paste/delete/save/load with fzf
+  # Script source is in config/scripts/tmux-buffer-manager.sh
+  tmuxBufferManager = pkgs.writeShellApplication {
+    name = "tmux-buffer-manager";
+    runtimeInputs = [
+      pkgs.tmux
+      pkgs.fzf
+      pkgs.bat
+      pkgs.fd
+      pkgs.coreutils
+    ];
+    text = builtins.readFile ./scripts/tmux-buffer-manager.sh;
+  };
+in
+{
+  home.packages = [ tmuxBufferManager ];
+
   programs.tmux = {
     enable = true;
 
     clock24 = true;
     escapeTime = 0;
     extraConfig = ''
+
+      # Buffer manager (fzf+bat): preview/paste/delete/save/load
+      bind-key B display-popup -E -w 90% -h 85% -T "buffers" -d '#{pane_current_path}' \
+        "${tmuxBufferManager}/bin/tmux-buffer-manager #{pane_id} #{pane_current_path}"
+
       set -g default-terminal "tmux-256color"
       set -ga terminal-overrides ",alacritty:RGB"
       set -ga terminal-overrides ",xterm-ghostty:RGB"
@@ -34,12 +58,12 @@
       # Windows `other` than the current ringing the bell are highlithed in the status line with symbol "!"
       setw -g monitor-bell on
       set -g bell-action other
-      set -g bell-on-alert on
       set -g visual-bell on
 
       # https://github.com/tmux/tmux/issues/4240
       set -gu default-command
       set -g default-shell "${pkgs.zsh}/bin/zsh"
+
     '';
     keyMode = "vi";
     plugins = with pkgs; [
@@ -54,6 +78,7 @@
           set -g @rose_pine_date_time '%Y-%m-%d %H:%M'
           set -g @rose_pine_directory 'on'
           set -g @rose_pine_disable_active_window_menu 'on'
+          set -g @rose_pine_left_separator ' | '
         '';
       }
     ];
