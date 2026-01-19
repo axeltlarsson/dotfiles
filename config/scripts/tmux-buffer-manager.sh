@@ -119,6 +119,8 @@ while true; do
       ;;
     *)
       # Enter: paste all selected buffers (concatenated)
+      # Small delay prevents race condition with popup closing that drops initial chars
+      sleep 0.05
       if [[ -n "$TARGET_PANE" ]]; then
         while IFS= read -r line; do
           buffer_name=$(get_buffer_name "$line")
