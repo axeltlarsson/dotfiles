@@ -16,7 +16,7 @@ get_buffer_name() {
 
 # File picker for loading files into buffers
 pick_file() {
-  fd --type f --hidden --follow --exclude .git --exclude node_modules . "$WORK_DIR" 2>/dev/null | fzf \
+  fd --type f --hidden --follow --ignore --exclude .git --exclude node_modules . "$WORK_DIR" 2>/dev/null | fzf \
     --prompt="file> " \
     --header="Enter: select | Esc: cancel" \
     --layout=reverse \
@@ -25,12 +25,12 @@ pick_file() {
     --preview-window='down,60%,wrap'
 }
 
-# Main loop - allows delete/save/load to return to picker
+# Main loop - allows actions to return to picker
 while true; do
   # Select buffer with fzf (--expect captures which key was pressed)
   result=$(list_buffers | fzf \
     --prompt="buffer> " \
-    --header="Enter: paste | Ctrl-D: delete | Ctrl-S: save | Ctrl-O: load file | Tab: multi-select | Esc: close" \
+    --header="Enter: paste | Ctrl-D: delete | Ctrl-S: save | Ctrl-Y: copy | Ctrl-R: rename | Ctrl-O: load | Tab: select | Esc: close" \
     --layout=reverse \
     --height=100% \
     --delimiter=' \| ' \
@@ -38,7 +38,7 @@ while true; do
     --preview='tmux show-buffer -b {1} | bat --style=plain --color=always --language=txt' \
     --preview-window='down,60%,wrap' \
     --multi \
-    --expect='ctrl-d,ctrl-s,ctrl-o' \
+    --expect='ctrl-d,ctrl-s,ctrl-o,ctrl-y,ctrl-r' \
   ) || exit 0
 
   # First line is the key pressed, remaining lines are selections
@@ -90,15 +90,49 @@ while true; do
       done <<< "$selections"
       continue
       ;;
-    *)
-      # Enter: paste first selected buffer
+    ctrl-y)
+      # Copy selected buffers to system clipboard (concatenated)
+      {
+        while IFS= read -r line; do
+          buffer_name=$(get_buffer_name "$line")
+          if [[ -n "$buffer_name" ]]; then
+            tmux show-buffer -b "$buffer_name"
+          fi
+        done <<< "$selections"
+      } | pbcopy
+      exit 0
+      ;;
+    ctrl-r)
+      # Rename first selected buffer
       buffer_name=$(get_buffer_name "$(echo "$selections" | head -1)")
       if [[ -n "$buffer_name" ]]; then
-        if [[ -n "$TARGET_PANE" ]]; then
-          tmux paste-buffer -t "$TARGET_PANE" -b "$buffer_name"
-        else
-          tmux paste-buffer -b "$buffer_name"
+        printf "Rename '%s' to: " "$buffer_name"
+        read -r new_name </dev/tty
+        if [[ -n "$new_name" ]]; then
+          # tmux doesn't have rename, so we save content and recreate
+          content=$(tmux show-buffer -b "$buffer_name")
+          tmux delete-buffer -b "$buffer_name"
+          tmux set-buffer -b "$new_name" "$content"
         fi
+      fi
+      continue
+      ;;
+    *)
+      # Enter: paste all selected buffers (concatenated)
+      if [[ -n "$TARGET_PANE" ]]; then
+        while IFS= read -r line; do
+          buffer_name=$(get_buffer_name "$line")
+          if [[ -n "$buffer_name" ]]; then
+            tmux paste-buffer -t "$TARGET_PANE" -b "$buffer_name"
+          fi
+        done <<< "$selections"
+      else
+        while IFS= read -r line; do
+          buffer_name=$(get_buffer_name "$line")
+          if [[ -n "$buffer_name" ]]; then
+            tmux paste-buffer -b "$buffer_name"
+          fi
+        done <<< "$selections"
       fi
       exit 0
       ;;
