@@ -24,18 +24,16 @@ in
     clock24 = true;
     escapeTime = 0;
     extraConfig = /* tmux */ ''
-
-      # Buffer manager (fzf+bat): preview/paste/delete/save/load
-      bind-key B display-popup -E -w 90% -h 85% -T "buffers" -d '#{pane_current_path}' \
-        "${tmuxBufferManager}/bin/tmux-buffer-manager #{pane_id} #{pane_current_path}"
+      # https://github.com/tmux/tmux/issues/4240
+      set -gu default-command
+      set -g default-shell "${pkgs.zsh}/bin/zsh"
 
       set -g default-terminal "tmux-256color"
       set -ga terminal-overrides ",alacritty:RGB"
       set -ga terminal-overrides ",xterm-ghostty:RGB"
+
       set -g mouse on
       set -g focus-events on
-      # Match postgresql URLs, default url_search doesn't
-      set -g @copycat_search_C-p '(https?://|git@|git://|ssh://|ftp://|postgresql://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'
 
       # prefix + left/right swaps window left/right
       bind-key left swap-window -t -1 -d
@@ -45,9 +43,6 @@ in
 
       # prefix + b jumps to last window
       bind-key b last-window
-
-      # prefix + u shows popup terminal
-      bind-key u display-popup -E -w 90% -h 85% -d '#{pane_current_path}' "$SHELL -l"
 
       # notifications/monitoring for background activity and bells
       # Windows `other` than the current with activity are highlighted in the status line with symbol "#"
@@ -60,12 +55,21 @@ in
       set -g bell-action other
       set -g visual-bell on
 
-      # https://github.com/tmux/tmux/issues/4240
-      set -gu default-command
-      set -g default-shell "${pkgs.zsh}/bin/zsh"
+      # set 5 s display time for messages by default
+      set -g display-time 5000
 
-      # set 3 s display time for messages by default
-      set -g display-time 3000
+      # style message-display - use "Rose" as text colour to make it pop a bit more
+      set -g message-style 'fg=#ebbcba,bold'
+
+      # prefix + u shows popup terminal
+      bind-key u display-popup -E -w 90% -h 85% -d '#{pane_current_path}' "$SHELL -l"
+
+      # Buffer manager (fzf+bat): preview/paste/delete/save/load
+      bind-key B display-popup -E -w 90% -h 85% -T "buffers" -d '#{pane_current_path}' \
+        "${tmuxBufferManager}/bin/tmux-buffer-manager #{pane_id} #{pane_current_path}"
+
+      # Match postgresql URLs, default url_search doesn't
+      set -g @copycat_search_C-p '(https?://|git@|git://|ssh://|ftp://|postgresql://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'
 
     '';
     keyMode = "vi";
