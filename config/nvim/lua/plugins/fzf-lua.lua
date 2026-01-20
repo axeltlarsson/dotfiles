@@ -15,7 +15,11 @@ return {
       { "<Leader>ld",      function() require("fzf-lua").diagnostics_document() end,  desc = "Diagnostics (buffer)" },
       { "<Leader>lD",      function() require("fzf-lua").diagnostics_workspace() end, desc = "Diagnostics (workspace)" },
     },
-    opts = {},
+    opts = {
+      files = {
+        cmd = "fd --type f | sort -r",
+      },
+    },
     config = function(_, opts)
       local fzf = require("fzf-lua")
       fzf.setup(opts)
