@@ -125,14 +125,14 @@ while true; do
         while IFS= read -r line; do
           buffer_name=$(get_buffer_name "$line")
           if [[ -n "$buffer_name" ]]; then
-            tmux paste-buffer -t "$TARGET_PANE" -b "$buffer_name"
+            tmux paste-buffer -p -t "$TARGET_PANE" -b "$buffer_name"
           fi
         done <<< "$selections"
       else
         while IFS= read -r line; do
           buffer_name=$(get_buffer_name "$line")
           if [[ -n "$buffer_name" ]]; then
-            tmux paste-buffer -b "$buffer_name"
+            tmux paste-buffer -p -b "$buffer_name"
           fi
         done <<< "$selections"
       fi
