@@ -4,13 +4,6 @@
     enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
 
-    envExtra = ''
-      # TODO: autolaod
-      function zet {
-        nvim "+Zet $*"
-      }
-    '';
-
     initContent = ''
       alias vi=nvim
       alias vim=nvim
