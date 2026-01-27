@@ -44,19 +44,13 @@ in
       # prefix + b jumps to last window
       bind-key b last-window
 
-      # notifications/monitoring for background activity and bells
-      # Windows `other` than the current with activity are highlighted in the status line with symbol "#"
-      setw -g monitor-activity on
-      set -g activity-action other
-      set -g visual-activity off
-
       # Windows `other` than the current ringing the bell are highlithed in the status line with symbol "!"
       setw -g monitor-bell on
       set -g bell-action other
       set -g visual-bell on
 
-      # set 5 s display time for messages by default
-      set -g display-time 5000
+      # set 3 s display time for messages by default
+      set -g display-time 3000
 
       # style message-display - use "Rose" as text colour to make it pop a bit more
       set -g message-style 'fg=#ebbcba,bold'

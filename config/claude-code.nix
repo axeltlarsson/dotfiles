@@ -13,7 +13,7 @@
             hooks = [
               {
                 type = "command";
-                command = "tmux display-message '🤖 Claude ready (#{session_name})'";
+                command = "tmux display-message '🤖 Claude is ready (#{session_name})'";
               }
             ];
           }
@@ -24,7 +24,7 @@
             hooks = [
               {
                 type = "command";
-                command = "tmux display-message '🔐 Claude needs permission (#{session_name})'";
+                command = "echo -n '\a'; tmux display-message '🔐 Claude needs permission (#{session_name})'";
               }
             ];
           }
