@@ -35,5 +35,8 @@
     };
   };
 
-  home.packages = [ pkgs.kubie ];
+  home.packages = [
+    pkgs.kubie
+    pkgs.gh
+  ];
 }
