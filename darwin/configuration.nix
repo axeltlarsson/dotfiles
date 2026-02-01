@@ -66,4 +66,12 @@
 
   # Multi-monitor: each display has its own Spaces (fullscreen won't blank other monitors)
   system.defaults.spaces.spans-displays = false;
+
+  # Tailscale SSH with mosh setup
+  services.tailscale.enable = true;
+  services.openssh.enable = false; # allow access through tailscale only
+  environment.systemPackages = with pkgs; [
+    tailscale
+    mosh
+  ];
 }
