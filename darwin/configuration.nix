@@ -57,6 +57,7 @@
     pkg:
     builtins.elem (lib.getName pkg) [
       "claude-code"
+      "1password-cli"
     ];
 
   security.pam.services.sudo_local = {

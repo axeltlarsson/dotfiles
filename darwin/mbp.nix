@@ -37,7 +37,7 @@
     terminal-notifier
 
     nodejs
-    pkgs.nerd-fonts.hasklug
+    nerd-fonts.hasklug
   ];
 
   home.sessionPath = [ "${config.home.homeDirectory}/.npm-packages/bin" ];

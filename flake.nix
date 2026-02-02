@@ -51,6 +51,7 @@
           };
           modules = [
             ./darwin/configuration.nix
+            ./darwin/axel_mbp14_ja_darwin.nix
             home-manager.darwinModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
