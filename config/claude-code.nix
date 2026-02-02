@@ -31,5 +31,15 @@
         ];
       };
     };
+    memory.text = /* markdown */ ''
+      - When writing python code - always make sure to format it by ruff's rules and type check it with ty
+      - Use rg instead of grep
+      - Use fd instead of find
+      - Before committing make sure to run `ci` if configured in the repo (it usually is), if `ci` doesn't work - try `nix develop -c ci`
+      - For tools that are missing - you can run `nix run nixpkgs#<tool-name>`
+      - Never read .env files!
+      - Do not use git commit prefixes like fix:, chore:, feat: etc - just use an emoji then an imperative description, e.g. "🐛 Use correct ICD-10-SE format..."
+      - Hotfix commit means to use 🚑 emoji in commit message
+    '';
   };
 }
