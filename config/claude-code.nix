@@ -5,6 +5,7 @@
 {
   programs.claude-code = {
     enable = true;
+    package = pkgs.claude-code-bin;
     settings = {
       alwaysThinkingEnabled = true;
       hooks = {

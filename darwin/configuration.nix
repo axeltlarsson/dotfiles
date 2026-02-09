@@ -56,7 +56,7 @@
   nixpkgs.config.allowUnfreePredicate =
     pkg:
     builtins.elem (lib.getName pkg) [
-      "claude-code"
+      "claude-code-bin"
       "1password-cli"
     ];
 
