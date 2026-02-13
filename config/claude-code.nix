@@ -42,5 +42,6 @@
       - Do not use git commit prefixes like fix:, chore:, feat: etc - just use an emoji then an imperative description, e.g. "🐛 Use correct ICD-10-SE format..."
       - Hotfix commit means to use 🚑 emoji in commit message
     '';
+    skillsDir = ./claude-skills;
   };
 }
