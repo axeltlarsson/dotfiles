@@ -1,17 +1,17 @@
 ---
 name: linear
 description: Interact with the Linear API (GraphQL). Use when the user mentions Linear issues, wants to list/create/update/search issues, add comments, check projects/teams, or manage issue states.
-allowed-tools: Bash(uv run *linear*)
+allowed-tools: Bash(linear *)
 ---
 
 # Linear CLI
 
-Use the Python CLI at `~/.claude/skills/linear/linear.py` via `uv run`.
+Use the `linear` CLI.
 
 ## Commands
 
 ```bash
-uv run ~/.claude/skills/linear/linear.py <command> [args]
+linear <command> [args]
 ```
 
 | Command | Description |
@@ -43,22 +43,22 @@ Priority: 0=None, 1=Urgent, 2=High, 3=Medium, 4=Low
 
 ```bash
 # List my issues
-uv run ~/.claude/skills/linear/linear.py issues
+linear issues
 
 # Get issue details
-uv run ~/.claude/skills/linear/linear.py issue DAT-123
+linear issue DAT-123
 
 # Search
-uv run ~/.claude/skills/linear/linear.py search "login bug"
+linear search "login bug"
 
 # Create issue
-uv run ~/.claude/skills/linear/linear.py create DAT "Fix login redirect" --priority 2 --description "Users are redirected to 404"
+linear create DAT "Fix login redirect" --priority 2 --description "Users are redirected to 404"
 
 # Transition state
-uv run ~/.claude/skills/linear/linear.py update DAT-123 --state "In Progress"
+linear update DAT-123 --state "In Progress"
 
 # Add comment
-uv run ~/.claude/skills/linear/linear.py comment DAT-123 "Deployed fix in PR #42"
+linear comment DAT-123 "Deployed fix in PR #42"
 ```
 
 ## Tips

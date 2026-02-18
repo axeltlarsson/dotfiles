@@ -7,7 +7,10 @@
   ...
 }:
 {
-  imports = [ ./mbp.nix ];
+  imports = [
+    ./mbp.nix
+    ../config/linear.nix
+  ];
 
   # folder "work"
   home.file."work" = {
