@@ -7,6 +7,20 @@
     enable = true;
     package = pkgs.claude-code-bin;
     settings = {
+      permissions = {
+        allow = [
+          "Bash(gh pr view*)"
+          "Bash(gh pr list*)"
+          "Bash(gh pr diff*)"
+          "Bash(gh pr checks*)"
+          "Bash(gh issue view*)"
+          "Bash(gh issue list*)"
+          "Bash(gh api*)"
+          "Bash(gh repo view*)"
+          "WebSearch"
+          "WebFetch"
+        ];
+      };
       alwaysThinkingEnabled = true;
       hooks = {
         Stop = [
