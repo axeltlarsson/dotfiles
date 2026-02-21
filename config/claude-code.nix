@@ -22,6 +22,7 @@
         ];
       };
       alwaysThinkingEnabled = true;
+      verbose = true;
       hooks = {
         Stop = [
           {
