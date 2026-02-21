@@ -31,13 +31,13 @@ linear <command> [args]
 
 ## Create options
 
-`--description TEXT` `--priority 0-4` `--state STATE_NAME`
+`--description TEXT` `--priority 0-4` `--state STATE_NAME` `--parent ISSUE_ID`
 
 Priority: 0=None, 1=Urgent, 2=High, 3=Medium, 4=Low
 
 ## Update options
 
-`--title TEXT` `--state STATE_NAME` `--assignee USER_ID` `--priority 0-4` `--description TEXT`
+`--title TEXT` `--state STATE_NAME` `--assignee USER_ID` `--priority 0-4` `--description TEXT` `--parent ISSUE_ID`
 
 ## Examples
 
@@ -45,7 +45,7 @@ Priority: 0=None, 1=Urgent, 2=High, 3=Medium, 4=Low
 # List my issues
 linear issues
 
-# Get issue details
+# Get issue details (includes branchName and url)
 linear issue DAT-123
 
 # Search
@@ -54,6 +54,12 @@ linear search "login bug"
 # Create issue
 linear create DAT "Fix login redirect" --priority 2 --description "Users are redirected to 404"
 
+# Create sub-issue
+linear create DAT "Subtask title" --parent DAT-100
+
+# Set parent on existing issue
+linear update DAT-124 --parent DAT-100
+
 # Transition state
 linear update DAT-123 --state "In Progress"
 
@@ -61,9 +67,15 @@ linear update DAT-123 --state "In Progress"
 linear comment DAT-123 "Deployed fix in PR #42"
 ```
 
+## Git branch workflow
+
+**Always** use `linear issue <id>` to get the `branchName` field from the Linear ticket before creating a git branch. Use that branch name — do not invent your own.
+
 ## Tips
 
+- Run `linear --help` or `linear <command> --help` for full usage details
 - Issue identifiers like `DAT-123` work as the `id` argument everywhere
+- `issue` returns `branchName`, `url`, and `children` (sub-issues) in addition to details and comments
 - To transition state: use `states <team-id>` to find state names, then `update <id> --state "Name"`
 - `create` resolves team key and state name automatically — no need to look up UUIDs
 - All output is JSON — parse fields as needed

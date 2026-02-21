@@ -10,6 +10,7 @@ import argparse
 import json
 import subprocess
 import sys
+from textwrap import dedent
 from typing import Any
 
 import httpx  # ty: ignore[unresolved-import]
@@ -84,7 +85,7 @@ def cmd_issue(args: argparse.Namespace) -> None:
     query = """
     query IssueDetail($id: String!) {
       issue(id: $id) {
-        id identifier title description
+        id identifier title description url branchName
         state { id name }
         team { id key name }
         assignee { id name }
@@ -92,6 +93,7 @@ def cmd_issue(args: argparse.Namespace) -> None:
         labels { nodes { id name } }
         priority priorityLabel
         createdAt updatedAt
+        children { nodes { id identifier title state { name } } }
         comments { nodes { body user { name } createdAt } }
       }
     }
@@ -268,7 +270,21 @@ def cmd_archive(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Linear CLI")
+    parser = argparse.ArgumentParser(
+        description="CLI for the Linear GraphQL API. Manage issues, teams, projects, and more.",
+        epilog=dedent("""\
+            Examples:
+              linear me                                   Show current user
+              linear issues                               List my assigned issues
+              linear issue DAT-123                        Get issue details (incl. branch name)
+              linear search 'login bug'                   Search issues
+              linear create DAT 'Fix bug' --priority 2    Create issue
+              linear create DAT 'Subtask' --parent DAT-1  Create sub-issue
+              linear update DAT-123 --state 'In Progress' Transition state
+              linear comment DAT-123 'Fixed in PR #42'    Add comment
+              linear states <team-uuid>                   List workflow states"""),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("me", help="Current user info")
