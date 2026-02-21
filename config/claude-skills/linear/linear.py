@@ -52,6 +52,15 @@ def gql(query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
     return data["data"]
 
 
+def resolve_issue_uuid(identifier: str) -> str:
+    """Resolve an issue identifier (e.g. DAT-123) to its UUID."""
+    data = gql(
+        "query IssueId($id: String!) { issue(id: $id) { id } }",
+        {"id": identifier},
+    )
+    return data["issue"]["id"]
+
+
 def cmd_me(_args: argparse.Namespace) -> None:
     data = gql("{ viewer { id name email displayName admin active } }")
     print(json.dumps(data, indent=2))
@@ -144,6 +153,8 @@ def cmd_create(args: argparse.Namespace) -> None:
             )
             sys.exit(1)
         input_fields["stateId"] = state_id
+    if args.parent:
+        input_fields["parentId"] = resolve_issue_uuid(args.parent)
 
     query = """
     mutation CreateIssue($input: IssueCreateInput!) {
@@ -188,6 +199,8 @@ def cmd_update(args: argparse.Namespace) -> None:
         input_fields["priority"] = args.priority
     if args.description:
         input_fields["description"] = args.description
+    if args.parent:
+        input_fields["parentId"] = resolve_issue_uuid(args.parent)
 
     if not input_fields:
         print("No fields to update", file=sys.stderr)
@@ -206,12 +219,7 @@ def cmd_update(args: argparse.Namespace) -> None:
 
 
 def cmd_comment(args: argparse.Namespace) -> None:
-    # Resolve issue identifier to UUID
-    issue_data = gql(
-        "query IssueId($id: String!) { issue(id: $id) { id } }",
-        {"id": args.id},
-    )
-    issue_uuid = issue_data["issue"]["id"]
+    issue_uuid = resolve_issue_uuid(args.id)
 
     query = """
     mutation CreateComment($input: CommentCreateInput!) {
@@ -284,6 +292,7 @@ def main() -> None:
         help="0=None 1=Urgent 2=High 3=Medium 4=Low",
     )
     p_create.add_argument("--state", help="Workflow state name")
+    p_create.add_argument("--parent", help="Parent issue identifier (e.g. DAT-100)")
 
     p_update = sub.add_parser("update", help="Update issue")
     p_update.add_argument("id", help="Issue identifier (e.g. DAT-123)")
@@ -297,6 +306,7 @@ def main() -> None:
         help="0=None 1=Urgent 2=High 3=Medium 4=Low",
     )
     p_update.add_argument("--description", help="New description (markdown)")
+    p_update.add_argument("--parent", help="Parent issue identifier (e.g. DAT-100)")
 
     p_comment = sub.add_parser("comment", help="Add comment to issue")
     p_comment.add_argument("id", help="Issue identifier (e.g. DAT-123)")
