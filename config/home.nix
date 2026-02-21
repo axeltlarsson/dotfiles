@@ -111,6 +111,7 @@
     yazi = {
       enable = true;
       enableZshIntegration = true;
+      shellWrapperName = "y";
       flavors = {
         rose-pine =
           pkgs.runCommand "rose-pine-flavor"
