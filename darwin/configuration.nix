@@ -51,7 +51,6 @@
   nixpkgs.overlays = [
     (import ../overlays/python.nix)
     (import ../overlays/tmux-plugins.nix)
-    (import ../overlays/zsh-prezto-pure.nix)
   ];
 
   nixpkgs.config.allowUnfreePredicate =
