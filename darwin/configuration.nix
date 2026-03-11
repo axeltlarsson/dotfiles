@@ -34,17 +34,11 @@
       enable = true;
       ephemeral = true;
       maxJobs = 4;
-      config = {
-        # try to leave this blank first-time setup if facing issues
-        # enable a NixOS VM
-        virtualisation = {
-          darwin-builder = {
-            diskSize = 10 * 1024; # 10 Gib
-            memorySize = 8 * 1024;
-          };
-          cores = 6;
-        };
-      };
+      # Bootstrap with defaults first, then restore custom VM config:
+      # config.virtualisation = {
+      #   darwin-builder = { diskSize = 10 * 1024; memorySize = 8 * 1024; };
+      #   cores = 6;
+      # };
     };
   };
 

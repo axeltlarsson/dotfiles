@@ -5,7 +5,7 @@
     dotDir = "${config.xdg.configHome}/zsh";
 
     defaultKeymap = "viins";
-    enableCompletion = true;
+    enableCompletion = false; # we handle compinit ourselves with dump caching
 
     autosuggestion.enable = true;
 
@@ -46,7 +46,25 @@
     };
 
     initContent = ''
-      # === Options (from prezto environment + directory modules) ===
+      # === Completion (cached compinit — only regenerate dump once per day) ===
+      autoload -Uz compinit
+      _comp_dump="${config.xdg.configHome}/zsh/.zcompdump"
+      if [[ -f "$_comp_dump" ]]; then
+        # Regenerate if dump is older than 24h
+        zmodload zsh/stat
+        local -a _dump_stat
+        zstat -A _dump_stat +mtime "$_comp_dump"
+        if (( EPOCHSECONDS - _dump_stat[1] < 86400 )); then
+          compinit -C -d "$_comp_dump"
+        else
+          compinit -d "$_comp_dump"
+        fi
+      else
+        compinit -d "$_comp_dump"
+      fi
+      unset _comp_dump
+
+      # === Options ===
       setopt nonomatch           # allow `nix run nixpkgs#whatever`
       setopt AUTO_CD             # cd by typing directory name
       setopt AUTO_PUSHD          # push dirs onto stack on cd
@@ -76,7 +94,7 @@
       fi
 
       # === Fast syntax highlighting (replaces zsh-syntax-highlighting) ===
-      source ${pkgs.zsh-fast-syntax-highlighting}/share/zsh/site-functions/fast-syntax-highlighting.plugin.zsh
+      source ${pkgs.zsh-fast-syntax-highlighting}/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
       # === Vi mode enhancements ===
       autoload -Uz edit-command-line

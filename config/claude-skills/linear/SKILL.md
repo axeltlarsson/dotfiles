@@ -6,79 +6,82 @@ allowed-tools: Bash(linear *)
 
 # Linear CLI
 
-Use the `linear` CLI.
+Use the `linear` CLI. **Always use `--fields`** to request only the fields you need — this saves tokens and keeps output concise.
 
-## Commands
+## Token efficiency rules
+
+1. **Always pass `--fields`** — never dump full JSON when you only need specific values
+2. Use team keys directly (e.g. `DAT`) — no need to look up UUIDs
+3. Use `--fields branchName` to get branch names, not the full issue blob
+4. Single field → raw value (no JSON wrapping); multiple fields → compact JSON
+
+## `--fields` flag
+
+Works on all subcommands. Comma-separated, dot notation for nesting.
 
 ```bash
-linear <command> [args]
+linear issue DAT-123 --fields branchName           # → axel/dat-123-fix-bug
+linear issue DAT-123 --fields identifier,title,state.name
+linear teams --fields key,name                      # → compact JSON array
+linear issues --fields identifier,title,state.name  # → array of objects
+linear states DAT --fields name                     # → one name per line
 ```
+
+Auto-unwraps nested response wrappers (`nodes`, single-key dicts, mutation `success`), so you don't need to know the GraphQL response shape.
+
+## Commands
 
 | Command | Description |
 |---------|-------------|
 | `me` | Current user info |
-| `teams` | List teams (id, name, key) |
-| `issues` | List my assigned issues |
-| `issue <id>` | Get issue details + comments (e.g. `DAT-123`) |
-| `search <query>` | Search issues by text |
+| `teams` | List teams |
+| `issues` | My assigned issues |
+| `issue <id>` | Issue details + comments |
+| `search <query>` | Search issues |
 | `create <team-key> <title> [opts]` | Create issue |
 | `update <id> [opts]` | Update issue fields |
 | `comment <id> <body>` | Add comment (markdown) |
-| `states <team-id>` | List workflow states for a team |
+| `states <team-key>` | List workflow states (accepts team key directly) |
 | `labels` | List all labels |
 | `projects` | List all projects |
 | `archive <id>` | Archive an issue |
 
 ## Create options
 
-`--description TEXT` `--priority 0-4` `--state STATE_NAME` `--parent ISSUE_ID`
-
-Priority: 0=None, 1=Urgent, 2=High, 3=Medium, 4=Low
+`--description TEXT` `--priority 0-4` `--state STATE_NAME` `--parent ISSUE_ID` `--labels '["Bug"]'` `--project NAME`
 
 ## Update options
 
-`--title TEXT` `--state STATE_NAME` `--assignee USER_ID` `--priority 0-4` `--description TEXT` `--parent ISSUE_ID`
+`--title TEXT` `--state STATE_NAME` `--assignee USER_ID` `--priority 0-4` `--description TEXT` `--parent ISSUE_ID` `--project NAME`
+
+Labels for update — `--labels` accepts JSON:
+- Array → replaces all labels: `--labels '["Bug", "Frontend"]'`
+- Object → add/remove: `--labels '{"add": ["Bug"], "remove": ["Old"]}'`
 
 ## Examples
 
 ```bash
-# List my issues
-linear issues
+# Get branch name for git checkout
+linear issue DAT-123 --fields branchName
 
-# Get issue details (includes branchName and url)
-linear issue DAT-123
+# Compact issue list
+linear issues --fields identifier,title,state.name,priorityLabel
 
-# Search
-linear search "login bug"
-
-# Create issue
-linear create DAT "Fix login redirect" --priority 2 --description "Users are redirected to 404"
-
-# Create sub-issue
-linear create DAT "Subtask title" --parent DAT-100
-
-# Set parent on existing issue
-linear update DAT-124 --parent DAT-100
+# Create with labels
+linear create DAT "Fix login" --priority 2 --labels '["Bug"]' --project "Q1 Sprint"
 
 # Transition state
 linear update DAT-123 --state "In Progress"
 
-# Add comment
-linear comment DAT-123 "Deployed fix in PR #42"
+# Add a label without removing existing ones
+linear update DAT-123 --labels '{"add": ["Reviewed"]}'
+
+# List states by team key
+linear states DAT --fields name,type
 ```
 
 ## Git branch workflow
 
-**Always** use `linear issue <id>` to get the `branchName` field from the Linear ticket before creating a git branch. Use that branch name — do not invent your own.
-
-## Tips
-
-- Run `linear --help` or `linear <command> --help` for full usage details
-- Issue identifiers like `DAT-123` work as the `id` argument everywhere
-- `issue` returns `branchName`, `url`, and `children` (sub-issues) in addition to details and comments
-- To transition state: use `states <team-id>` to find state names, then `update <id> --state "Name"`
-- `create` resolves team key and state name automatically — no need to look up UUIDs
-- All output is JSON — parse fields as needed
-- Comments and descriptions support markdown
+Use `linear issue <id> --fields branchName` to get the branch name from Linear. Use that name — do not invent your own.
 
 $ARGUMENTS
