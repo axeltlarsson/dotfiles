@@ -94,11 +94,26 @@ def resolve_project_id(name_or_uuid: str) -> str:
     sys.exit(1)
 
 
+def fetch_all_labels() -> list[dict[str, str]]:
+    """Fetch all labels using cursor pagination."""
+    all_labels: list[dict[str, str]] = []
+    cursor: str | None = None
+    while True:
+        after = f', after: "{cursor}"' if cursor else ""
+        query = "{ issueLabels(first: 100" + after + ") { nodes { id name } pageInfo { hasNextPage endCursor } } }"
+        data = gql(query)
+        all_labels.extend(data["issueLabels"]["nodes"])
+        page_info = data["issueLabels"]["pageInfo"]
+        if not page_info["hasNextPage"]:
+            break
+        cursor = page_info["endCursor"]
+    return all_labels
+
+
 def resolve_label_ids(label_names: list[str]) -> list[str]:
     """Resolve label names (case-insensitive) to IDs."""
-    data = gql("{ issueLabels(first: 250) { nodes { id name } } }")
     lookup: dict[str, str] = {}
-    for label in data["issueLabels"]["nodes"]:
+    for label in fetch_all_labels():
         lookup[label["name"].lower()] = label["id"]
     ids: list[str] = []
     for name in label_names:
@@ -398,7 +413,18 @@ def cmd_states(args: argparse.Namespace) -> Any:
 
 
 def cmd_labels(_args: argparse.Namespace) -> Any:
-    return gql("{ issueLabels(first: 100) { nodes { id name color } } }")
+    all_labels: list[dict[str, str]] = []
+    cursor: str | None = None
+    while True:
+        after = f', after: "{cursor}"' if cursor else ""
+        query = "{ issueLabels(first: 100" + after + ") { nodes { id name color } pageInfo { hasNextPage endCursor } } }"
+        data = gql(query)
+        all_labels.extend(data["issueLabels"]["nodes"])
+        page_info = data["issueLabels"]["pageInfo"]
+        if not page_info["hasNextPage"]:
+            break
+        cursor = page_info["endCursor"]
+    return {"issueLabels": {"nodes": all_labels}}
 
 
 def cmd_projects(_args: argparse.Namespace) -> Any:
@@ -429,23 +455,25 @@ def main() -> None:
               linear states DAT                            List states by team key"""),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument(
+    # Shared parent so --fields works on every subcommand (before or after args)
+    fields_parent = argparse.ArgumentParser(add_help=False)
+    fields_parent.add_argument(
         "--fields",
         help="Comma-separated fields to extract (dot notation for nesting, e.g. state.name)",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("me", help="Current user info")
-    sub.add_parser("teams", help="List teams")
-    sub.add_parser("issues", help="List my assigned issues")
+    sub.add_parser("me", help="Current user info", parents=[fields_parent])
+    sub.add_parser("teams", help="List teams", parents=[fields_parent])
+    sub.add_parser("issues", help="List my assigned issues", parents=[fields_parent])
 
-    p_issue = sub.add_parser("issue", help="Get issue details + comments")
+    p_issue = sub.add_parser("issue", help="Get issue details + comments", parents=[fields_parent])
     p_issue.add_argument("id", help="Issue identifier (e.g. DAT-123)")
 
-    p_search = sub.add_parser("search", help="Search issues")
+    p_search = sub.add_parser("search", help="Search issues", parents=[fields_parent])
     p_search.add_argument("query", help="Search query")
 
-    p_create = sub.add_parser("create", help="Create issue")
+    p_create = sub.add_parser("create", help="Create issue", parents=[fields_parent])
     p_create.add_argument("team_key", help="Team key (e.g. DAT)")
     p_create.add_argument("title", help="Issue title")
     p_create.add_argument("--description", help="Issue description (markdown)")
@@ -462,7 +490,7 @@ def main() -> None:
     )
     p_create.add_argument("--project", help="Project name or UUID")
 
-    p_update = sub.add_parser("update", help="Update issue")
+    p_update = sub.add_parser("update", help="Update issue", parents=[fields_parent])
     p_update.add_argument("id", help="Issue identifier (e.g. DAT-123)")
     p_update.add_argument("--title", help="New title")
     p_update.add_argument("--state", help="Workflow state name")
@@ -481,17 +509,17 @@ def main() -> None:
     )
     p_update.add_argument("--project", help="Project name or UUID")
 
-    p_comment = sub.add_parser("comment", help="Add comment to issue")
+    p_comment = sub.add_parser("comment", help="Add comment to issue", parents=[fields_parent])
     p_comment.add_argument("id", help="Issue identifier (e.g. DAT-123)")
     p_comment.add_argument("body", help="Comment body (markdown)")
 
-    p_states = sub.add_parser("states", help="List workflow states for a team")
+    p_states = sub.add_parser("states", help="List workflow states for a team", parents=[fields_parent])
     p_states.add_argument("team", help="Team key (e.g. DAT) or UUID")
 
-    sub.add_parser("labels", help="List labels")
-    sub.add_parser("projects", help="List projects")
+    sub.add_parser("labels", help="List labels", parents=[fields_parent])
+    sub.add_parser("projects", help="List projects", parents=[fields_parent])
 
-    p_archive = sub.add_parser("archive", help="Archive issue")
+    p_archive = sub.add_parser("archive", help="Archive issue", parents=[fields_parent])
     p_archive.add_argument("id", help="Issue identifier (e.g. DAT-123)")
 
     args = parser.parse_args()
