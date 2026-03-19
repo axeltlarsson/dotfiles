@@ -13,6 +13,13 @@
 
   programs.zsh.enable = true;
 
+  # Workaround: nix-darwin unconditionally creates /etc/ssh/ssh_config.d/100-nix-darwin.conf
+  # even when extraConfig is empty. Empty files in the Nix store on macOS get rwxrwxrwx perms,
+  # which causes OpenSSH to reject the file ("Bad owner or permissions"), breaking all SSH.
+  # Setting a non-empty value ensures the store file gets proper r--r--r-- permissions.
+  # Upstream: https://github.com/nix-darwin/nix-darwin/issues/913
+  programs.ssh.extraConfig = "# nix-darwin managed";
+
   nix = {
     package = pkgs.nix;
     settings.experimental-features = "nix-command flakes";
