@@ -38,7 +38,7 @@
       "postgrest.cachix.org-1:icgW4R15fz1+LqvhPjt4EnX/r19AaqxiVV+1olwlZtI="
     ];
     linux-builder = {
-      enable = true;
+      enable = false;
       ephemeral = true;
       maxJobs = 4;
       # Bootstrap with defaults first, then restore custom VM config:
