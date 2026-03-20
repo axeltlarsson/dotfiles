@@ -10,5 +10,5 @@ let
 in
 {
   home.packages = [ linear ];
-  programs.claude-code.skillsDir = ./claude-skills;
+  programs.claude-code.skills.linear = ./claude-skills/linear;
 }
