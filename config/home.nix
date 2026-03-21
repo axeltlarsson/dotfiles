@@ -109,38 +109,31 @@
       enableZshIntegration = true;
     };
 
-    yazi = {
-      enable = true;
-      enableZshIntegration = true;
-      shellWrapperName = "y";
-      flavors = {
-        rose-pine =
-          pkgs.runCommand "rose-pine-flavor"
-            {
-              buildInputs = [ pkgs.git ];
-            }
-            ''
-              src=$(mktemp -d)
-              cp -r ${
-                pkgs.fetchFromGitHub {
-                  owner = "Msouza91";
-                  repo = "rose-pine.yazi";
-                  rev = "4101d0d9c475f23d94b7262e7fd945930378807e";
-                  sha256 = "sha256-Ygx3tyefGcq3Qqk/72RSJbT5K8G7wVqIk2rCI0vKkNQ=";
-                }
-              }/* $src
-
-              # Rename files to match yazi's expectations
-              mv $src/theme.toml $src/flavor.toml
-              mv $src/rose-pine.tmTheme $src/tmtheme.xml
-              cp $src/LICENSE $src/LICENSE-tmtheme
-
-              # Move everything to the output directory
-              mkdir -p $out
-              cp -r $src/* $out
-            '';
+    yazi =
+      let
+        rosePineSrc = pkgs.fetchFromGitHub {
+          owner = "rose-pine";
+          repo = "yazi";
+          rev = "c89d745573d4fcfe0550fe6646f9f9ab1c0e51db";
+          sha256 = "sha256-9e3dXViWl1rK9BPrGAFfs9ZL/tsG6Njz6ksuU6AIrFY=";
+        };
+      in
+      {
+        enable = true;
+        enableZshIntegration = true;
+        shellWrapperName = "y";
+        theme = {
+          flavor = {
+            dark = "rose-pine";
+            light = "rose-pine-dawn";
+          };
+        } // builtins.fromTOML (builtins.readFile "${rosePineSrc}/themes/rose-pine.toml");
+        flavors = {
+          rose-pine = "${rosePineSrc}/flavors/rose-pine.yazi";
+          rose-pine-dawn = "${rosePineSrc}/flavors/rose-pine-dawn.yazi";
+          rose-pine-moon = "${rosePineSrc}/flavors/rose-pine-moon.yazi";
+        };
       };
-    };
 
     delta = {
       enable = true;
