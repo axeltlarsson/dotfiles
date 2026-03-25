@@ -28,6 +28,20 @@
         ref = "master";
       };
     };
+    # Stable channel for running pre-built packages without local compilation
+    # e.g. `nix run nixpkgs-stable#foo`
+    nixpkgs-stable = {
+      from = {
+        id = "nixpkgs-stable";
+        type = "indirect";
+      };
+      to = {
+        type = "github";
+        owner = "NixOS";
+        repo = "nixpkgs";
+        ref = "nixos-25.11";
+      };
+    };
   };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
