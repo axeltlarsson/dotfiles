@@ -75,7 +75,6 @@
       submodule.recurse = true;
 
       gpg = {
-        format = "ssh"; # Use SSH keys for signing
         ssh.allowedSignersFile = "~/.config/git/allowed_signers";
       };
     };
@@ -102,6 +101,7 @@
     ];
 
     signing = {
+      format = "ssh";
       signByDefault = true;
     };
   };
