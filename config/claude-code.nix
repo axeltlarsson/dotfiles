@@ -54,6 +54,7 @@
       };
     };
     context = /* markdown */ ''
+      - To search for software in nipxkgs use `nh search` - it is faster than `nix search`!
       - When writing python code - always make sure to format it by ruff's rules and type check it with ty
       - Use rg instead of grep
       - Use fd instead of find
