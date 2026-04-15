@@ -23,7 +23,12 @@
         ];
       };
       alwaysThinkingEnabled = true;
+      effortLevel = "high";
       verbose = true;
+      attribution = {
+        commit = "";
+        pr = "";
+      };
       hooks = {
         Stop = [
           {
@@ -48,7 +53,7 @@
         ];
       };
     };
-    memory.text = /* markdown */ ''
+    context = /* markdown */ ''
       - When writing python code - always make sure to format it by ruff's rules and type check it with ty
       - Use rg instead of grep
       - Use fd instead of find
