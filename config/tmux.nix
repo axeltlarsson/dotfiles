@@ -29,7 +29,6 @@ in
       set -g default-shell "${pkgs.zsh}/bin/zsh"
 
       set -g default-terminal "tmux-256color"
-      set -ga terminal-overrides ",alacritty:RGB"
       set -ga terminal-overrides ",xterm-ghostty:RGB"
 
       set -g mouse on

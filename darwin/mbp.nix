@@ -8,7 +8,6 @@
 {
   imports = [
     ../config/home.nix
-    ../config/alacritty.nix
     ../config/claude-code.nix
   ];
 

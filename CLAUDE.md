@@ -27,7 +27,7 @@ This is a Nix flake managing dotfiles across multiple machines:
   - `mbp.nix` - Additional darwin settings
 - **config/** - Home-manager modules (shared across machines)
   - `home.nix` - Common packages and imports all other modules
-  - Individual modules: `zsh.nix`, `tmux.nix`, `git.nix`, `ssh.nix`, `ghostty.nix`, `fzf.nix`, `alacritty.nix`
+  - Individual modules: `zsh.nix`, `tmux.nix`, `git.nix`, `ssh.nix`, `ghostty.nix`, `fzf.nix`
   - `nvim/` - Neovim configuration (Lua)
 - **nixpi/** - NixOS configuration for Raspberry Pi
 - **andrimner/** - Home-manager config for Linux server
