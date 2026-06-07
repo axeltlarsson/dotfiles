@@ -4,7 +4,7 @@
     enable = true;
     enableDefaultConfig = false;
 
-    matchBlocks."*".addKeysToAgent = "yes";
+    settings."*".AddKeysToAgent = "yes";
 
     extraConfig = ''
       ServerAliveInterval 15
