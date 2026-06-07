@@ -9,7 +9,7 @@ return {
     },
     lazy = false,                    -- neo-tree will lazily load itself
     keys = {
-      { "<leader>d", "<cmd>Neotree reveal<cr>", desc = "Reveal file in Neo-tree" },
+      { "<leader>d", "<cmd>Neotree toggle reveal<cr>", desc = "Toggle Neo-tree" },
     },
     config = function(_, _)
       require("neo-tree").setup({
