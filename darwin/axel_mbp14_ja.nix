@@ -10,6 +10,8 @@
   imports = [
     ./mbp.nix
     ../config/linear.nix
+    ../config/aikido.nix
+    ../config/publish-report.nix
   ];
 
   # folder "work"
