@@ -4,32 +4,9 @@ let
   src = pkgs.fetchFromGitHub {
     owner = "pbakaus";
     repo = "impeccable";
-    rev = "d6b1a56bc5b79e9375be0f8508b4daa1678fb058";
-    hash = "sha256-xt9oIszoAwprFe3UKf4id+DLPoObWj0BRlIuTAldlvc=";
+    rev = "d2ab4ddee6fa63002fae680652b5fbd31735e280";
+    hash = "sha256-r13nUfAlDXNckyY+9+AldJNY8RQNy0gk97xQpcWGSsc=";
   };
-  skillNames = [
-    "adapt"
-    "animate"
-    "arrange"
-    "audit"
-    "bolder"
-    "clarify"
-    "colorize"
-    "critique"
-    "delight"
-    "distill"
-    "extract"
-    "frontend-design"
-    "harden"
-    "normalize"
-    "onboard"
-    "optimize"
-    "overdrive"
-    "polish"
-    "quieter"
-    "teach-impeccable"
-    "typeset"
-  ];
 in
 {
   pname = "impeccable-claude-skills";
@@ -37,10 +14,5 @@ in
   description = "Design fluency skills for Claude Code";
   homepage = "https://impeccable.style";
   license = "Apache-2.0";
-  skills = builtins.listToAttrs (
-    map (name: {
-      inherit name;
-      value = "${src}/.claude/skills/${name}";
-    }) skillNames
-  );
+  skills.impeccable = "${src}/.claude/skills/impeccable";
 }
