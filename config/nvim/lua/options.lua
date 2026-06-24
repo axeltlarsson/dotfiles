@@ -38,6 +38,13 @@ o.autoindent = true
 
 vim.g.editorconfig = true
 
+-- Custom digraphs (insert with <C-k>)
+cmd [[
+  digraph =^ 8796
+  digraph =D 8797
+  digraph := 8788
+]]
+
 -- Splits / command preview / scrolling
 o.splitbelow = true
 o.splitright = true
