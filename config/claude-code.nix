@@ -8,6 +8,7 @@
     skills = (import ./claude-skills/impeccable.nix { inherit pkgs; }).skills;
     settings = {
       permissions = {
+        defaultMode = "auto";
         allow = [
           "Bash(gh pr view*)"
           "Bash(gh pr list*)"
@@ -55,11 +56,15 @@
     context = /* markdown */ ''
       - To search for software in nipxkgs use `nh search` - it is faster than `nix search`!
       - When writing python code - always make sure to format it by ruff's rules and type check it with ty
+      - Python deps: never use pip. For ad-hoc scripts use `uv run` with PEP 723 inline metadata (`# /// script` block); for project deps use a Nix derivation
       - Use rg instead of grep
       - Use fd instead of find
+      - Never use Homebrew (`brew`) - install/run tools with nix instead
       - Before committing make sure to run `ci` if configured in the repo (it usually is), if `ci` doesn't work - try `nix develop -c ci`
       - For tools that are missing - you can run `nix run nixpkgs#<tool-name>`
       - Never read .env files!
+      - Code comments: be terse. Default to none; one line max, and only when the WHY is non-obvious. No motivational/restating prose, no ticket links in code
+      - When asked for markdown text to paste elsewhere (Slack, docs), output it inside a code block so the raw markdown is copyable
       - Do not use git commit prefixes like fix:, chore:, feat: etc - just use an emoji then an imperative description, e.g. "🐛 Use correct ICD-10-SE format..."
       - Hotfix commit means to use 🚑 emoji in commit message
     '';
