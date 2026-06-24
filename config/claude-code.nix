@@ -5,7 +5,7 @@
 {
   programs.claude-code = {
     enable = true;
-    skills = (import ./impeccable.nix { inherit pkgs; }).skills;
+    skills = (import ./claude-skills/impeccable.nix { inherit pkgs; }).skills;
     settings = {
       permissions = {
         allow = [
