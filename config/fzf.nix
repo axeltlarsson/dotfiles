@@ -41,8 +41,8 @@
       ];
 
     # FileWidget Ctrl-T
-    fileWidgetCommand = "fd --type f | sort -r";
-    fileWidgetOptions = [
+    fileWidget.command = "fd --type f | sort -r";
+    fileWidget.options = [
       "--preview 'bat --style=numbers --color=always --line-range :500 {}'"
       "--layout=reverse"
       "--preview-window=right:60%"
