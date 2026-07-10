@@ -14,6 +14,13 @@
     ../config/publish-report.nix
   ];
 
+  programs.claude-code.mcpServers = {
+    vanta = {
+      type = "http";
+      url = "https://mcp.eu.vanta.com/mcp";
+    };
+  };
+
   # folder "work"
   home.file."work" = {
     recursive = true;
