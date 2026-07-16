@@ -29,12 +29,10 @@
       "apple-virt"
     ];
     settings.substituters = [
-      "https://cache.garnix.io"
       "https://postgrest.cachix.org"
       "https://aseipp-nix-cache.global.ssl.fastly.net"
     ];
     settings.trusted-public-keys = [
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
       "postgrest.cachix.org-1:icgW4R15fz1+LqvhPjt4EnX/r19AaqxiVV+1olwlZtI="
     ];
     linux-builder = {
