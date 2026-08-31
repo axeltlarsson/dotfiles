@@ -11,7 +11,17 @@
   system.primaryUser = "axel";
   system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    # Completion + prompt are handled by home-manager (cached compinit, pure).
+    # The nix-darwin defaults run a full compinit + bashcompinit + promptinit in
+    # /etc/zshrc for every shell, costing ~80 ms per startup (compaudit rescans
+    # the whole fpath) — and completion then gets initialised a second time by
+    # the user zshrc.
+    enableCompletion = false;
+    enableBashCompletion = false;
+    promptInit = "";
+  };
 
   # Workaround: nix-darwin unconditionally creates /etc/ssh/ssh_config.d/100-nix-darwin.conf
   # even when extraConfig is empty. Empty files in the Nix store on macOS get rwxrwxrwx perms,

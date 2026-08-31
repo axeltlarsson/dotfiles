@@ -2,7 +2,8 @@
   programs.fzf = {
     # N.B! `tmux kill-server` after changing — tmux caches env vars int is global server environment
     enable = true;
-    enableZshIntegration = true;
+    # `fzf --zsh` output is baked into the zshrc at build time (see zsh.nix)
+    enableZshIntegration = false;
     defaultCommand = "fd --type f | sort -r";
     # Colours are ANSI palette indices, not hex, so they follow whatever palette
     # ghostty has loaded (Rosé Pine main or dawn) with no reload. Rosé Pine maps

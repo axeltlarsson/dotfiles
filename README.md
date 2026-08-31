@@ -7,7 +7,7 @@
 ## Performance tweaks
 
 ``` bash
-for i in $(seq 1 10); do /usr/bin/time $SHELL -i -c exit; done
+nix run nixpkgs#hyperfine -- --warmup 3 'zsh -lic exit'
 ```
 
 References:

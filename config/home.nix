@@ -131,13 +131,15 @@ in
 
     direnv = {
       enable = true;
-      enableZshIntegration = true;
+      # hook output is baked into the zshrc at build time (see zsh.nix)
+      enableZshIntegration = false;
       nix-direnv.enable = true;
     };
 
     zoxide = {
       enable = true;
-      enableZshIntegration = true;
+      # init output is baked into the zshrc at build time (see zsh.nix)
+      enableZshIntegration = false;
     };
 
     yazi =
