@@ -72,6 +72,25 @@ vim.keymap.set("n", "]d", function()
 end, { desc = "Next diagnostic" })
 keymap.set("n", ",q", vim.diagnostic.setloclist, { desc = "Diagnostics to loclist" })
 
+-- Theme: flip the whole system between light and dark (see config/theme.nix).
+-- The script sets the macOS appearance and then pushes 'background' back into
+-- this instance, so we don't touch it here.
+keymap.set("n", "<Leader>tt", function()
+  if vim.fn.executable("theme") ~= 1 then
+    vim.notify("theme command not found", vim.log.levels.WARN)
+    return
+  end
+  -- Report failures here too: outside tmux the script has nowhere to display
+  -- them, and vim.system discards its stderr.
+  vim.system({ "theme", "toggle" }, { text = true }, function(out)
+    if out.code ~= 0 then
+      vim.schedule(function()
+        vim.notify("theme toggle failed: " .. (out.stderr or ""), vim.log.levels.WARN)
+      end)
+    end
+  end)
+end, { desc = "Toggle light/dark theme" })
+
 -- Delete nvim 0.11 default LSP keymaps (we define our own in lsp.lua)
 keymap.del('n', 'grn')
 keymap.del('n', 'grr')

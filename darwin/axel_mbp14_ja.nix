@@ -37,15 +37,22 @@
     ${config.programs.git.settings.user.email} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaizpKc2t1Oowabm8WuRyOm+Fv50ai+vfpnP+Y0XtZz axel@jointacademy.com
   '';
 
-  programs.k9s = {
-    enable = true;
-    skins = {
-      rose-pine = builtins.readFile ../config/k9s-rose-pine.yaml;
+  programs.k9s =
+    let
+      palette = import ../config/rose-pine.nix;
+      skin = import ../config/k9s-skin.nix;
+    in
+    {
+      enable = true;
+      skins = {
+        rose-pine = skin palette.main;
+        rose-pine-dawn = skin palette.dawn;
+      };
+      settings = {
+        # `theme sync` points skins/current.yaml at one of the two above
+        k9s.ui.skin = "current";
+      };
     };
-    settings = {
-      k9s.ui.skin = "rose-pine";
-    };
-  };
 
   home.packages = [
     pkgs.kubie

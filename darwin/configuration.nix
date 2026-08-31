@@ -49,7 +49,6 @@
 
   nixpkgs.overlays = [
     (import ../overlays/python.nix)
-    (import ../overlays/tmux-plugins.nix)
     (import ../overlays/pure-prompt.nix)
   ];
 

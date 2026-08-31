@@ -51,8 +51,37 @@ in
       # set 3 s display time for messages by default
       set -g display-time 3000
 
-      # style message-display - use "Rose" as text colour to make it pop a bit more
-      set -g message-style 'fg=#ebbcba,bold'
+      # === Rosé Pine status line ===
+      # Transcribed from the rose-pine tmux plugin's output, with every hex
+      # replaced by the ANSI palette slot holding that role, so the bar follows
+      # whatever palette the terminal has loaded (main or dawn) with no reload
+      # and no plugin. Slots, per rosepinetheme.com, in both variants:
+      #   0 overlay  1 love  2 pine  3 gold  4 foam  5 iris  6 rose  7 text  8 muted
+      # bg=default means the terminal's own background, so the bar always blends.
+      set -g status on
+      set -g status-justify left
+      set -g status-left-length 200
+      set -g status-right-length 200
+      set -g status-style 'fg=colour2,bg=default'
+      set -g status-left '#[fg=#{?client_prefix,colour1,colour7}] #[fg=colour7]#S#[fg=colour7]    '
+      set -g status-right '#[fg=colour4]%Y-%m-%d %H:%M#[fg=colour8]  #[fg=colour8]󰃰 #[fg=colour7]#[fg=colour7]  #[fg=colour8] #[fg=colour6]#{b:pane_current_path}'
+
+      setw -g window-status-separator '  '
+      setw -g window-status-format '#I:#W#{?window_flags,#{window_flags}, }'
+      setw -g window-status-current-format '#I:#W#{?window_flags,#{window_flags}, }'
+      setw -g window-status-style 'fg=colour5,bg=default'
+      setw -g window-status-current-style 'fg=colour3,bg=default'
+      # reverse rather than a hardcoded fg/bg pair: swapping the terminal's own
+      # colours is the only inversion that stays legible in both variants
+      setw -g window-status-activity-style 'fg=colour6,reverse'
+
+      set -g pane-border-style 'fg=colour8'
+      set -g pane-active-border-style 'fg=colour3'
+      set -g display-panes-colour colour3
+      set -g display-panes-active-colour colour7
+
+      # use "Rose" as message text colour to make it pop a bit more
+      set -g message-style 'fg=colour6,bold'
 
       # prefix + u shows popup terminal
       bind-key u display-popup -E -w 90% -h 85% -d '#{pane_current_path}' "$SHELL -l"
@@ -71,16 +100,8 @@ in
       { plugin = tmuxPlugins.yank; }
       { plugin = tmuxPlugins.open; }
       { plugin = tmuxPlugins.copycat; }
-      {
-        plugin = tmuxPlugins.rose-pine;
-        extraConfig = /* tmux */ ''
-          set -g @rose_pine_variant 'main'
-          set -g @rose_pine_date_time '%Y-%m-%d %H:%M'
-          set -g @rose_pine_directory 'on'
-          set -g @rose_pine_disable_active_window_menu 'on'
-          set -g @rose_pine_status_left_append_section ' '
-        '';
-      }
+      # The rose-pine plugin used to live here; the status line above replaces it
+      # so that light/dark needs no re-run of a plugin script.
     ];
     shell = "${pkgs.zsh}/bin/zsh";
   };

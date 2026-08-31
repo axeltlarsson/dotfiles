@@ -106,23 +106,26 @@
 
       # === Pure prompt (rosé pine) ===
       # Ported from https://github.com/rose-pine/pure (fish, archived)
+      # Colours are ANSI palette slots rather than hex, so the prompt follows the
+      # ghostty palette (Rosé Pine main or dawn) instantly — no reload, and even
+      # already-running shells adapt. See config/theme.nix.
       fpath+=(${pkgs.pure-prompt}/share/zsh/site-functions)
       autoload -U promptinit; promptinit
-      zstyle ':prompt:pure:path' color '#ebbcba'               # rose
-      zstyle ':prompt:pure:git:branch' color '#6e6a86'         # muted
-      zstyle ':prompt:pure:git:branch:cached' color '#eb6f92'  # love
-      zstyle ':prompt:pure:git:dirty' color '#eb6f92'          # love
-      zstyle ':prompt:pure:git:arrow' color '#9ccfd8'          # foam
-      zstyle ':prompt:pure:git:stash' color '#31748f'          # pine
-      zstyle ':prompt:pure:git:action' color '#f6c177'         # gold
-      zstyle ':prompt:pure:execution_time' color '#f6c177'     # gold
-      zstyle ':prompt:pure:prompt:success' color '#c4a7e7'     # iris
-      zstyle ':prompt:pure:prompt:error' color '#eb6f92'       # love
-      zstyle ':prompt:pure:prompt:continuation' color '#6e6a86' # muted
-      zstyle ':prompt:pure:user' color '#c4a7e7'               # iris
-      zstyle ':prompt:pure:host' color '#c4a7e7'               # iris
-      zstyle ':prompt:pure:virtualenv' color '#6e6a86'         # muted
-      zstyle ':prompt:pure:suspended_jobs' color '#eb6f92'     # love
+      zstyle ':prompt:pure:path' color 'cyan'                  # rose
+      zstyle ':prompt:pure:git:branch' color '8'               # muted
+      zstyle ':prompt:pure:git:branch:cached' color 'red'      # love
+      zstyle ':prompt:pure:git:dirty' color 'red'              # love
+      zstyle ':prompt:pure:git:arrow' color 'blue'             # foam
+      zstyle ':prompt:pure:git:stash' color 'green'            # pine
+      zstyle ':prompt:pure:git:action' color 'yellow'          # gold
+      zstyle ':prompt:pure:execution_time' color 'yellow'      # gold
+      zstyle ':prompt:pure:prompt:success' color 'magenta'     # iris
+      zstyle ':prompt:pure:prompt:error' color 'red'           # love
+      zstyle ':prompt:pure:prompt:continuation' color '8'      # muted
+      zstyle ':prompt:pure:user' color 'magenta'               # iris
+      zstyle ':prompt:pure:host' color 'magenta'               # iris
+      zstyle ':prompt:pure:virtualenv' color '8'               # muted
+      zstyle ':prompt:pure:suspended_jobs' color 'red'         # love
       prompt pure
 
       # === Tmux autostart ===

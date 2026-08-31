@@ -12,8 +12,9 @@
       # font-thicken = true;
       # font-thicken-strength = 200;
 
-      # Theme
-      theme = "Rose Pine";
+      # Theme — follows the macOS appearance automatically, no config reload needed.
+      # Flip it with `theme toggle` / tmux `prefix + T` (see config/theme.nix).
+      theme = "light:Rose Pine Dawn,dark:Rose Pine";
 
       # Window
       window-decoration = false;

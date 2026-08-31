@@ -2,8 +2,11 @@ local o = vim.o
 local cmd = vim.cmd
 
 -- Theme
+-- 'background' is deliberately NOT set: neovim queries the terminal background
+-- (OSC 11) at startup and sets it itself, which picks up ghostty's current
+-- light/dark theme (and works over SSH). rose-pine's variant = "auto" then
+-- resolves to dawn or main. `theme sync` pushes changes into running instances.
 cmd.syntax("enable")
-o.background = "dark"
 o.termguicolors = true
 
 -- UI

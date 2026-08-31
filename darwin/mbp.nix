@@ -9,6 +9,7 @@
   imports = [
     ../config/home.nix
     ../config/claude-code.nix
+    ../config/theme.nix
   ];
 
   # Use XDG paths on macOS (some programs like k9s look in ~/.config/ not ~/Library/Application Support/)
