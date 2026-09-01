@@ -26,7 +26,6 @@ return {
         "roc",
         "ruby",
         "sql",
-        "tmux",
         "toml",
         "typst",
         "vim",
