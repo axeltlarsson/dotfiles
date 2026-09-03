@@ -95,16 +95,22 @@ in
       bind-key B display-popup -E -w 90% -h 85% -T "buffers" -d '#{pane_current_path}' \
         "${tmuxBufferManager}/bin/tmux-buffer-manager #{pane_id} #{pane_current_path}"
 
-      # Match postgresql URLs, default url_search doesn't
-      set -g @copycat_search_C-p '(https?://|git@|git://|ssh://|ftp://|postgresql://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'
-
     '';
     keyMode = "vi";
     plugins = with pkgs; [
       { plugin = tmuxPlugins.pain-control; }
       { plugin = tmuxPlugins.yank; }
       { plugin = tmuxPlugins.open; }
-      { plugin = tmuxPlugins.copycat; }
+      {
+        plugin = tmuxPlugins.copycat;
+        # Overrides the C-u URL search. Must be set before copycat.tmux runs,
+        # hence here and not in extraConfig, which lands after every run-shell.
+        # Copycat's own pattern allows `,()` mid-URL, so it swallows trailing
+        # `),` and glues comma-separated URLs into one match.
+        extraConfig = ''
+          set -g @copycat_search_C-u '(https?://|postgresql://|git@|git://|ssh://|ftp://|file:///)[[:alnum:]?=%/_.:~@!#$&*+-]*[[:alnum:]/#=_&+-]'
+        '';
+      }
       # The rose-pine plugin used to live here; the status line above replaces it
       # so that light/dark needs no re-run of a plugin script.
     ];
