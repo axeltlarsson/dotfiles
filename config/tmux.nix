@@ -84,7 +84,8 @@ in
       # fill= is what paints the rest of the status line while a prompt is up
       # (tmux's default is bg=yellow,fg=black,fill=yellow) — without it,
       # `prefix + ,` leaves the old window list showing through the prompt.
-      set -g message-style 'fg=colour6,bold,bg=default,fill=default'
+      # fill=terminal, not fill=default: `default` inherits and paints nothing.
+      set -g message-style 'fg=colour6,bold,bg=default,fill=terminal'
       set -g message-command-style 'fg=colour0,bg=colour3,fill=colour3'
 
       # prefix + u shows popup terminal
