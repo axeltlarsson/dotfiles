@@ -3,7 +3,7 @@
   programs.ghostty = {
     enable = true;
     # On macOS, ghostty is installed externally (not via nixpkgs)
-    package = lib.mkIf pkgs.stdenv.isDarwin null;
+    package = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin null;
     enableZshIntegration = true;
     settings = {
       # Font
