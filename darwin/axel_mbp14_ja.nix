@@ -14,10 +14,16 @@
     ../config/publish-report.nix
   ];
 
-  programs.claude-code.mcpServers = {
-    vanta = {
-      type = "http";
-      url = "https://mcp.eu.vanta.com/mcp";
+  programs.claude-code = {
+    # Auto mode (permissions.defaultMode) is set for both machines in
+    # ../config/claude-code.nix; Remote Control is wanted only on this one.
+    settings.remoteControlAtStartup = true;
+
+    mcpServers = {
+      vanta = {
+        type = "http";
+        url = "https://mcp.eu.vanta.com/mcp";
+      };
     };
   };
 
