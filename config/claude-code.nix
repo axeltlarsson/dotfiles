@@ -63,7 +63,7 @@
       - Before committing make sure to run `ci` if configured in the repo (it usually is), if `ci` doesn't work - try `nix develop -c ci`
       - For tools that are missing - you can run `nix run nixpkgs#<tool-name>`
       - Never read .env files!
-      - Code comments: be terse. Default to none; one line max, and only when the WHY is non-obvious. No motivational/restating prose, no ticket links in code
+      - Code comments: be terse. Default to none; one line max, and only when the WHY is non-obvious. No motivational/restating prose, no ticket links in code. Comment only the current state - never how the code used to work, why it changed, or what incident prompted it; that belongs in the commit message body and `git blame`. Block comments max ~3 lines
       - When asked for markdown text to paste elsewhere (Slack, docs), output it inside a code block so the raw markdown is copyable
       - Do not use git commit prefixes like fix:, chore:, feat: etc - just use an emoji then an imperative description, e.g. "🐛 Use correct ICD-10-SE format..."
       - Hotfix commit means to use 🚑 emoji in commit message
