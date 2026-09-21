@@ -2,10 +2,19 @@
   pkgs,
   ...
 }:
+let
+  # skills is attrsOf (either lines path): a "${pkg}/…" string would be taken as
+  # SKILL.md content, so the directory has to arrive as a derivation.
+  gh-stack-skill = pkgs.runCommand "gh-stack-skill-${pkgs.gh-stack.version}" { } ''
+    cp -r ${pkgs.gh-stack}/share/skills/gh-stack/gh-stack $out
+  '';
+in
 {
   programs.claude-code = {
     enable = true;
-    skills = (import ./claude-skills/impeccable.nix { inherit pkgs; }).skills;
+    skills = (import ./claude-skills/impeccable.nix { inherit pkgs; }).skills // {
+      gh-stack = gh-stack-skill;
+    };
     settings = {
       permissions = {
         defaultMode = "auto";
