@@ -75,6 +75,12 @@ in
       done' || true
   '';
 
+  # compinit -C never validates the dump, so drop it whenever the profile (and
+  # thus fpath) may have changed; the next interactive shell rebuilds it.
+  home.activation.zshCompdump = config.lib.dag.entryAfter [ "linkGeneration" ] ''
+    run rm -f ${config.xdg.configHome}/zsh/.zcompdump ${config.xdg.configHome}/zsh/.zcompdump.zwc
+  '';
+
   programs.zsh = {
     enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
@@ -157,22 +163,14 @@ in
       unsetopt HUP
       unsetopt CHECK_JOBS
 
-      # === Completion (cached compinit — only regenerate dump once per day) ===
+      # === Completion ===
+      # fpath only changes on `switch`, which deletes the dump (see
+      # home.activation.zshCompdump); the first shell after that regenerates it
+      # (~600 ms, once) and every other shell trusts it: -C skips the
+      # per-startup validation (~50 ms of stat()s + compaudit).
       autoload -Uz compinit
       _comp_dump="${config.xdg.configHome}/zsh/.zcompdump"
-      if [[ -f "$_comp_dump" ]]; then
-        # Regenerate if dump is older than 24h
-        zmodload zsh/stat
-        local -a _dump_stat
-        zstat -A _dump_stat +mtime "$_comp_dump"
-        if (( EPOCHSECONDS - _dump_stat[1] < 86400 )); then
-          compinit -C -d "$_comp_dump"
-        else
-          compinit -d "$_comp_dump"
-        fi
-      else
-        compinit -d "$_comp_dump"
-      fi
+      compinit -C -d "$_comp_dump"
       # keep a compiled copy of the dump; zsh loads .zwc ~2x faster
       if [[ -f "$_comp_dump" && ! "$_comp_dump.zwc" -nt "$_comp_dump" ]]; then
         zcompile "$_comp_dump" &!
