@@ -14,9 +14,30 @@ let
     ];
     text = builtins.readFile ./scripts/tmux-buffer-manager.sh;
   };
+
+  # OSC 8 hyperlinks, bare URLs and paths: fzf picker and in-buffer jump.
+  # The awk stages and icon table sit next to the script.
+  tmuxLinks = pkgs.writeShellApplication {
+    name = "tmux-links";
+    runtimeInputs = [
+      pkgs.tmux
+      pkgs.fzf
+      pkgs.gawk
+      pkgs.coreutils
+      pkgs.findutils
+      # preview (images also need macOS sips and a kitty-graphics terminal)
+      pkgs.bat
+      pkgs.file
+    ];
+    runtimeEnv.TMUX_LINKS_LIB = "${./scripts/tmux-links}";
+    text = builtins.readFile ./scripts/tmux-links/main.sh;
+  };
 in
 {
-  home.packages = [ tmuxBufferManager ];
+  home.packages = [
+    tmuxBufferManager
+    tmuxLinks
+  ];
 
   programs.tmux = {
     enable = true;
@@ -30,9 +51,14 @@ in
 
       set -g default-terminal "tmux-256color"
       set -ga terminal-overrides ",xterm-ghostty:RGB"
+      # tmux only forwards OSC 8 hyperlinks outward when the client terminal
+      # advertises Hls, and ghostty's terminfo has no such capability.
+      set -as terminal-features ",xterm-ghostty:hyperlinks"
 
       set -g mouse on
       set -g focus-events on
+      # lets kitty-graphics image previews (tmux-links, yazi) reach ghostty
+      set -g allow-passthrough on
 
       # prefix + left/right swaps window left/right
       bind-key left swap-window -t -1 -d
@@ -91,9 +117,21 @@ in
       # prefix + u shows popup terminal
       bind-key u display-popup -E -w 90% -h 85% -d '#{pane_current_path}' "$SHELL -l"
 
-      # Buffer manager (fzf+bat): preview/paste/delete/save/load
-      bind-key B display-popup -E -w 90% -h 85% -T "buffers" -d '#{pane_current_path}' \
-        "${tmuxBufferManager}/bin/tmux-buffer-manager #{pane_id} #{pane_current_path}"
+      # Buffer manager (fzf+bat): preview/paste/delete/save/load.
+      # display-popup does not expand formats in its arguments, so #{pane_id}
+      # and friends have to be resolved by run-shell first.
+      bind-key B run-shell -b 'tmux display-popup -E -w 90% -h 85% -T buffers -d "#{pane_current_path}" "${tmuxBufferManager}/bin/tmux-buffer-manager #{pane_id} #{pane_current_path}"'
+
+      # Links: prefix + O picks from a list, prefix + L highlights them in
+      # place (n/N to cycle), copy-mode o/O opens the selection or the link
+      # under the cursor and p previews it. o supersedes tmux-open's, which
+      # cannot resolve OSC 8.
+      bind-key O run-shell -b "${tmuxLinks}/bin/tmux-links pick '#{pane_id}'"
+      bind-key L run-shell -b "${tmuxLinks}/bin/tmux-links jump '#{pane_id}'"
+      bind-key -T copy-mode-vi o run-shell -b "${tmuxLinks}/bin/tmux-links open-at '#{pane_id}'"
+      bind-key -T copy-mode-vi O run-shell -b "${tmuxLinks}/bin/tmux-links open-at '#{pane_id}'"
+      bind-key -T copy-mode-vi p run-shell -b "${tmuxLinks}/bin/tmux-links preview-at '#{pane_id}'"
+      unbind-key C-u
 
     '';
     keyMode = "vi";
@@ -101,16 +139,9 @@ in
       { plugin = tmuxPlugins.pain-control; }
       { plugin = tmuxPlugins.yank; }
       { plugin = tmuxPlugins.open; }
-      {
-        plugin = tmuxPlugins.copycat;
-        # Overrides the C-u URL search. Must be set before copycat.tmux runs,
-        # hence here and not in extraConfig, which lands after every run-shell.
-        # Copycat's own pattern allows `,()` mid-URL, so it swallows trailing
-        # `),` and glues comma-separated URLs into one match.
-        extraConfig = ''
-          set -g @copycat_search_C-u '(https?://|postgresql://|git@|git://|ssh://|ftp://|file:///)[[:alnum:]?=%/_.:~@!#$&*+-]*[[:alnum:]/#=_&+-]'
-        '';
-      }
+      # URL search (C-u) is unbound below: tmux-links' prefix + L covers it,
+      # and copycat's pattern glues comma-separated URLs into one match.
+      { plugin = tmuxPlugins.copycat; }
       # The rose-pine plugin used to live here; the status line above replaces it
       # so that light/dark needs no re-run of a plugin script.
     ];

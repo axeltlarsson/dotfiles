@@ -30,7 +30,7 @@ while true; do
   # Select buffer with fzf (--expect captures which key was pressed)
   result=$(list_buffers | fzf \
     --prompt="buffer> " \
-    --header="Enter: paste | Ctrl-D: delete | Ctrl-S: save | Ctrl-Y: copy | Ctrl-R: rename | Ctrl-O: load | Tab: select | Esc: close" \
+    --header="Enter: paste | Ctrl-E: edit | Ctrl-D: delete | Ctrl-S: save | Ctrl-Y: copy | Ctrl-R: rename | Ctrl-O: load | Tab: select | Esc: close" \
     --layout=reverse \
     --height=100% \
     --delimiter=' \| ' \
@@ -38,7 +38,7 @@ while true; do
     --preview='tmux show-buffer -b {1} | bat --style=plain --color=always --language=txt' \
     --preview-window='down,60%,wrap' \
     --multi \
-    --expect='ctrl-d,ctrl-s,ctrl-o,ctrl-y,ctrl-r' \
+    --expect='ctrl-d,ctrl-s,ctrl-o,ctrl-y,ctrl-r,ctrl-e' \
   ) || exit 0
 
   # First line is the key pressed, remaining lines are selections
@@ -101,6 +101,18 @@ while true; do
         done <<< "$selections"
       } | pbcopy
       exit 0
+      ;;
+    ctrl-e)
+      # Edit first selected buffer in $EDITOR; the buffer takes the result
+      buffer_name=$(get_buffer_name "$(echo "$selections" | head -1)")
+      if [[ -n "$buffer_name" ]]; then
+        tmpfile=$(mktemp)
+        tmux show-buffer -b "$buffer_name" > "$tmpfile"
+        "${EDITOR:-$(command -v nvim || echo vi)}" "$tmpfile" < /dev/tty > /dev/tty
+        tmux load-buffer -b "$buffer_name" "$tmpfile"
+        rm -f "$tmpfile"
+      fi
+      continue
       ;;
     ctrl-r)
       # Rename first selected buffer
