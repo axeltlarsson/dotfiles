@@ -179,6 +179,43 @@ in
       fi
       unset _comp_dump
 
+      # === Lazy completions for tools that appear on XDG_DATA_DIRS later ===
+      # compinit only registers what is on fpath at startup; nix devShells (via
+      # direnv) add their tools' share/ to XDG_DATA_DIRS afterwards, so kubectl,
+      # jojnts, … had no completion inside a project. Mirror bash-completion's
+      # on-demand loader: first in the completer chain, and only for a command
+      # with no registered completion, register every XDG_DATA_DIRS
+      # zsh/site-functions dir not yet on fpath the way compinit would. Nothing
+      # at startup or per prompt; one assoc lookup per <TAB>; a one-off scan of
+      # the new dirs the first time a devShell command is completed.
+      _xdg_lazy_complete() {
+        (( $+_comps[$words[1]] )) && return 1
+        [[ $XDG_DATA_DIRS == "''${_xdg_comp_seen-}" ]] && return 1
+        typeset -g _xdg_comp_seen=$XDG_DATA_DIRS
+        local d f
+        local -a line
+        for d in ''${(s.:.)XDG_DATA_DIRS}; do
+          d=$d/zsh/site-functions
+          [[ -d $d ]] || continue
+          (( $fpath[(I)$d] )) && continue
+          fpath+=($d)
+          for f in $d/^([^_]*|*[\;\|\&]*|*~|*.zwc)(N); do
+            IFS=$' \t' read -rA line < $f
+            case $line[1] in
+              '#compdef')
+                if [[ $line[2] = -[pPkK](n|) ]]; then
+                  compdef ''${line[2]}na ''${f:t} "''${(@)line[3,-1]}"
+                else
+                  compdef -na ''${f:t} "''${(@)line[2,-1]}"
+                fi ;;
+              '#autoload') autoload -rUz "''${(@)line[2,-1]}" ''${f:t} ;;
+            esac
+          done
+        done
+        return 1
+      }
+      zstyle ':completion:*' completer _xdg_lazy_complete _complete _ignored
+
       # === Smart URLs ===
       # Auto-quote special chars in URLs so `?`, `&`, etc. aren't globbed
       if [[ $TERM != dumb ]]; then
