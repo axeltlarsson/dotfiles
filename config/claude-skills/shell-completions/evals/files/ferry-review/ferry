@@ -1,0 +1,59 @@
+# shellcheck shell=bash
+# ferry — move fixture bundles between regions. Synthetic CLI for the
+# shell-completions evals; run as `bash ferry ...` outside nix.
+
+usage() {
+  cat <<'EOF'
+usage: ferry COMMAND [ARGS]
+
+  ferry ship  (eu|us) FILE [--tag=NAME] [--force]   upload FILE to the region bucket
+  ferry fetch (eu|us) FILE [--tag=NAME] [--force]   download FILE from the region bucket
+  ferry dock  (north|south|east) [ro|rw]            attach to a dock (read-only by default)
+  ferry status [--json]                             show what is in transit
+EOF
+}
+
+tag='' force=false
+parse_opts() {
+  # only the same-word form --tag=NAME is recognised; "--tag NAME" is an error
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      --tag=*) tag=${arg#--tag=} ;;
+      --force) force=true ;;
+      *) echo "ferry: unknown option: $arg" >&2; exit 2 ;;
+    esac
+  done
+}
+
+require_region() {
+  case "$1" in eu|us) ;; *) echo "ferry: region must be eu or us" >&2; exit 2 ;; esac
+}
+
+case "${1:-}" in
+  ship)
+    [ $# -ge 3 ] || { usage >&2; exit 2; }
+    require_region "$2"
+    [ -f "$3" ] || { echo "ferry: no such file: $3" >&2; exit 2; }
+    parse_opts "${@:4}"
+    echo "ship $3 -> $2 tag=${tag:-none} force=$force"
+    ;;
+  fetch)
+    [ $# -ge 3 ] || { usage >&2; exit 2; }
+    require_region "$2"
+    parse_opts "${@:4}"
+    echo "fetch $3 <- $2 force=$force"   # tag is parsed but never used here
+    ;;
+  dock)
+    [ $# -eq 3 ] || { usage >&2; exit 2; }
+    case "$2" in north|south|east) ;; *) echo "ferry: unknown dock: $2" >&2; exit 2 ;; esac
+    case "$3" in ro|rw) ;; *) echo "ferry: mode must be ro or rw" >&2; exit 2 ;; esac
+    echo "dock $2 $3"
+    ;;
+  status)
+    [ $# -le 2 ] || { usage >&2; exit 2; }
+    if [ "${2:-}" = --json ]; then echo '{"in_transit":[]}'; else echo "nothing in transit"; fi
+    ;;
+  help|-h|--help|"") usage ;;
+  *) usage >&2; exit 2 ;;
+esac

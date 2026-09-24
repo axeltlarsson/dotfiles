@@ -1,0 +1,16 @@
+id	shell	line	assert	expect	bash32	notes
+# theme.sh grammar: bare `theme` prints; light|dark|toggle|auto take nothing (extra words silently ignored);
+# sync reads $2 and only the literal --force acts; anything else is a usage error (exit 2) — so no help word.
+T0.P	both	theme{sp}	set_eq	light|dark|toggle|auto|sync	same	subcommands; no help word (theme help is a usage error)
+T0.Pp	both	theme t	buf	theme toggle{sp}	same	unique prefix
+T0.Nd	both	theme -	set_empty	-	same	no top-level options (--help is a usage error too)
+T0.Nu	both	theme bogus{sp}	set_empty	-	same	unknown word offers nothing
+T1.Ne	both	theme light{sp}	set_empty	-	same	light takes no arguments (extra words are ignored: drift to report)
+T1.Ne2	both	theme toggle{sp}	set_empty	-	same
+T1.Nem	zsh	theme light{sp}	msg	no more arguments	same
+T2.P	both	theme sync{sp}	set_eq	--force	same	only sync takes --force
+T2.Pd	both	theme sync -	set_eq	--force	same
+T2.B	both	theme sync --f	buf	theme sync --force{sp}	same	bare flag keeps its space
+T2.Ne	both	theme sync --force{sp}	set_empty	-	same	nothing after --force
+T2.Nem	zsh	theme sync --force{sp}	msg	no more arguments	same
+T2.Nx	both	theme sync{sp}	set_not	light|dark	same	sync takes no appearance word

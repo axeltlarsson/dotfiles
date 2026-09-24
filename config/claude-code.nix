@@ -14,6 +14,7 @@ in
     enable = true;
     skills = (import ./claude-skills/impeccable.nix { inherit pkgs; }).skills // {
       gh-stack = gh-stack-skill;
+      shell-completions = ./claude-skills/shell-completions;
     };
     settings = {
       permissions = {

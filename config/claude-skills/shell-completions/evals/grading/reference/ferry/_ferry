@@ -1,0 +1,67 @@
+#compdef ferry
+# zsh completion for ferry — grammar read from the dispatcher in ./ferry (see the
+# grammar table in PR.md); verified by ferry.cases.tsv. Literal lists mirror the script.
+
+_ferry() {
+  local curcontext="$curcontext" context state state_descr line ret=1
+  typeset -A opt_args
+
+  _arguments -C '1: :->cmd' '*:: :->args' && ret=0
+
+  case $state in
+    cmd)
+      local -a commands=(
+        'ship:upload a file to a region bucket'
+        'fetch:download a file from a region bucket'
+        'dock:attach to a dock'
+        'status:show what is in transit'
+        'help:show usage'
+      )
+      _describe -t commands 'ferry command' commands && ret=0
+      ;;
+    args)
+      curcontext="${curcontext%:*:*}:ferry-$words[1]:"
+      local -a specs
+      case $words[1] in
+        ship | fetch)
+          specs=(
+            '1:region:((eu\:"EU bucket" us\:"US bucket"))'
+            '2:file:_files'
+          )
+          if (( CURRENT > 3 )); then # ferry parses options from $4 on: parse_opts "${@:4}"
+            specs+=('--force[overwrite]')
+            # fetch parses --tag but never uses it; --tag=- because only the same-word form is accepted
+            [[ $words[1] == ship ]] && specs+=('--tag=-[tag the upload]:tag name:')
+          fi
+          ;;
+        dock)
+          specs=(
+            '1:dock:((north\:"north dock" south\:"south dock" east\:"east dock"))'
+            '2:mode:((ro\:"read-only" rw\:"read-write"))' # required: the script checks $# -eq 3
+          )
+          ;;
+        status)
+          specs=('1::option:((--json\:"machine-readable output"))') # only the literal --json, only as $2
+          ;;
+        help)
+          _message 'no more arguments'
+          return ret
+          ;;
+        *)
+          _message "unknown command: $words[1]"
+          return ret
+          ;;
+      esac
+      _arguments "${specs[@]}" && ret=0
+      ;;
+  esac
+  return ret
+}
+
+# autoloaded: the whole file is the function body on first use, so call it; sourced: register it
+if [[ $funcstack[1] == _ferry ]]; then
+  _ferry "$@"
+else
+  (( $+functions[compdef] )) && compdef _ferry ferry
+fi
+# vim: ft=zsh

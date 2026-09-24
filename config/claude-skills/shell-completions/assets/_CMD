@@ -1,0 +1,77 @@
+#compdef CMD
+# zsh completion for CMD — grammar read from the dispatcher in <script> @ <git sha>
+# (grammar table in the PR); verified by CMD.cases.tsv. Literal lists mirror the script.
+#
+# TEMPLATE NOTES (delete them; keep only comments that cite the CLI, file:line):
+# - the file name is the function name: install as share/zsh/site-functions/_CMD
+# - add `-s` to the top _arguments only if the CLI stacks single-letter flags (-vq)
+
+_CMD() {
+  # _arguments -C rewrites curcontext and sets state/state_descr/line/opt_args:
+  # localise the manual's full list or they leak to callers on the completion stack.
+  local curcontext="$curcontext" context state state_descr line ret=1
+  typeset -A opt_args
+
+  # ': :->cmd' — a lone space as message: the description comes from _describe.
+  # '*:: :->args' — two colons shift $words/CURRENT so that inside 'args' $words[1] is
+  # the subcommand and $words[N] is the CLI's $N (same numbering as bash's COMP_CWORD).
+  _arguments -C '1: :->cmd' '*:: :->args' && ret=0
+
+  case $state in
+    cmd)
+      local -a commands=(
+        'sub1:one-line description, lowercase, imperative, no trailing period'
+        'sub2:…'
+        'help:show usage' # only if the dispatcher names it (case "${1-help}"); never -h/--help fall-throughs
+      )
+      _describe -t commands 'CMD command' commands && ret=0
+      ;;
+    args)
+      curcontext="${curcontext%:*:*}:CMD-$words[1]:" # lets users zstyle ':completion:*:*:CMD-sub1:*'
+      local -a specs
+      case $words[1] in
+        sub1)
+          specs=(
+            '1:region:((eu\:"EU bucket" us\:"US bucket"))' # positional values always carry descriptions
+            '2:file:_files'                                # CLI checks [ -f ] ⇒ _files; [ -d ] ⇒ _files -/
+          )
+          # Optspecs are position-independent. When the CLI only parses flags from a
+          # given word (parse_opts "${@:4}"), gate them: CURRENT > 3.
+          if (( CURRENT > 3 )); then
+            specs+=('--force[overwrite the target]')            # bare flag
+            # =- : the value is accepted only in the same word (--tag=NAME). Plain '='
+            # would also complete the next-word form the CLI rejects.
+            # A flag a subcommand parses but ignores is simply not offered there.
+            [[ $words[1] == sub1 ]] && specs+=('--tag=-[tag the upload]:tag name:')
+          fi
+          ;;
+        sub2)
+          specs=(
+            '1:dock:((north\:"north dock" south\:"south dock"))'
+            '2:mode:((ro\:"read-only" rw\:"read-write"))' # required when the code checks $# -eq 3 — even if help says [ro|rw]
+          )
+          ;;
+        help)
+          _message 'no more arguments'
+          return ret
+          ;;
+        *)
+          _message "unknown command: $words[1]"
+          return ret
+          ;;
+      esac
+      # One _arguments call per arm: past the last spec it reports "no more arguments",
+      # so every subcommand ends the same way. Never _values for positionals.
+      _arguments "${specs[@]}" && ret=0
+      ;;
+  esac
+  return ret
+}
+
+# Autoloaded, the whole file is the function body on first use: call it. Sourced: register it.
+if [[ $funcstack[1] == _CMD ]]; then
+  _CMD "$@"
+else
+  (( $+functions[compdef] )) && compdef _CMD CMD
+fi
+# vim: ft=zsh

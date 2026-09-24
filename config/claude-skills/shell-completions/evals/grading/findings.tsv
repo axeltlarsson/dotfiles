@@ -1,0 +1,14 @@
+id	regex	label
+# Defects planted in evals/files/ferry-review (id, case-insensitive ERE the review must match, label). Threshold: 9/12.
+mapfile	mapfile|readarray|bash 3\.2|/bin/bash|bash (4|≥ ?4|>= ?4)	mapfile needs bash ≥ 4: the file cannot be sourced on macOS /bin/bash 3.2
+nospace	nospace|trailing space|space after (the )?(=|equals)	bash: --tag= is completed with a trailing space
+fetch-tag	fetch[^\n]{0,120}--tag|--tag[^\n]{0,120}fetch|ignor[^\n]{0,80}--tag|--tag[^\n]{0,80}ignor	--tag offered after fetch, which parses but ignores it
+filenames	-o filenames|compopt -o filenames|global.{0,40}filenames|dir/|trailing slash	global `complete -o filenames` / unscoped file completion
+zsh-locals	curcontext|opt_args|state_descr|local (context|line)|leak	_arguments -C with only `local state`
+meta	\bmeta\b|mainProgram	symlinkJoin drops meta (mainProgram)
+gating	CURRENT|position-independent|before (the )?positional|(\$4|fourth|word 4|4th)|parse_opts|region (slot|position)|any position	options offered at positional slots although the CLI parses flags from $4 only
+same-word	=-|same[- ]word|next[- ]word|--tag NAME|--tag <|separate word	--tag value is accepted only in the same word: the spec must be --tag=-
+arity	arity|\$# -eq 3|exact(ly)? (3|three)|mode is required|required argument|no more arguments|after (the )?mode|every position|past the last	dock/status arity: nothing may be offered past the last argument; mode is required
+descriptions	description|_describe|_values	commands listed via _values without descriptions
+bash-name	\.bash\b|unsuffixed|2\.18|deprecat	bash file installed without the .bash suffix (deprecated in bash-completion 2.18)
+cur	COMP_WORDS\[COMP_CWORD\]|\$2\b|COMP_LINE|word[- ]?break|COMP_WORDBREAKS|SC2207|word.split	cur taken from COMP_WORDS[COMP_CWORD] / unquoted $(compgen) (SC2207)

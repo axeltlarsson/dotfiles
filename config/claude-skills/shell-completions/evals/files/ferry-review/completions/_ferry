@@ -1,0 +1,27 @@
+#compdef ferry
+
+_ferry() {
+  local state
+  _arguments -C '1: :->cmd' '*:: :->args'
+
+  case $state in
+    cmd)
+      _values 'command' ship fetch dock status
+      ;;
+    args)
+      case $words[1] in
+        ship|fetch)
+          _arguments '--force[overwrite]' '--tag=[tag]:name:' '1:region:(eu us)' '2:file:_files'
+          ;;
+        dock)
+          _arguments '1:dock:(north south east)' '2::mode:(ro rw)'
+          ;;
+        status)
+          _arguments '*:option:(--json)'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_ferry "$@"

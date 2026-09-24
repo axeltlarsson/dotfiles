@@ -43,3 +43,6 @@ result
 
 # End of https://www.toptal.com/developers/gitignore/api/direnv
 lazy-lock.json
+
+# skill-creator eval workspaces
+config/claude-skills/*-workspace/

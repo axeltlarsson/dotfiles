@@ -1,0 +1,28 @@
+id	shell	line	assert	expect	bash32	notes
+# Columns: id | shell (zsh|bash|both) | typed line ({sp} = a literal space, the cursor is at the end)
+#   | assert | expect | bash32 (same | skip | expect:<alternative>, applied when the bash under test is 3.x) | notes
+# Asserts: set_eq (exactly these candidates, '|'-separated; '-' = none)   set_empty   set_has   set_not
+#          buf (the whole line after <TAB>, exact)   buf_unchanged   msg / msg_not (zsh only: _message text)
+# Cover, per grammar row: positive, prefix, nothing before the first legal flag word, ignored-branch negative,
+# already-present filter, buf without trailing space for --opt=, next-word negative for =-, dir slash +
+# escaped space for files, set_empty past the last argument of every subcommand.
+T0.P	both	CMD{sp}	set_eq	sub1|sub2|help	same	top-level commands
+T0.Pp	both	CMD s	set_eq	sub1|sub2	same	prefix narrows
+T0.Nd	both	CMD -	set_empty	-	same	no top-level options
+T0.B	both	CMD h	buf	CMD help{sp}	same	unique prefix inserts with a space
+T0.Bu	both	CMD s	buf_unchanged	-	same	ambiguous prefix leaves the line alone
+T1.P	both	CMD sub1{sp}	set_eq	eu|us	same	positional values
+T1.Nb	both	CMD sub1 -	set_empty	-	same	flags are parsed from $4 only
+T1.F	both	CMD sub1 eu{sp}	set_eq	dir|file with space.yaml|plain	same	file positional (run with --cwd fixtures)
+T1.Fd	both	CMD sub1 eu d	buf	CMD sub1 eu dir/	same	directory: slash, no space
+T1.Fs	both	CMD sub1 eu f	buf	CMD sub1 eu file\ with\ space.yaml{sp}	expect:CMD sub1 eu file with space.yaml{sp}	quoting (3.2: unquoted)
+T1.O	both	CMD sub1 eu plain{sp}	set_eq	--force|--tag=	same	options after the positionals
+T1.Ot	both	CMD sub1 eu plain --ta	buf	CMD sub1 eu plain --tag=	same	same-word value: no trailing space
+T1.Of	both	CMD sub1 eu plain --fo	buf	CMD sub1 eu plain --force{sp}	same	bare flag keeps its space
+T1.Ov	both	CMD sub1 eu plain --tag=	set_empty	-	same	free-form value
+T1.Ovm	zsh	CMD sub1 eu plain --tag=	msg	tag name	same	zsh names the value it expects
+T1.Ow	zsh	CMD sub1 eu plain --tag{sp}	msg_not	tag name	same	next-word form not accepted (=-)
+T1.Or	both	CMD sub1 eu plain --force -	set_eq	--tag=	same	already-present flag not re-offered
+T2.O	both	CMD sub2 x y -	set_empty	-	same	sub2 takes no flags
+T2.Ne	both	CMD sub2 north ro{sp}	set_empty	-	same	exact arity
+T2.Nem	zsh	CMD sub2 north ro{sp}	msg	no more arguments	same	zsh says so

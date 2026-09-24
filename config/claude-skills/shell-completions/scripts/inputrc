@@ -1,0 +1,10 @@
+# readline settings for the bash completion harness (mirrors bash-completion's test suite):
+# one TAB lists everything, one candidate per line, no pager, no query, no bell, no paste escapes.
+set show-all-if-ambiguous on
+set bell-style none
+set completion-query-items 100000
+set page-completions off
+set completion-display-width 0
+set enable-bracketed-paste off
+set mark-directories on
+set mark-symlinked-directories on

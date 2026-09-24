@@ -1,0 +1,66 @@
+{
+  "skill_name": "shell-completions",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a small bash CLI called ferry in this folder (files: ferry, flake.nix, fixtures/) — the flake packages it with writeShellApplication for a dev shell. Add zsh and bash tab completion for it and ship them with the package so they work inside nix develop. I want this to pass review in one go, so actually verify it works rather than eyeballing it. Save the completion files (completions/_ferry, completions/ferry.bash), the updated flake.nix, your test cases (cases.tsv) and the PR description (PR.md) into the output directory.",
+      "expected_output": "completions/_ferry and completions/ferry.bash mirroring the dispatcher (options only from word 4, --tag= only in the same word and without a trailing space, fetch without --tag, dock with a required mode and nothing after it, files for FILE), flake.nix installing both under share/ with meta preserved and the bash file named ferry.bash, a cases.tsv, and PR.md quoting a verify evidence block with FAIL 0 for zsh, bash 5 and bash 3.2 plus a drift section naming fetch --tag and the dock mode.",
+      "files": [
+        "evals/files/ferry/ferry",
+        "evals/files/ferry/flake.nix",
+        "evals/files/ferry/fixtures/plain",
+        "evals/files/ferry/fixtures/file with space.yaml",
+        "evals/files/ferry/fixtures/dir/.keep"
+      ],
+      "expectations": [
+        "check-static.sh passes on the produced _ferry and ferry.bash (exit 0)",
+        "The grading zsh cases (evals/grading/ferry.cases.tsv) pass against the produced _ferry: FAIL 0",
+        "The grading bash cases pass under the bash on PATH: FAIL 0",
+        "The grading bash cases pass under /bin/bash 3.2: FAIL 0",
+        "flake.nix installs both files under share/ (installShellCompletion or install -Dm644), names the bash file ferry.bash, and keeps meta (meta = or inherit meta)",
+        "PR.md contains at least three lines matching ^(zsh|bash) [^ ]+  PASS [0-9]+ FAIL 0",
+        "PR.md or the final message reports that fetch parses but ignores --tag",
+        "PR.md or the final message reports that dock requires the mode argument although the help marks it optional",
+        "The transcript shows a pty harness actually ran (verify.sh or test-zsh-completion / test-bash-completion, or an equivalent pexpect/zpty run)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Here is a PR adding shell completions for our ferry CLI: ferry is the script, completions/_ferry and completions/ferry.bash are new, flake.nix packages them. Review it the way a strict reviewer would: list every real defect with file:line and the concrete fix, and say which ones you would block the merge on. Write the review to review.md in the output directory.",
+      "expected_output": "review.md with findings for: mapfile breaking macOS bash 3.2, --tag= completed with a trailing space, --tag offered after fetch which ignores it, unscoped file completion / global -o filenames, missing zsh locals (curcontext/opt_args), symlinkJoin dropping meta, options offered at positional slots although parsed from $4, --tag= vs --tag=- (same-word only), dock/status arity (mode required, nothing past the last argument), commands via _values without descriptions, the bash file installed without the .bash suffix, cur taken from COMP_WORDS[COMP_CWORD] / unquoted $(compgen).",
+      "files": [
+        "evals/files/ferry-review/ferry",
+        "evals/files/ferry-review/completions/_ferry",
+        "evals/files/ferry-review/completions/ferry.bash",
+        "evals/files/ferry-review/flake.nix"
+      ],
+      "expectations": [
+        "grade-review.py finds at least 9 of the 12 planted defects in review.md (evals/grading/findings.tsv)",
+        "review.md cites file:line for its findings",
+        "review.md separates blockers from nits",
+        "review.md does not claim the #compdef header is missing (it is present)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "In my dotfiles the theme script (config/theme.nix packages config/scripts/theme.sh with writeShellApplication; copies of both are in the input files) has no tab completion. Add bash and zsh completions and wire them into theme.nix so they are installed together with the script. Verify them, follow the repo conventions (nixfmt-rfc-style, build not switch, emoji + imperative commit message) and give me the commit message. Save the new and changed files into the output directory.",
+      "expected_output": "_theme and theme.bash (bare theme prints; light|dark|toggle|auto take nothing; only sync takes the literal --force as $2; no help word because `theme help` is a usage error), theme.nix changed to install both completion files with meta preserved, a cases file, a verify evidence block with FAIL 0 on three shells, a commit message like `✨ Ship bash and zsh completions for theme`, and no switch executed.",
+      "files": [
+        "evals/files/theme/theme.nix",
+        "evals/files/theme/theme.sh"
+      ],
+      "expectations": [
+        "check-static.sh passes on the produced _theme and theme.bash",
+        "The grading zsh cases (evals/grading/theme.cases.tsv) pass: FAIL 0",
+        "The grading bash cases pass under the bash on PATH: FAIL 0",
+        "The grading bash cases pass under /bin/bash 3.2: FAIL 0",
+        "theme.nix still exposes the package for home.packages, the tmux binding and the launchd agent, installs both completion files under share/ and keeps meta",
+        "nixfmt --check passes on the produced theme.nix",
+        "The final message or a PR/commit text quotes the verify evidence block (three FAIL 0 lines)",
+        "The transcript contains no `switch` invocation",
+        "The commit message is emoji + imperative and mentions completions",
+        "The final message reports that light/dark/toggle/auto silently ignore extra arguments (drift)"
+      ]
+    }
+  ]
+}
