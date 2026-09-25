@@ -214,6 +214,15 @@ in
       }
       zstyle ':completion:*' completer _xdg_lazy_complete _complete _ignored
 
+      # Without a format, _message hints ("key prefix", "no more arguments") and
+      # group headings are dropped. menu select autoloads zsh/complist on first use.
+      zstyle ':completion:*' menu select
+      zstyle ':completion:*' group-name '''
+      zstyle ':completion:*' list-colors '''
+      zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+      zstyle ':completion:*:messages' format '%F{blue}%d%f'
+      zstyle ':completion:*:warnings' format '%F{red}-- no matches --%f'
+
       # === Smart URLs ===
       # Auto-quote special chars in URLs so `?`, `&`, etc. aren't globbed
       if [[ $TERM != dumb ]]; then
