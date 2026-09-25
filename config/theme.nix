@@ -14,7 +14,7 @@
   ...
 }:
 let
-  theme = pkgs.writeShellApplication {
+  unwrapped = pkgs.writeShellApplication {
     name = "theme";
     runtimeInputs = [
       pkgs.neovim
@@ -30,6 +30,36 @@ let
     };
     text = builtins.readFile ./scripts/theme.sh;
   };
+
+  # writeShellApplication emits only bin/. Copy it into one store path with the
+  # completions: bash-completion looks for share/ next to the command's realpath.
+  theme =
+    pkgs.runCommand "theme"
+      {
+        nativeBuildInputs = [
+          pkgs.installShellFiles
+          pkgs.shellcheck-minimal
+          pkgs.zsh
+        ];
+        inherit (unwrapped) meta;
+      }
+      ''
+        # Only theme.sh is checked by writeShellApplication; the completions hard-code
+        # its subcommands, so lint them and fail the build when they drift.
+        zsh -n ${./scripts/completions/_theme}
+        bash -n ${./scripts/completions/theme.bash}
+        shellcheck -S warning ${./scripts/completions/theme.bash}
+        sed -n 's/^\([a-z][a-z |]*\))$/\1/p' ${./scripts/theme.sh} | tr -d ' ' | tr '|' '\n' | sort >arms
+        sed -n "s/^ *'\([a-z]*\):.*/\1/p" ${./scripts/completions/_theme} | sort |
+          diff -u --label theme.sh --label _theme arms -
+        sed -n 's/.*_theme__words \([a-z ]*\) ;;.*/\1/p' ${./scripts/completions/theme.bash} | tr ' ' '\n' | sort |
+          diff -u --label theme.sh --label theme.bash arms -
+
+        install -Dm755 ${unwrapped}/bin/theme $out/bin/theme
+        installShellCompletion --cmd theme \
+          --bash ${./scripts/completions/theme.bash} \
+          --zsh ${./scripts/completions/_theme}
+      '';
 in
 {
   home.packages = [ theme ];

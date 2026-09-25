@@ -1,0 +1,33 @@
+id	shell	line	assert	expect	bash32	notes
+# theme: grammar from config/scripts/theme.sh @ blob 9d71223. Run verify.sh with --cwd DIR, DIR holding only a
+# directory named toggle/: T0.B and T1.Bn then prove candidates are never file names and nothing falls back to files.
+T0.P	both	theme{sp}	set_eq	auto|dark|light|sync|toggle	same	every dispatcher arm (theme.sh:145-171)
+T0.Pp	both	theme t	set_eq	toggle	same	prefix narrows
+T0.B	both	theme to	buf	theme toggle{sp}	same	unique prefix inserts with a space, not toggle/ (cwd has a toggle dir)
+T0.Bu	both	theme{sp}	buf_unchanged	-	same	ambiguous: lists, leaves the line alone
+T0.Nd	both	theme -	set_empty	-	same	no top-level options: -h/--help hit *) (usage, exit 2)
+T0.Nh	both	theme h	set_empty	-	same	no help subcommand
+T0.Nc	both	theme :	set_empty	-	same	nothing glued after a word-break character
+T0.Nu	both	theme foo{sp}	set_empty	-	same	unknown subcommand
+T0.Num	zsh	theme foo{sp}	msg	unknown command: foo	same	zsh names it
+T1.Ne	both	theme light{sp}	set_empty	-	same	light never reads $2 (theme.sh:149-152)
+T1.Nem	zsh	theme light{sp}	msg	no more arguments	same	zsh says so
+T1.Nf	both	theme light -	set_empty	-	same	--force belongs to sync only
+T1.Bn	both	theme light{sp}	buf_unchanged	-	same	no file fallback past the last argument (cwd has a toggle dir)
+T2.B	both	theme d	buf	theme dark{sp}	same	unique prefix
+T2.Ne	both	theme dark{sp}	set_empty	-	same	dark never reads $2 (theme.sh:149-152)
+T2.Nem	zsh	theme dark{sp}	msg	no more arguments	same	zsh says so
+T3.Ne	both	theme toggle{sp}	set_empty	-	same	toggle never reads $2 (theme.sh:153-161)
+T3.Nem	zsh	theme toggle{sp}	msg	no more arguments	same	zsh says so
+T4.Ne	both	theme auto{sp}	set_empty	-	same	auto never reads $2 (theme.sh:162-165)
+T4.Nem	zsh	theme auto{sp}	msg	no more arguments	same	zsh says so
+T4.Nf	both	theme auto --f	set_empty	-	same	auto forces internally (theme.sh:164); no --force flag
+T5.P	both	theme sync{sp}	set_eq	--force	same	optional $2 literal, offered at an empty word (theme.sh:167, :138)
+T5.Pd	both	theme sync -	set_eq	--force	same	a positional literal, not an optspec
+T5.B	both	theme sync --f	buf	theme sync --force{sp}	same	unique, space appended
+T5.Bs	both	theme sync{sp}	buf	theme sync --force{sp}	same	TAB on the empty word inserts the only candidate
+T5.Ne	both	theme sync --force{sp}	set_empty	-	same	$3+ never read: apply "${2:-}" (theme.sh:167)
+T5.Nem	zsh	theme sync --force{sp}	msg	no more arguments	same	zsh says so
+T5.Nr	both	theme sync --force -	set_empty	-	same	not re-offered
+T5.Nx	both	theme sync foo{sp}	set_empty	-	same	$3 unread whatever $2 was
+T5.Nxm	zsh	theme sync foo{sp}	msg	no more arguments	same	zsh says so

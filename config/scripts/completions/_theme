@@ -1,0 +1,55 @@
+#compdef theme
+# zsh completion for theme — grammar read from the dispatcher in config/scripts/theme.sh
+# @ blob 9d71223; verified by theme.cases.tsv. config/theme.nix fails the build when the
+# command list drifts from the script's case arms.
+
+_theme() {
+  local curcontext="$curcontext" context state state_descr line ret=1
+  typeset -A opt_args
+
+  # '*::' shifts $words so that in 'args' $words[1] is the subcommand and $words[N] is $N
+  _arguments -C '1: :->cmd' '*:: :->args' && ret=0
+
+  case $state in
+    cmd)
+      # theme.sh:145-171; an empty $1 prints the appearance, -h/--help hit *) (exit 2)
+      local -a commands=(
+        'light:pin the macOS appearance to light, then sync'
+        'dark:pin the macOS appearance to dark, then sync'
+        'toggle:flip the macOS appearance, then sync'
+        'auto:hand the appearance back to the macOS sunrise/sunset schedule'
+        'sync:re-apply the current appearance without changing it'
+      )
+      _describe -t commands 'theme command' commands && ret=0
+      ;;
+    args)
+      curcontext="${curcontext%:*:*}:theme-$words[1]:"
+      local -a specs
+      case "$words[1]" in
+        sync)
+          # theme.sh:167 passes only $2 on, and :138 compares it to the literal --force
+          specs=('1::option:((--force\:"also push to running neovim even when nothing changed"))')
+          ;;
+        light | dark | toggle | auto) ;; # theme.sh:149-165 never read $2
+        *)
+          _message "unknown command: ${words[1]//\%/%%}"
+          return ret
+          ;;
+      esac
+      if (( $#specs )); then
+        _arguments "${specs[@]}" && ret=0
+      else
+        _message 'no more arguments'
+      fi
+      ;;
+  esac
+  return ret
+}
+
+# Autoloaded, the whole file is the function body on first use: call it. Sourced: register it.
+if [[ $funcstack[1] == _theme ]]; then
+  _theme "$@"
+else
+  (( $+functions[compdef] )) && compdef _theme theme
+fi
+# vim: ft=zsh
