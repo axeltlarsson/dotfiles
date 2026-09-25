@@ -1,0 +1,30 @@
+id	shell	line	assert	expect	bash32	notes
+# publish_report.py grammar: one FILE (existing .html/.htm, any case) anywhere among the options;
+# --prefix/--name take free text as `--x v` or `--x=v`; --no-invalidate; argparse -h/--help; `--` ends options.
+# Run with --cwd on a fixture dir holding: dir/, report.html, 'old report.HTM', notes.txt, x:y.html
+P0.F	both	publish-report{sp}	set_eq	dir|report.html|old report.HTM|x:y.html	same	html files and dirs only; no options at an empty word
+P0.Fn	both	publish-report{sp}	set_not	notes.txt	same	non-html files are rejected by main()
+P0.Fp	both	publish-report r	buf	publish-report report.html{sp}	same	unique file prefix
+P0.Fd	both	publish-report d	buf	publish-report dir/	same	directory: slash, no space
+P0.Fs	both	publish-report o	buf	publish-report old\ report.HTM{sp}	same	escaped space, upper-case suffix
+P0.Fc	both	publish-report x:	buf	publish-report x:y.html{sp}	same	':' in a file name
+P0.O	both	publish-report -	set_eq	-h|--help|--prefix=|--name=|--no-invalidate	same	all options
+P0.Op	both	publish-report --n	set_eq	--name=|--no-invalidate	same	prefix narrows
+P0.Ov	both	publish-report --pre	buf	publish-report --prefix=	same	value option: no trailing space
+P0.Ob	both	publish-report --no	buf	publish-report --no-invalidate{sp}	same	bare flag keeps its space
+P1.Of	both	publish-report report.html -	set_eq	-h|--help|--prefix=|--name=|--no-invalidate	same	options after the file
+P1.Ne	both	publish-report report.html{sp}	set_eq	-h|--help|--prefix=|--name=|--no-invalidate	same	exactly one file: only options remain
+P1.Nf	both	publish-report report.html{sp}	set_not	dir|x:y.html	same	no second file
+P2.V	both	publish-report --prefix{sp}	set_empty	-	same	next-word value is free text, not a file
+P2.Vm	zsh	publish-report --prefix{sp}	msg	key prefix	same	zsh names the value
+P2.Ve	both	publish-report --name=	set_empty	-	same	same-word value is free text
+P2.Vem	zsh	publish-report --name=	msg	file name	same	zsh names the value
+P2.Fa	both	publish-report --prefix us_payer{sp}	set_eq	dir|report.html|old report.HTM|x:y.html	same	value consumed, file still expected
+P2.Fe	both	publish-report --name=x{sp}	set_eq	dir|report.html|old report.HTM|x:y.html	same	same-word value consumes no extra word
+P3.R	both	publish-report --no-invalidate --prefix=a -	set_eq	-h|--help|--name=	same	already-present options not re-offered
+P3.H	both	publish-report -h{sp}	set_empty	-	same	nothing after help
+P3.Hm	zsh	publish-report -h{sp}	msg	no more arguments	same	zsh says so
+P3.Hd	both	publish-report --help -	set_empty	-	same	no options after help
+P4.D	both	publish-report --{sp}	set_eq	dir|report.html|old report.HTM|x:y.html	same	file after --
+P4.Dn	both	publish-report -- -	set_empty	-	same	no options after --
+P4.De	both	publish-report -- report.html{sp}	set_empty	-	same	still one file after --

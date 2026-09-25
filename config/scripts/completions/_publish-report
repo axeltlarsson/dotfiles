@@ -1,0 +1,24 @@
+#compdef publish-report
+# zsh completion for publish-report — grammar read from the argparse parser in
+# config/claude-skills/publish-report/publish_report.py @ 176cec0; verified by
+# publish-report.cases.tsv. config/publish-report.nix fails the build when the options drift.
+
+_publish-report() {
+  local ret=1
+  # argparse: options anywhere, `--x v` and `--x=v` both accepted, `--` ends options (-S);
+  # main() rejects anything but an existing .html/.htm (case-insensitive) file
+  _arguments -S \
+    '(- : *)'{-h,--help}'[show help and exit]' \
+    '--prefix=[key prefix under the reports site]:key prefix:' \
+    '--name=[uploaded file name without .html]:file name:' \
+    '--no-invalidate[skip the CloudFront invalidation]' \
+    '1:html report:_files -g "*.(#i)htm(|l)(-.)"' && ret=0
+  return ret
+}
+
+if [[ $funcstack[1] == _publish-report ]]; then
+  _publish-report "$@"
+else
+  (( $+functions[compdef] )) && compdef _publish-report publish-report
+fi
+# vim: ft=zsh
