@@ -53,7 +53,8 @@ def bash_version(bash: str) -> str:
 
 
 def cmd_name(comp: Path) -> str:
-    m = re.search(r"^complete\b.*\s(\S+)\s*$", comp.read_text(), re.M)
+    # the name after `-F <function>`; the line may be indented (if/else) or carry a comment
+    m = re.search(r"^[ \t]*complete\b[^\n#]*-F[ \t]+\S+[ \t]+([^\s#;]+)", comp.read_text(), re.M)
     return m.group(1) if m else comp.stem
 
 
@@ -66,13 +67,15 @@ def list_candidates(bash: str, comp: Path, cmd: str, line: str, cwd: Path) -> li
     )
     if r.returncode != 0:
         return [f"<bash-list.sh exit {r.returncode}: {r.stderr.strip()}>"]
-    # bash 3.2 branch appends the trailing space / directory slash itself: normalise for set asserts
-    return [c.rstrip(" ").rstrip("/") for c in r.stdout.splitlines() if c.strip()]
+    # the bash 3.2 branch appends the trailing space / directory slash and printf-%q-quotes file
+    # names itself: normalise to the bare name for set asserts (buf asserts see the real insertion)
+    return [re.sub(r"\\(.)", r"\1", c.rstrip(" ").rstrip("/")) for c in r.stdout.splitlines() if c.strip()]
 
 
 def buffer_after_tab(bash: str, comp: Path, cwd: Path, typed: str) -> str:
     env = {
         "HOME": os.environ.get("HOME", "/"),
+        "HISTFILE": "/dev/null",  # an interactive bash would append to (and trim) ~/.bash_history
         "PATH": os.environ["PATH"],
         "TERM": "dumb",
         "INPUTRC": str(HERE / "inputrc"),

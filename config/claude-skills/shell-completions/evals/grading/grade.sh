@@ -3,7 +3,7 @@
 #
 # Objective checks for the skill-creator evals. Prints `PASS|FAIL <n> <text> | <evidence>`
 # per expectation (the grader agent maps these onto grading.json). Needs a pty for the
-# harness rows: run unsandboxed.
+# harness rows: run unsandboxed. FERRY_CASES / THEME_CASES pin an older cases file.
 set -uo pipefail
 kind=${1:?ferry|review|theme} out=${2:?outputs dir}
 final=${3:-/dev/null} transcript=${4:-/dev/null}
@@ -29,7 +29,7 @@ harness_rows() { # cmd zf bf cases [--cwd dir]
 }
 
 evidence_block() { # file(s)
-  local c; c=$(cat "$@" 2>/dev/null | grep -cE '^(zsh|bash) [^ ]+  PASS [0-9]+ FAIL 0')
+  local c; c=$(cat "$@" 2>/dev/null | grep -cE '^[[:space:]>]*(zsh|bash) [^ ]+  PASS [0-9]+ FAIL 0')
   (( c >= 3 )) && res PASS "quotes the verify evidence block (>= 3 FAIL 0 lines)" "$c lines" || res FAIL "quotes the verify evidence block (>= 3 FAIL 0 lines)" "$c lines"
 }
 
@@ -37,7 +37,7 @@ case $kind in
   ferry)
     zf=$(first '_ferry'); bf=$(first 'ferry.bash'); nix=$(first 'flake.nix'); pr=$(first 'PR.md')
     [[ -n $zf && -n $bf ]] || { res FAIL "completion files produced" "zf=$zf bf=$bf"; exit 1; }
-    harness_rows ferry "$zf" "$bf" "$here/ferry.cases.tsv" --cwd "$skill/evals/files/ferry/fixtures"
+    harness_rows ferry "$zf" "$bf" "${FERRY_CASES:-$here/ferry.cases.tsv}" --cwd "$skill/evals/files/ferry/fixtures"
     if [[ -n $nix ]] && grep -qE 'installShellCompletion|share/bash-completion/completions/ferry\.bash' "$nix" && grep -qE '\bmeta\b' "$nix"; then
       res PASS "flake installs share/ files as ferry.bash/_ferry and keeps meta" "$nix"
     else res FAIL "flake installs share/ files as ferry.bash/_ferry and keeps meta" "$nix"; fi
@@ -60,7 +60,7 @@ case $kind in
   theme)
     zf=$(first '_theme'); bf=$(first 'theme.bash'); nix=$(first 'theme.nix')
     [[ -n $zf && -n $bf ]] || { res FAIL "completion files produced" "zf=$zf bf=$bf"; exit 1; }
-    harness_rows theme "$zf" "$bf" "$here/theme.cases.tsv"
+    harness_rows theme "$zf" "$bf" "${THEME_CASES:-$here/theme.cases.tsv}"
     if [[ -n $nix ]] && grep -qE 'installShellCompletion|share/bash-completion/completions/theme\.bash' "$nix" && grep -qE '\bmeta\b' "$nix" && grep -q 'home.packages' "$nix" && grep -q 'launchd' "$nix"; then
       res PASS "theme.nix installs completions, keeps meta and its consumers" "$nix"
     else res FAIL "theme.nix installs completions, keeps meta and its consumers" "$nix"; fi

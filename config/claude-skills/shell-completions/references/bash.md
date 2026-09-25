@@ -77,8 +77,10 @@ extglob`. Runtime errors (`bash -n` does **not** catch): `mapfile`/`readarray`, 
 
 Parity technique (git's): register with `-o nospace` **only when `compopt` is missing**, and let
 the function append the trailing space to every candidate that is not an `--opt=` and not a
-directory (which gets `/`). Then `--opt=` has no space, words do, directories chain — on both
-versions [V]. Only quoting of special characters in file names is lost on 3.2.
+directory (which gets `/`), and quote file names with `printf -v q '%q' "$f"` — readline only
+quotes under `-o filenames`, so an unquoted `file with space.yaml` would be inserted as three
+arguments. Then `--opt=` has no space, words do, directories chain, names are escaped — on both
+versions [V].
 
 ## How bash-completion finds the file (2.18 `_comp_load`)
 

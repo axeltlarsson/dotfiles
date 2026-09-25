@@ -70,7 +70,8 @@ assertion). Items marked ★ are the ones reviewers flag most often.
   index; never `complete -o filenames` (turns `db` into `db/` when a `db` dir exists).
 - **B4 S1 ★** Sourceable on `/bin/bash` 3.2: no `mapfile`/`readarray`, `declare -A`, `${x,,}`,
   `;&`, `|&`, `[[ -v`, negative indices, `local -n`; `compopt` guarded; `/bin/bash -n` passes; run
-  the harness under `/bin/bash`.
+  the harness under `/bin/bash`; the 3.2 branch quotes file names itself (`printf %q`), or a name
+  with a space is inserted as several arguments.
 - **B5 S1** `complete -F _cmd cmd` with no global `-o default|bashdefault|filenames|dirnames`.
 - **B6 S1** `cur=$2` (readline's word), `--opt=value` detected from `COMP_LINE`/`COMP_POINT`; not
   `${COMP_WORDS[COMP_CWORD]}` (it is `=` after `--opt=` on ≥ 4 and unsplit on 3.2).

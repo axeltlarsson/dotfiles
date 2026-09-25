@@ -2,7 +2,7 @@
 # bash completion for CMD — grammar read from the dispatcher in <script> @ <git sha>
 # (grammar table in the PR); verified by CMD.cases.tsv. Literal lists mirror the script.
 # Runs on macOS /bin/bash 3.2 (no mapfile, no compopt): the 3.2 branch adds the trailing
-# space / directory slash itself; only quoting of special characters in file names is lost.
+# space, the directory slash and the quoting of file names (printf %q) itself.
 #
 # TEMPLATE NOTES (delete them; keep only comments that cite the CLI, file:line):
 # - install as share/bash-completion/completions/CMD.bash (bash-completion ≥ 2.18 name)
@@ -66,8 +66,10 @@ _CMD__files() {
     compopt -o filenames # readline adds / to directories and quotes special characters
     while IFS= read -r f; do COMPREPLY+=("${f#"$pre"}"); done < <(compgen -f -- "$pre$cur")
   else
+    local q # no -o filenames on 3.2: quote the name ourselves or a space splits it into words
     while IFS= read -r f; do
-      if [[ -d $f ]]; then COMPREPLY+=("${f#"$pre"}/"); else COMPREPLY+=("${f#"$pre"} "); fi
+      printf -v q '%q' "${f#"$pre"}"
+      if [[ -d $f ]]; then COMPREPLY+=("$q/"); else COMPREPLY+=("$q "); fi
     done < <(compgen -f -- "$pre$cur")
   fi
 }

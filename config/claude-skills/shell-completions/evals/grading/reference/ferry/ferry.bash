@@ -2,7 +2,7 @@
 # bash completion for ferry — grammar read from the dispatcher in ./ferry (see the
 # grammar table in PR.md); verified by ferry.cases.tsv. Literal lists mirror the script.
 # Runs on macOS /bin/bash 3.2 (no mapfile, no compopt): the 3.2 branch adds the trailing
-# space / directory slash itself; only quoting of special characters in file names is lost.
+# space, the directory slash and the quoting of file names (printf %q) itself.
 
 # bash 3.2 has no compopt
 _ferry__have_compopt() { type compopt >/dev/null 2>&1; }
@@ -59,8 +59,10 @@ _ferry__files() {
     compopt -o filenames # readline adds / to directories and quotes special characters
     while IFS= read -r f; do COMPREPLY+=("${f#"$pre"}"); done < <(compgen -f -- "$pre$cur")
   else
+    local q # no -o filenames on 3.2: quote the name ourselves or a space splits it into words
     while IFS= read -r f; do
-      if [[ -d $f ]]; then COMPREPLY+=("${f#"$pre"}/"); else COMPREPLY+=("${f#"$pre"} "); fi
+      printf -v q '%q' "${f#"$pre"}"
+      if [[ -d $f ]]; then COMPREPLY+=("$q/"); else COMPREPLY+=("$q "); fi
     done < <(compgen -f -- "$pre$cur")
   fi
 }

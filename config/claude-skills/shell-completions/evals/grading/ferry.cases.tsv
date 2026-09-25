@@ -11,7 +11,7 @@ T1.P	both	ferry ship{sp}	set_eq	eu|us	same	region
 T1.Nb	both	ferry ship -	set_empty	-	same	options are parsed from $4 only: none at the region slot
 T1.F	both	ferry ship eu{sp}	set_eq	dir|file with space.yaml|plain|x:y.txt	same	FILE completes files
 T1.Fd	both	ferry ship eu d	buf	ferry ship eu dir/	same	directory: slash, no space
-T1.Fs	both	ferry ship eu f	buf	ferry ship eu file\ with\ space.yaml{sp}	expect:ferry ship eu file with space.yaml{sp}	space in a file name is escaped (3.2: no compopt, unquoted)
+T1.Fs	both	ferry ship eu f	buf	ferry ship eu file\ with\ space.yaml{sp}	same	space in a file name is escaped (3.2: by printf %q in the function)
 T1.Nb3	both	ferry ship eu -	set_empty	-	same	still no options at the FILE slot
 T1.Fc	both	ferry ship eu x:	buf	ferry ship eu x:y.txt{sp}	same	a ':' in a file name: bash 4+ splits COMP_WORDS there, completion must not
 T1.Fcn	both	ferry ship eu x:	set_not	--force|--tag=	same	no flags inside a file name

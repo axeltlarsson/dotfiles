@@ -64,7 +64,8 @@ the prefix readline will not replace (`pre`); candidates
 via a literal `for w in …` loop (no `compgen -W "$var"`, no `mapfile`, no `$(compgen)` in an array
 assignment); `compopt -o filenames` only in the file branch, `compopt -o nospace` only when the
 unique candidate ends in `=`, both guarded by `type compopt`; no global `-o` on `complete` except
-`-o nospace` in the 3.2 branch, where the function appends spaces itself. Must `source` and work on
+`-o nospace` in the 3.2 branch, where the function appends spaces itself and quotes file names
+with `printf %q` (readline only quotes under `-o filenames`). Must `source` and work on
 `/bin/bash` 3.2 — that is the documented fallback for people without bash-completion.
 Details: `references/bash.md`.
 
