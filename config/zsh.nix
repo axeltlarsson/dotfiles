@@ -216,7 +216,9 @@ in
 
       # Without a format, _message hints ("key prefix", "no more arguments") and
       # group headings are dropped. menu select autoloads zsh/complist on first use.
-      zstyle ':completion:*' menu select
+      zstyle ':completion:*' menu select search
+      # fallbacks only run when the exact match finds nothing; each costs about one more scan
+      zstyle ':completion:*' matcher-list ''' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*'
       zstyle ':completion:*' group-name '''
       zstyle ':completion:*' list-colors '''
       zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
