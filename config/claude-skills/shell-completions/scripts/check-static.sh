@@ -32,10 +32,11 @@ if has '->' "$zf"; then
   has 'typeset -A opt_args' "$zf" && ok "zsh: opt_args declared local" || bad "zsh: missing 'typeset -A opt_args'"
 fi
 has '\bret=1\b' "$zf" && { has 'return ret' "$zf" && ok "zsh: ret idiom (return ret)" || bad "zsh: ret=1 declared but never 'return ret'"; }
-has '_values' "$zf" && warn "zsh: _values used — positionals normally belong in _arguments specs so every arm reports 'no more arguments'"
+zcode=$(sed -E 's/(^|[[:space:]])#.*$//' "$zf") # comments stripped: prose is not code
+grep -q '_values' <<<"$zcode" && warn "zsh: _values used — positionals normally belong in _arguments specs so every arm reports 'no more arguments'"
 has ":\(+[^)]*[[:space:]\"]--?[a-zA-Z]" "$zf" && warn "zsh: an option-looking word inside a positional word list — only right for a literal the CLI accepts at a fixed position (rule R9); real options must be optspecs"
-has 'compadd' "$zf" && ! has '"\$expl\[@\]"|_wanted|_describe' "$zf" && warn "zsh: bare compadd without \"\$expl[@]\"/_wanted"
-has '(^|[^_a-zA-Z])(echo|print) ' "$zf" && warn "zsh: prints from the completer — use _message"
+grep -q 'compadd' <<<"$zcode" && ! grep -qE '"\$expl\[@\]"|_wanted|_describe' <<<"$zcode" && warn "zsh: bare compadd without \"\$expl[@]\"/_wanted"
+grep -qE '(^|[^_a-zA-Z])(echo|print) ' <<<"$zcode" && warn "zsh: prints from the completer — use _message"
 
 # ---- bash ------------------------------------------------------------------
 [[ $(head -1 "$bf") == '# shellcheck shell=bash'* ]] && ok "bash: line 1 is '# shellcheck shell=bash'" ||
@@ -56,8 +57,10 @@ if sed -E 's/(^|[[:space:]])#.*$//' "$bf" | grep -nE -- "$forbidden" >"$tmpf" 2>
 else
   ok "bash: no bash-4-only constructs (3.2-sourceable)"
 fi
-if has 'compopt' "$bf"; then
-  if has 'type compopt' "$bf" || ! grep -E 'compopt' "$bf" | grep -vqE '2>/dev/null|type compopt'; then
+# comments stripped first: prose like "bash 3.2 has no compopt" is not a call
+code=$(sed -E 's/(^|[[:space:]])#.*$//' "$bf")
+if grep -q 'compopt' <<<"$code"; then
+  if grep -q 'type compopt' <<<"$code" || ! grep -E 'compopt' <<<"$code" | grep -vqE '2>/dev/null|type compopt'; then
     ok "bash: compopt is guarded (bash 3.2 has none)"
   else
     bad "bash: unguarded compopt (guard with 'type compopt >/dev/null 2>&1' or '2>/dev/null')"

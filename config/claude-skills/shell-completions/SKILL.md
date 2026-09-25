@@ -5,11 +5,17 @@ description: Write, fix, review or package shell tab completions — zsh compsys
 
 # shell-completions
 
-Hand-written completions look trivial and are reviewed hard. The last one (jojnts-service #9952)
-drew nine findings across two rounds, and a re-probe of the *merged* result found four more. Every
-one of them traces back to three causes: trusting `--help` instead of the dispatcher, not knowing a
-shell rule (`_arguments` optspecs are position-independent; bash 3.2 does not split `COMP_WORDS` at
-`=`; `symlinkJoin` drops `meta`), or declaring "tested" without a pty. This skill removes all three.
+Hand-written completions look trivial and are reviewed hard. Three practices make them pass:
+
+- **Read the grammar from the dispatcher, not `--help`.** Usage text drifts: it lists flags a
+  branch ignores and marks required arguments optional. The completion must offer what the code
+  accepts, at the word where the code reads it.
+- **Apply the shell rules that are easy to miss.** `_arguments` optspecs are position-independent;
+  bash 3.2 does not split `COMP_WORDS` at `=`; a global `complete -o filenames` rewrites
+  look-alike candidates; `symlinkJoin` drops `meta`. The templates encode all of these.
+- **Verify in a pty on zsh, bash 5 and `/bin/bash` 3.2 before saying "done".** Completion code
+  only runs inside a completion widget, so reading it is not testing it.
+
 Deliverable: `_cmd` + `cmd.bash` + packaging + a `cases.tsv` + the verify evidence block in the PR.
 
 ## Workflow
@@ -30,15 +36,19 @@ flags a handler silently ignores, exact arity checks, stubs). Pin the script's g
 Then **stop and report** to the user before writing anything: every `help ≠ code` row (a flag help
 lists but a branch ignores; `[ro|rw]` in help while the code requires it; extra words silently
 accepted), every unvalidated value, every stub. The completion follows the code; the user decides
-about the help text or the code. Never edit the CLI to make the completion simpler.
+about the help text or the code. Never edit the CLI to make the completion simpler. If nobody can
+answer (a subagent or non-interactive run), carry on following the code and put the drift list at
+the top of your report and in the PR.
 
 ### 2. zsh — start from `assets/_CMD`
 
 Keep the shape: `#compdef cmd`; the manual's full local list (`curcontext="$curcontext" context
 state state_descr line ret=1; typeset -A opt_args`); `': :->cmd' '*:: :->args'` so `$words[N]` is
 the CLI's `$N`; `_describe` for commands; per subcommand a `specs` array and **one**
-`_arguments "${specs[@]}" && ret=0` (every arm then ends with "no more arguments" — `_values`
-would return silently); values with descriptions `((v\:"desc"))`; options **always** as optspecs,
+`_arguments "${specs[@]}" && ret=0`, which says "no more arguments" past the last spec — but with
+an *empty* spec list it says nothing, so an arm that takes no arguments calls
+`_message 'no more arguments'` itself (the template does both; `_values` for positionals would
+return silently); values with descriptions `((v\:"desc"))`; options **always** as optspecs,
 never words in a positional list (that adds a trailing space and no exclusion); `--opt=-` when the
 value is accepted only in the same word; optspecs appended only when `CURRENT` has reached the word
 the CLI parses flags from, and not in a branch that ignores them; `return ret`; the guarded
@@ -46,8 +56,11 @@ dual-mode footer. Details and the reasons: `references/zsh.md`.
 
 ### 3. bash — start from `assets/CMD.bash`
 
-`# shellcheck shell=bash` first line; `cur=$2` (never `${COMP_WORDS[COMP_CWORD]}`); detect
-`--opt=value` from `${COMP_LINE:0:COMP_POINT}` because bash 3.2 does not split at `=`; candidates
+`# shellcheck shell=bash` first line; `cur=$2` (never `${COMP_WORDS[COMP_CWORD]}`); rebuild the
+shell-level words with the template's `_CMD__split` — bash ≥ 4 splits `COMP_WORDS` at `=`, `:` and
+`@` (so `--tag=x` or a file name `a:b` becomes several words) while 3.2 does not, and indexing
+`COMP_WORDS` directly puts flags inside file names; offer candidates for the whole word and strip
+the prefix readline will not replace (`pre`); candidates
 via a literal `for w in …` loop (no `compgen -W "$var"`, no `mapfile`, no `$(compgen)` in an array
 assignment); `compopt -o filenames` only in the file branch, `compopt -o nospace` only when the
 unique candidate ends in `=`, both guarded by `type compopt`; no global `-o` on `complete` except
@@ -102,7 +115,9 @@ emoji + imperative).
 
 Same order: extract the grammar table from the CLI first, then read the completion against it,
 then run `check-static.sh` and — if the fixture layout allows — the harnesses. Report with
-`file:line`, the fix, and blocker/nit. The checklist's ★ items are the ones real reviewers found.
+`file:line`, the fix, and blocker/nit. The checklist's ★ items are the ones reviewers flag most
+often. Check every fix you propose against the same rules — a fix that uses `mapfile` or an
+unguarded `compopt` reintroduces a bash 3.2 defect.
 
 ## Files
 

@@ -65,12 +65,20 @@ When a subcommand parses but ignores a flag, do not add it in that branch.
 
 **Past the last positional** `_arguments` shows "no more arguments" (a `_message`; visible only with
 a `format` zstyle). Use `_arguments` for every arm — including ones with a single positional — so
-all subcommands end the same way; `_values` for positionals returns silently.
+all subcommands end the same way; `_values` for positionals returns silently. With an **empty**
+spec list `_arguments` prints nothing at all, so an arm that takes no arguments calls
+`_message 'no more arguments'` itself:
+`if (( $#specs )); then _arguments "${specs[@]}" && ret=0; else _message 'no more arguments'; fi`.
 
 **Options never as positional word lists**: `'3:option:(--force --tag=)'` gets a trailing space
 after `--tag=`, no description and no exclusion [V]. The one exception is a literal that the CLI
-accepts only at a fixed `$N` (`[ "${3-ro}" == --rw ]`): that *is* a positional —
-`'2::mode:((--rw\:"read-write"))'`.
+accepts only at a fixed `$N` (`[ "${2:-}" = --json ]`): that *is* a positional —
+`'1::option:((--json\:"machine-readable output"))'`.
+
+**Options at an empty word**: `_arguments` offers optspecs for an empty word only when no
+positional can go there; while a positional is still possible, options appear only once the user
+types `-`. A flag that must show up at an empty word next to positionals is rule 8's positional
+literal, not an optspec.
 
 ## Helpers
 

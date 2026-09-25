@@ -3,16 +3,16 @@
 Severity: **S1** wrong or misleading completion, or breaks a shell (blocks) · **S2** convention /
 robustness a strict reviewer always raises · **S3** nit that still draws a comment.
 Detection: *static* (`scripts/check-static.sh` or a grep) · *case* (a `cases.tsv` row, typed text ⇒
-assertion). Items marked ★ were real findings on jojnts-service #9952 or its merged result.
+assertion). Items marked ★ are the ones reviewers flag most often.
 
 ## Grammar fidelity (both shells)
 
 - **G1 S1 ★** Flags offered only from the word the CLI parses them (`"${@:4}"` ⇒ zsh `CURRENT > 3`,
   bash `COMP_CWORD ≥ 4`). Optspecs are position-independent. *case*: `cmd sub -` ⇒ `set_empty`;
   `cmd sub a b -` ⇒ the flags.
-- **G2 S1 ★** A flag a handler ignores in a branch is not offered there (`scrub import` +
-  `--grep-scrub`, `tunnel content` + `--rw`). *case*: `set_eq` without it + a positive control in
-  the branch that does consume it.
+- **G2 S1 ★** A flag a handler ignores in a branch is not offered there (`ferry fetch` parses
+  `--tag` and never reads it). *case*: `set_eq` without it + a positive control in the branch that
+  does consume it (`ferry ship`).
 - **G3 S1 ★** Value form matches the parser: same-word only ⇒ `--opt=-` and no space after `=`;
   next-word ⇒ `--opt`; both ⇒ `--opt=`. *case*: `buf` `…--opt=` (no `{sp}`); zsh `msg_not` for the
   next-word form.
@@ -20,10 +20,11 @@ assertion). Items marked ★ were real findings on jojnts-service #9952 or its m
   diff against the script's array (`assets/package.nix.md`).
 - **G5 S1** Exact arity ⇒ nothing past the last position (`shell a b <TAB>` ⇒ `set_empty`; zsh
   `msg` "no more arguments"). No `-o default`/`bashdefault`.
-- **G6 S2** Conditional positionals gated on the earlier word (`db stage [eu|us]`), optional ones
-  declared optional (`'k::…'`).
+- **G6 S2** Conditional positionals gated on the earlier word (a value that exists only after one
+  particular first value), optional ones declared optional (`'k::…'`).
 - **G7 S2** A `-`-literal accepted only at a fixed `$N` is a positional with a description, not an
-  optspec (`tunnel eu --rw`). *case*: `cmd tunnel -` ⇒ empty; `cmd tunnel eu -` ⇒ `--rw`.
+  optspec (`[ "${2:-}" = --json ]`). *case*: `ferry status -` ⇒ `--json`; `ferry status --json -` ⇒
+  empty.
 - **G8 S2** Required-but-unused positionals are still offered; the gap goes in the PR.
 - **G9 S2** Default arm: offer the named default word (`${1-help}`), never `-h/--help` fall-throughs.
 - **G10 S2** Stubs that exit 0 are offered with "(not yet implemented)"; rejected values never.
@@ -43,7 +44,7 @@ assertion). Items marked ★ were real findings on jojnts-service #9952 or its m
 - **Z4 S1 ★** Every arm ends consistently: one `_arguments "${specs[@]}"` per subcommand (says "no
   more arguments"); no `_values` for positionals (returns 0 silently with no matches).
 - **Z5 S2 ★** `local curcontext="$curcontext" context state state_descr line ret=1; typeset -A opt_args`
-  — the manual's full list; the merged jojnts file still lacked `context`/`state_descr`.
+  — the manual's full list; `context` and `state_descr` are the two most often forgotten.
 - **Z6 S2** `ret` idiom: `&& ret=0` after every helper, `return ret`.
 - **Z7 S2** Per-subcommand `curcontext="${curcontext%:*:*}:cmd-$words[1]:"`.
 - **Z8 S2** Descriptions on every value (`((v\:"desc"))`) and every command (`_describe`); lowercase,

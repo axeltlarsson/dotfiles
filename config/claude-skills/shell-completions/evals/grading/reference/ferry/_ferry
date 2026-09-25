@@ -23,16 +23,25 @@ _ferry() {
       curcontext="${curcontext%:*:*}:ferry-$words[1]:"
       local -a specs
       case $words[1] in
-        ship | fetch)
+        ship)
           specs=(
             '1:region:((eu\:"EU bucket" us\:"US bucket"))'
-            '2:file:_files'
+            '2:file:_files' # ship checks [ -f "$3" ]
           )
           if (( CURRENT > 3 )); then # ferry parses options from $4 on: parse_opts "${@:4}"
-            specs+=('--force[overwrite]')
-            # fetch parses --tag but never uses it; --tag=- because only the same-word form is accepted
-            [[ $words[1] == ship ]] && specs+=('--tag=-[tag the upload]:tag name:')
+            specs+=(
+              '--force[overwrite]'
+              '--tag=-[tag the upload]:tag name:' # =- : only the same-word form --tag=NAME is accepted
+            )
           fi
+          ;;
+        fetch)
+          specs=(
+            '1:region:((eu\:"EU bucket" us\:"US bucket"))'
+            '2:remote file name: ' # a name in the bucket, not a local path
+          )
+          # fetch parses --tag but never uses it: only --force
+          (( CURRENT > 3 )) && specs+=('--force[overwrite]')
           ;;
         dock)
           specs=(
@@ -43,16 +52,17 @@ _ferry() {
         status)
           specs=('1::option:((--json\:"machine-readable output"))') # only the literal --json, only as $2
           ;;
-        help)
-          _message 'no more arguments'
-          return ret
-          ;;
+        help) ;;
         *)
           _message "unknown command: $words[1]"
           return ret
           ;;
       esac
-      _arguments "${specs[@]}" && ret=0
+      if (( $#specs )); then
+        _arguments "${specs[@]}" && ret=0
+      else
+        _message 'no more arguments'
+      fi
       ;;
   esac
   return ret

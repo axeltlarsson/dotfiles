@@ -14,7 +14,7 @@ _CMD() {
 
   # ': :->cmd' — a lone space as message: the description comes from _describe.
   # '*:: :->args' — two colons shift $words/CURRENT so that inside 'args' $words[1] is
-  # the subcommand and $words[N] is the CLI's $N (same numbering as bash's COMP_CWORD).
+  # the subcommand and $words[N] is the CLI's $N (same numbering as bash's word index).
   _arguments -C '1: :->cmd' '*:: :->args' && ret=0
 
   case $state in
@@ -22,6 +22,7 @@ _CMD() {
       local -a commands=(
         'sub1:one-line description, lowercase, imperative, no trailing period'
         'sub2:…'
+        'sub3:…'
         'help:show usage' # only if the dispatcher names it (case "${1-help}"); never -h/--help fall-throughs
       )
       _describe -t commands 'CMD command' commands && ret=0
@@ -49,20 +50,25 @@ _CMD() {
           specs=(
             '1:dock:((north\:"north dock" south\:"south dock"))'
             '2:mode:((ro\:"read-only" rw\:"read-write"))' # required when the code checks $# -eq 3 — even if help says [ro|rw]
+            # an argument that is not a local path (a remote object, a name): message only, no _files
+            # '3:remote file name: '
           )
           ;;
-        help)
-          _message 'no more arguments'
-          return ret
-          ;;
+        sub3) ;; # takes no arguments: the empty spec list is handled below
+        help) ;;
         *)
           _message "unknown command: $words[1]"
           return ret
           ;;
       esac
-      # One _arguments call per arm: past the last spec it reports "no more arguments",
-      # so every subcommand ends the same way. Never _values for positionals.
-      _arguments "${specs[@]}" && ret=0
+      # One _arguments call per arm: past the last spec it reports "no more arguments", so
+      # every subcommand ends the same way. With an empty spec list it prints nothing, so
+      # say it here. Never _values for positionals.
+      if (( $#specs )); then
+        _arguments "${specs[@]}" && ret=0
+      else
+        _message 'no more arguments'
+      fi
       ;;
   esac
   return ret

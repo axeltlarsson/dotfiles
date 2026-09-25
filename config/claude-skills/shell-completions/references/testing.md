@@ -31,6 +31,10 @@ each harness.
 
 ## Running
 
+Both harnesses run cases in parallel (`COMPLETION_JOBS`, default 6) and `verify.sh` runs the three
+shells concurrently — a full run is ~20–30 s. Output order is stable. If a busy machine makes a
+`buf` row flaky, rerun with `COMPLETION_JOBS=1` before suspecting the completion.
+
 ```
 scripts/check-static.sh _cmd cmd.bash
 scripts/verify.sh cmd _cmd cmd.bash cases.tsv [--cwd fixture-dir]     # everything + evidence block
@@ -41,7 +45,7 @@ uv run scripts/test-bash-completion.py cmd.bash /bin/bash cases.tsv [--cwd DIR]
 Output contract: `PASS|FAIL <id>  <notes>` per row (a FAIL line is followed by typed/assert/expect/got),
 then `<harness> <version>  PASS n FAIL m`; exit 1 on any FAIL. `verify.sh` ends with the `## evidence`
 block to paste into the PR. `--cwd` matters for file rows: keep a fixture dir with `dir/`,
-`file with space.yaml`, `plain`.
+`file with space.yaml`, `plain`, `x:y.txt`.
 
 ## How the harnesses work (so you can extend them)
 
@@ -61,7 +65,8 @@ its text (`_arguments`' "no more arguments" does not go through `compadd -x`). R
 the file, rebuilds `COMP_WORDS` the way that bash version splits (≥ 4 at `=`/`:` too), sets
 `COMP_LINE/POINT/CWORD` and `$2`/`$3`, calls the function registered by `complete -p`, prints
 `COMPREPLY`. `buf` rows spawn `bash --noprofile --norc -i` with pexpect (`dimensions=(40,200)`,
-`TERM=dumb`, `INPUTRC=scripts/inputrc`), send the line + `\t`, then read the buffer back with
+`TERM=dumb`, `INPUTRC=scripts/inputrc`), send the line + `\t` and, without waiting (readline
+handles keys in order, so the completion finishes before C-a runs), read the buffer back with
 C-a `echo 'BU''F:<` C-e `>'` Enter — the marker is split so the echoed command can never match.
 Fresh session per row.
 
@@ -82,6 +87,13 @@ Fresh session per row.
   `LISTMAX=100000` (zsh), `completion-query-items 100000` + `page-completions off` (bash).
 - Disable autosuggestion/highlighting plugins in test shells (`zsh -f`, `--norc`) — they paint text
   into the capture.
-- `nix develop`'s bash is nixpkgs' minimal build without `progcomp`: never use it to test
-  completion; use the interactive bash on PATH and `/bin/bash`.
+- `nix develop -c bash …` runs stdenv's minimal non-interactive bash, which has no `progcomp`
+  (`shopt: progcomp: invalid shell option name`); a plain interactive `nix develop` starts
+  bashInteractive, which does. Test with the interactive bash on PATH and `/bin/bash`, never with
+  `nix develop -c bash`.
+- File names with `:`, `=` or `@`: bash ≥ 4 splits `COMP_WORDS` there and readline replaces only
+  the text after the last break character (`$2`). Completion code that indexes `COMP_WORDS` puts
+  flags inside such names; rebuild the shell words from `COMP_LINE` (template `_CMD__split`) and
+  keep a `buf` row with an `x:y` fixture. `bash-list.sh` emulates the `=` and `:` split but not
+  readline's `@` quirk — `buf` rows (real readline) are authoritative there.
 - A `set -e` in a harness turns a failing assertion into an aborted run: count failures instead.

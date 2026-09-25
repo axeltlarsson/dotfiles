@@ -81,8 +81,8 @@ A named pipe needs the shell flag **and** `--cmd`/`--name`.
     zsh -n ${./completions/_mytool}
     head -c8 ${./completions/_mytool} | grep -qx '#compdef'
     # literal lists must mirror the script: diff them
-    diff <(bash -c 'source <(grep -m1 "^clusters=" ${./mytool.sh}); printf "%s\n" "''${clusters[@]}"') \
-         <(sed -n "s/.*'1:cluster:((\(.*\)))'.*/\1/p" ${./completions/_mytool} | tr ' ' '\n' | sed 's/\\\\:.*//')
+    diff <(bash -c 'source <(grep -m1 "^regions=" ${./mytool.sh}); printf "%s\n" "''${regions[@]}"') \
+         <(sed -n "s/.*'1:region:((\(.*\)))'.*/\1/p" ${./completions/_mytool} | tr ' ' '\n' | sed 's/\\\\:.*//')
     touch $out
   '';
   ```
@@ -95,7 +95,7 @@ A named pipe needs the shell flag **and** `--cmd`/`--name`.
 - `mkShell` puts `packages` and `nativeBuildInputs` into `nativeBuildInputs`; stdenv's `setup.sh` runs `addToSearchPath _XDG_DATA_DIRS "$pkg/share"` for every such input that has a `share/` dir (`hostOffset <= -1`), then exports `XDG_DATA_DIRS`. `buildInputs` are **not** added (they are still on `PATH`, so bash-completion's PATH-relative lookup finds them anyway).
 - **bash**: bash-completion ≥ 2 (requires bash ≥ 4.2) loads `$XDG_DATA_DIRS/*/bash-completion/completions/<cmd>.bash` on the **first `<TAB>`** — nothing to configure. Gotcha: pressing `<TAB>` on the command *before* the file exists pins a minimal compspec for that shell session → `complete -r <cmd>` or a new shell.
 - **zsh never reads `XDG_DATA_DIRS`**, and `compinit` registers only what is on `fpath` when it runs (startup). Options, in order of preference:
-  1. a lazy loader in `.zshrc` — Axel's `_xdg_lazy_complete` (dotfiles `config/zsh.nix`, first entry in `zstyle ':completion:*' completer`) registers every `XDG_DATA_DIRS/*/zsh/site-functions` dir not yet on fpath the first time an unregistered command is completed; the public equivalent is `zsh-completion-sync`;
+  1. a lazy loader in `.zshrc` — e.g. `_xdg_lazy_complete` in axeltlarsson/dotfiles `config/zsh.nix` (first entry in `zstyle ':completion:*' completer`) registers every `XDG_DATA_DIRS/*/zsh/site-functions` dir not yet on fpath the first time an unregistered command is completed; zsh-completion-sync is a plugin doing the same from `precmd`;
   2. per tool, in `.zshrc` after `compinit`:
      `(( $+commands[mytool] )) && { fpath+=(${commands[mytool]:h:h}/share/zsh/site-functions); autoload -Uz _mytool; compdef _mytool mytool; }`
      (works because `$commands` does not resolve the `bin/` symlink);

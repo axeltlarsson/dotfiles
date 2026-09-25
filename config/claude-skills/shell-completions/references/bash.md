@@ -23,10 +23,14 @@ being completed**, `$3` the previous word. Fill `COMPREPLY`; bash filters nothin
 **bash 3.2 does not split `COMP_WORDS` at `=` or `:` at all** (bash 4.0 CHANGES: "The programmable
 completion code now uses the same set of characters as readline when breaking the command line
 into a list of words") — there `tool --output=fo` gives `COMP_WORDS=(tool --output=fo)`,
-`COMP_CWORD=1`, `$2=fo`. So: take `cur` from `$2` (identical on both), detect a `--opt=value` word
-from the line (`lw=${COMP_LINE:0:COMP_POINT}; lw=${lw##*[[:space:]]}; [[ $lw == --*=* ]]`), and
-index positionals by `COMP_CWORD` only while no `=`-carrying word precedes the cursor (otherwise
-walk `COMP_WORDS` and skip option words and the `=` pieces).
+`COMP_CWORD=1`, `$2=fo`. So: take `cur` from `$2` (identical on both) and **rebuild the shell-level words** from
+`COMP_WORDS` + `COMP_LINE` — glue the pieces back together unless whitespace separates them
+(template `_CMD__split`). Then `words[N]` is the CLI's `$N` on every version, whatever `=`, `:` or
+`@` the line contains. Readline still replaces only `$2`, so match candidates against the whole
+word and strip the part before `$2`: `pre=${words[cword]%"$cur"}`, test `[[ $w == "$pre$cur"* ]]`,
+add `${w#"$pre"}` [V: a file `x:y.txt` completes as `x:y.txt` on 5.3 and 3.2; indexing
+`COMP_WORDS` directly inserted flags after `x:` on 5.3]. This generalises bash-completion's
+`__ltrim_colon_completions` without depending on bash-completion.
 
 ## `complete -o` options, `compopt`
 

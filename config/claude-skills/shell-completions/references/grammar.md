@@ -1,11 +1,12 @@
 # The grammar table — read the code, not the help
 
-Every substantive review finding on a completion so far came from the completion trusting `--help`
-or a plausible guess instead of the dispatcher. Fill this table from the code **before** writing a
-line of completion; the table is also the spec for `cases.tsv` and goes into the PR.
+The completion must offer what the code accepts, at the word where the code reads it — and usage
+text is the least reliable source for that. Fill this table from the dispatcher and its handlers
+**before** writing a line of completion; the table is also the spec for `cases.tsv` and goes into
+the PR.
 
-Header: `CLI: <path> @ <git sha>` (`git log -1 --format=%h -- <path>`). Re-extract before merge if
-the script changed.
+Header: `CLI: <path> @ <git sha>` (`git log -1 --format=%h -- <path>`; outside a repo
+`git hash-object <path>`). Re-extract before merge if the script changed.
 
 | column | meaning |
 |---|---|
@@ -15,7 +16,7 @@ the script changed.
 | `values` | literal set (quote the array/case arm), `_files`, or `free text` |
 | `validated` | `file:line` of the check that rejects other values, or `none` |
 | `consumed` | `file:line` where the value changes behaviour, or `ignored (branch)` |
-| `depends` | condition on an earlier word (`$2 == stage`), or `—` |
+| `depends` | condition on an earlier word (`$1 == ship`), or `—` |
 | `form` | `word` · `same-word =` · `next-word` · `both` · `exact-literal` |
 | `arity` | `exact N` (`$# -ne N`) · `N..M` · `≥ N` · `repeat-idempotent` · `repeat-effective` |
 | `help says` | usage text for the slot, verbatim |
@@ -35,15 +36,15 @@ positional `N-1`.
    `--opt=-[desc]:msg:` (empty action = message for free text); bash candidate `--opt=` + `nospace`.
 3. **Both forms accepted** ⇒ zsh `--opt=[desc]:msg:action`; bash offer `--opt` and complete the
    value at the next word.
-4. **Handler ignores the flag in a branch** (`scrub_import` never reads `--grep-scrub`) ⇒ don't offer
-   it there; list it under drift.
-5. **Required but unused positional** (`import` needs `$3` for arity, never reads it) ⇒ still offer;
-   list the gap.
+4. **Handler ignores the flag in a branch** (`fetch` parses `--tag` but never reads it) ⇒ don't
+   offer it there; list it under drift.
+5. **Required but unused positional** (counted by a `$#` check, never read) ⇒ still offer; list the
+   gap.
 6. **Exact / maximum arity** ⇒ nothing past the last position: zsh `_arguments` with exactly the
    described positionals ("no more arguments"); bash no arm ⇒ empty `COMPREPLY`, and no
    `-o default`/`bashdefault` anywhere.
 7. **Optional positional** ⇒ zsh `'k::msg:action'`; bash offer at that index only.
-8. **`-`-literal accepted only at a fixed `$N`** (`[ "${3-ro}" == --rw ]`) ⇒ a positional with a
+8. **`-`-literal accepted only at a fixed `$N`** (`[ "${2:-}" = --json ]`) ⇒ a positional with a
    description, not an optspec.
 9. **Repeatable flags**: idempotent ⇒ plain optspec (zsh excludes it once present; bash filters by
    `${w%%=*}`); effective repeats ⇒ `'*--opt…'`, no filter.
@@ -66,7 +67,8 @@ positional `N-1`.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | — | $1 | cmd | ship fetch dock status help | `case "${1:-}"`; `*)` usage exit 2 | dispatcher | — | word | — | 4 usage lines | `-h/--help` undocumented fall-throughs | Y incl. `help`; N for `-h/--help` |
 | ship/fetch | $2 | pos | eu us | `require_region` | yes | — | word | ≥ 3 | `(eu\|us)` | — | Y |
-| ship/fetch | $3 | file | `_files` | ship `[ -f ]`; fetch none | yes | — | word | ≥ 3 | `FILE` | fetch: unvalidated | Y |
+| ship | $3 | file | `_files` | `[ -f "$3" ]` | yes | — | word | ≥ 3 | `FILE` | — | Y |
+| fetch | $3 | free | remote object name | none | yes | — | word | ≥ 3 | `FILE` ("download FILE from the region bucket") | unvalidated | message only: local files would be the wrong namespace |
 | ship/fetch | $4+ | flag | `--force` | `parse_opts` `*)` exit 2 | yes | `CURRENT > 3` | word | repeat-idempotent | `[--force]` | — | Y from $4 |
 | ship | $4+ | flag=val | `--tag=NAME` | `--tag=*)` only | ship yes; **fetch ignores** | `CURRENT > 3`, `$words[1] == ship` | same-word `=` | repeat (last wins) | listed for both | help ≠ code (fetch) | Y ship only, `=-` |
 | dock | $2 | pos | north south east | `case` exit 2 | yes | — | word | exact 3 | ✓ | — | Y |

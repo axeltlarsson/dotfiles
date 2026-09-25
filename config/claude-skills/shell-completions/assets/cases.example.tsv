@@ -5,7 +5,8 @@ id	shell	line	assert	expect	bash32	notes
 #          buf (the whole line after <TAB>, exact)   buf_unchanged   msg / msg_not (zsh only: _message text)
 # Cover, per grammar row: positive, prefix, nothing before the first legal flag word, ignored-branch negative,
 # already-present filter, buf without trailing space for --opt=, next-word negative for =-, dir slash +
-# escaped space for files, set_empty past the last argument of every subcommand.
+# escaped space and a ':' name for files, set_empty past the last argument of every subcommand (zsh msg
+# "no more arguments" too), set_empty + zsh msg for an argument that is not a local path.
 T0.P	both	CMD{sp}	set_eq	sub1|sub2|help	same	top-level commands
 T0.Pp	both	CMD s	set_eq	sub1|sub2	same	prefix narrows
 T0.Nd	both	CMD -	set_empty	-	same	no top-level options
@@ -13,9 +14,11 @@ T0.B	both	CMD h	buf	CMD help{sp}	same	unique prefix inserts with a space
 T0.Bu	both	CMD s	buf_unchanged	-	same	ambiguous prefix leaves the line alone
 T1.P	both	CMD sub1{sp}	set_eq	eu|us	same	positional values
 T1.Nb	both	CMD sub1 -	set_empty	-	same	flags are parsed from $4 only
-T1.F	both	CMD sub1 eu{sp}	set_eq	dir|file with space.yaml|plain	same	file positional (run with --cwd fixtures)
+T1.F	both	CMD sub1 eu{sp}	set_eq	dir|file with space.yaml|plain|x:y.txt	same	file positional (run with --cwd fixtures: dir/, 'file with space.yaml', plain, x:y.txt)
 T1.Fd	both	CMD sub1 eu d	buf	CMD sub1 eu dir/	same	directory: slash, no space
 T1.Fs	both	CMD sub1 eu f	buf	CMD sub1 eu file\ with\ space.yaml{sp}	expect:CMD sub1 eu file with space.yaml{sp}	quoting (3.2: unquoted)
+T1.Fc	both	CMD sub1 eu x:	buf	CMD sub1 eu x:y.txt{sp}	same	':' in a file name (bash 4+ splits COMP_WORDS there)
+T1.Fcn	both	CMD sub1 eu x:	set_not	--force|--tag=	same	no flags inside a file name
 T1.O	both	CMD sub1 eu plain{sp}	set_eq	--force|--tag=	same	options after the positionals
 T1.Ot	both	CMD sub1 eu plain --ta	buf	CMD sub1 eu plain --tag=	same	same-word value: no trailing space
 T1.Of	both	CMD sub1 eu plain --fo	buf	CMD sub1 eu plain --force{sp}	same	bare flag keeps its space

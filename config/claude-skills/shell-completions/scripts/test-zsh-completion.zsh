@@ -7,10 +7,12 @@
 # Rows: id  shell(zsh|bash|both)  line  assert  expect  bash32  notes  ("{sp}" = space).
 # Asserts: set_eq set_empty set_has set_not buf buf_unchanged msg msg_not.
 # Prints PASS/FAIL per case and `zsh <version>  PASS n FAIL m`; exit 1 on any failure.
+# Cases run in parallel (COMPLETION_JOBS, default 6), one fresh shell each; output stays in order.
 # Needs a pty: run unsandboxed.
 emulate -L zsh
 setopt extendedglob
 zmodload zsh/zpty
+zmodload zsh/parameter
 
 local dir=${1:?site-functions dir} cases=${2:?cases.tsv}
 shift 2
@@ -88,25 +90,32 @@ check() { # id line assert expect notes
   esac
   if (( ok )); then
     print -r -- "PASS $id  $notes"
-    (( pass++ )) || true
   else
     print -r -- "FAIL $id  $notes"
     print -r -- "     typed: <$line>  assert: $assert  expect: [$expect]  $detail"
-    (( fail++ )) || true
   fi
 }
 
-local raw
+local jobs_max=${COMPLETION_JOBS:-6} raw n=0
 local -a f
 while IFS= read -r raw; do
   [[ -z $raw || $raw == \#* || $raw == id$'\t'* ]] && continue
   f=("${(@ps:\t:)raw}")
   [[ $f[2] == (zsh|both) ]] || continue
   local line=${f[3]//\{sp\}/ } expect=${f[5]//\{sp\}/ }
-  complete_once "$f[1]" "$line"
-  check "$f[1]" "$line" "$f[4]" "${expect:--}" "${f[7]-}"
+  n=$((n + 1))
+  while (( ${#${(M)${(v)jobstates}:#running*}} >= jobs_max )); do sleep 0.05; done
+  (
+    complete_once "$f[1]" "$line"
+    check "$f[1]" "$line" "$f[4]" "${expect:--}" "${f[7]-}"
+  ) >"$tmp/$(printf %04d $n).out" 2>&1 &
 done <"$cases"
+wait
 
+local out
+for out in "$tmp"/<->.out(N); do cat "$out"; done
+pass=$(cat "$tmp"/<->.out(N) /dev/null | grep -c '^PASS ')
+fail=$(cat "$tmp"/<->.out(N) /dev/null | grep -c '^FAIL ')
 rm -rf "$tmp"
 print -r -- "zsh $ZSH_VERSION  PASS $pass FAIL $fail"
 (( fail == 0 ))

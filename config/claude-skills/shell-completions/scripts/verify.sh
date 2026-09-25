@@ -26,13 +26,22 @@ rc=0
 
 echo "## static"
 "$here/check-static.sh" "$zf" "$bf" | tee -a "$log" || rc=1
-echo "## zsh"
-zsh "$here/test-zsh-completion.zsh" "$tmp/site-functions" "$cases" "${cwdargs[@]}" | tee -a "$log" || rc=1
-for b in "$(command -v bash)" /bin/bash; do
-  [[ -x $b ]] || continue
-  echo "## $b"
-  uv run -q "$here/test-bash-completion.py" "$bf" "$b" "$cases" "${cwdargs[@]}" | tee -a "$log" || rc=1
-done
+# the three shells run concurrently; each harness also runs its cases in parallel
+zsh "$here/test-zsh-completion.zsh" "$tmp/site-functions" "$cases" "${cwdargs[@]}" >"$tmp/h1" 2>&1 &
+p1=$!
+uv run -q "$here/test-bash-completion.py" "$bf" "$(command -v bash)" "$cases" "${cwdargs[@]}" >"$tmp/h2" 2>&1 &
+p2=$!
+p3=
+if [[ -x /bin/bash ]]; then
+  uv run -q "$here/test-bash-completion.py" "$bf" /bin/bash "$cases" "${cwdargs[@]}" >"$tmp/h3" 2>&1 &
+  p3=$!
+fi
+wait "$p1" || rc=1
+wait "$p2" || rc=1
+if [[ -n $p3 ]]; then wait "$p3" || rc=1; fi
+echo "## zsh"; tee -a "$log" <"$tmp/h1"
+echo "## $(command -v bash)"; tee -a "$log" <"$tmp/h2"
+if [[ -n $p3 ]]; then echo "## /bin/bash"; tee -a "$log" <"$tmp/h3"; fi
 
 echo "## controls"
 # a deliberately wrong expectation has to FAIL, or the harness is not asserting anything

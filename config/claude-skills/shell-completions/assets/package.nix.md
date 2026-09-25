@@ -76,8 +76,8 @@ checks.${system}.CMD-completions =
       bash -n ${./completions/CMD.bash}
       zsh -n ${./completions/_CMD}
       head -c8 ${./completions/_CMD} | grep -qx '#compdef'
-      diff <(bash -c 'source <(grep -m1 "^clusters=" ${./CMD.sh}); printf "%s\n" "''${clusters[@]}"') \
-           <(sed -n "s/.*'1:cluster:((\(.*\)))'.*/\1/p" ${./completions/_CMD} | tr ' ' '\n' | sed 's/\\\\:.*//')
+      diff <(bash -c 'source <(grep -m1 "^regions=" ${./CMD.sh}); printf "%s\n" "''${regions[@]}"') \
+           <(sed -n "s/.*'1:region:((\(.*\)))'.*/\1/p" ${./completions/_CMD} | tr ' ' '\n' | sed 's/\\\\:.*//')
       touch $out
     '';
 ```

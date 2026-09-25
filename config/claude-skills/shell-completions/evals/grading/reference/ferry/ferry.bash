@@ -4,18 +4,35 @@
 # Runs on macOS /bin/bash 3.2 (no mapfile, no compopt): the 3.2 branch adds the trailing
 # space / directory slash itself; only quoting of special characters in file names is lost.
 
+# bash 3.2 has no compopt
 _ferry__have_compopt() { type compopt >/dev/null 2>&1; }
 
-# offer every word matching $cur; skip options already on the line
-_ferry__words() {
-  local w p
-  for w in "$@"; do
-    [[ $w == "$cur"* ]] || continue
-    if [[ $w == -* ]]; then
-      for p in "${COMP_WORDS[@]:4:COMP_CWORD-4}"; do
-        [[ ${p%%=*} == "${w%%=*}" ]] && continue 2
-      done
+# The shell's words up to the cursor, in words[]/cword. bash 4+ splits COMP_WORDS at '=', ':' and
+# '@' (--tag=x, a file name a:b); 3.2 does not. Glue the pieces back unless whitespace separates them.
+_ferry__split() {
+  local line=${COMP_LINE:0:COMP_POINT} i w
+  line=${line#*"${COMP_WORDS[0]}"}
+  words=("${COMP_WORDS[0]}")
+  cword=0
+  for ((i = 1; i <= COMP_CWORD; i++)); do
+    w=${COMP_WORDS[i]-}
+    if [[ $line == [[:space:]]* ]]; then # whitespace starts a word; otherwise w is glued on
+      cword=$((cword + 1))
+      words[cword]=
+      line=${line#"${line%%[![:space:]]*}"}
     fi
+    if ((i == COMP_CWORD)); then w=$line; fi # the cursor's word only up to the cursor
+    words[cword]=${words[cword]}$w
+    line=${line#"$w"}
+  done
+}
+
+# offer every word matching the whole current word; readline replaces only $cur, so strip $pre
+_ferry__words() {
+  local w
+  for w in "$@"; do
+    [[ $w == "$pre$cur"* ]] || continue
+    w=${w#"$pre"}
     if _ferry__have_compopt || [[ $w == *= ]]; then
       COMPREPLY+=("$w")
     else
@@ -24,63 +41,78 @@ _ferry__words() {
   done
 }
 
+# parse_opts "${@:4}": flags only from word 4 on; skip those already given
+_ferry__flags() {
+  local w p
+  [[ $pre$cur == --*=* ]] && return 0 # the value of --tag=: free text
+  for w in "$@"; do
+    for p in "${words[@]:4:cword-4}"; do
+      [[ ${p%%=*} == "${w%%=*}" ]] && continue 2
+    done
+    _ferry__words "$w"
+  done
+}
+
 _ferry__files() {
   local f
   if _ferry__have_compopt; then
     compopt -o filenames # readline adds / to directories and quotes special characters
-    while IFS= read -r f; do COMPREPLY+=("$f"); done < <(compgen -f -- "$cur")
+    while IFS= read -r f; do COMPREPLY+=("${f#"$pre"}"); done < <(compgen -f -- "$pre$cur")
   else
     while IFS= read -r f; do
-      if [[ -d $f ]]; then COMPREPLY+=("$f/"); else COMPREPLY+=("$f "); fi
-    done < <(compgen -f -- "$cur")
+      if [[ -d $f ]]; then COMPREPLY+=("${f#"$pre"}/"); else COMPREPLY+=("${f#"$pre"} "); fi
+    done < <(compgen -f -- "$pre$cur")
   fi
 }
 
 _ferry() {
-  local cur=${2-} cmd=${COMP_WORDS[1]-} lw
+  # $2 is the text readline will replace; never ${COMP_WORDS[COMP_CWORD]}
+  local cur=${2-} cword pre
+  local -a words
   COMPREPLY=()
-  # the current word as typed: readline splits COMP_WORDS at '=' on bash 4+ but not on 3.2,
-  # so look at the line instead of COMP_WORDS to see a --opt=value word
-  lw=${COMP_LINE:0:COMP_POINT}
-  lw=${lw##*[[:space:]]}
-  if [[ $lw == --*=* ]]; then return 0; fi # value of --tag=: free text
+  _ferry__split
+  pre=${words[cword]%"$cur"}
+  if [[ $pre == [\"\']* ]]; then pre=; fi
 
-  case $COMP_CWORD in
+  case $cword in
     1) _ferry__words ship fetch dock status help ;;
     *)
-      case $cmd in
-        ship | fetch)
-          case $COMP_CWORD in
+      case ${words[1]} in
+        ship)
+          case $cword in
             2) _ferry__words eu us ;;
-            3) _ferry__files ;;
-            *) # ferry parses options from $4 on: parse_opts "${@:4}"
-              if [[ $cmd == ship ]]; then
-                _ferry__words --force --tag= # fetch parses --tag but never uses it
-              else
-                _ferry__words --force
-              fi
-              ;;
+            3) _ferry__files ;;                   # ship checks [ -f "$3" ]
+            *) _ferry__flags --force --tag= ;;
+          esac
+          ;;
+        fetch)
+          case $cword in
+            2) _ferry__words eu us ;;
+            3) ;;                                 # a name in the bucket, not a local path
+            *) _ferry__flags --force ;;           # fetch parses --tag but never uses it
           esac
           ;;
         dock)
-          case $COMP_CWORD in
+          case $cword in
             2) _ferry__words north south east ;;
-            3) _ferry__words ro rw ;; # required: the script checks $# -eq 3
+            3) _ferry__words ro rw ;;             # required: the script checks $# -eq 3
           esac
           ;;
         status)
-          if (( COMP_CWORD == 2 )); then _ferry__words --json; fi # only the literal --json, only as $2
+          if ((cword == 2)); then _ferry__words --json; fi # only the literal --json, only as $2
           ;;
       esac
       ;;
   esac
 
   # --tag= takes its value in the same word: no space after the '='
-  if [[ ${#COMPREPLY[@]} -eq 1 && ${COMPREPLY[0]} == *= ]]; then compopt -o nospace 2>/dev/null; fi
+  if [[ ${#COMPREPLY[@]} -eq 1 && ${COMPREPLY[0]} == *= ]] && _ferry__have_compopt; then
+    compopt -o nospace
+  fi
   return 0
 }
 
-if type compopt >/dev/null 2>&1; then
+if _ferry__have_compopt; then
   complete -F _ferry ferry
 else
   complete -o nospace -F _ferry ferry # bash 3.2: spaces are appended by _ferry__words

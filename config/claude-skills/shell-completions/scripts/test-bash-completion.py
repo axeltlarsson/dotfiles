@@ -10,6 +10,7 @@ splitting for that bash version). buf asserts drive a real interactive bash in a
 pty (pexpect) and read the line buffer back after <TAB>. The bash32 column applies
 when the binary is bash 3.x: `same`, `skip`, or `expect:<alternative>`.
 Prints PASS/FAIL per case and `bash <version>  PASS n FAIL m`; exit 1 on any failure.
+Cases run in parallel (COMPLETION_JOBS, default 6), one fresh shell each; output stays in order.
 Needs a pty: run unsandboxed (`uv run test-bash-completion.py ...`).
 """
 
@@ -18,6 +19,7 @@ import re
 import shlex
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pexpect
@@ -91,8 +93,8 @@ def buffer_after_tab(bash: str, comp: Path, cwd: Path, typed: str) -> str:
         c.sendline(f"source {shlex.quote(str(comp))}; PS1='PR''OMPT> '; echo RE''ADY")
         c.expect(r"READY\r?\n")
         c.expect(r"PROMPT> ")
+        # readline handles keys in order: the TAB completes before C-a runs, no wait needed
         c.send(typed + "\t")
-        c.expect(pexpect.TIMEOUT, timeout=0.6)  # let readline finish inserting/listing
         c.send("\x01echo 'BU''F:<")  # C-a: line start
         c.send("\x05>'\r")  # C-e: line end, then run it
         c.expect(r"\r?\nBUF:<(.*)>\r?\n")
@@ -101,55 +103,59 @@ def buffer_after_tab(bash: str, comp: Path, cwd: Path, typed: str) -> str:
         c.close(force=True)
 
 
+def run_case(row: list[str], major: int, bash: str, comp: Path, cmd: str, cwd: Path) -> tuple[str, bool | None]:
+    cid, _shell, line, assert_, expect, bash32, notes = row
+    line = line.replace("{sp}", " ")
+    expect = expect.replace("{sp}", " ")
+    if major < 4:
+        if bash32 == "skip":
+            return f"SKIP {cid}  {notes} (bash 3.x)", None
+        if bash32.startswith("expect:"):
+            expect = bash32[len("expect:"):].replace("{sp}", " ")
+    exp = [] if expect in ("", "-") else expect.split("|")
+    if assert_ in ("buf", "buf_unchanged"):
+        got = buffer_after_tab(bash, comp, cwd, line)
+        want = line if assert_ == "buf_unchanged" else expect
+        ok = got == want
+        detail = f"buf=<{got}>"
+    else:
+        got_list = list_candidates(bash, comp, cmd, line, cwd)
+        detail = f"list=[{'|'.join(sorted(got_list))}]"
+        if assert_ == "set_eq":
+            ok = sorted(got_list) == sorted(exp)
+        elif assert_ == "set_empty":
+            ok = not got_list
+        elif assert_ == "set_has":
+            ok = all(e in got_list for e in exp)
+        elif assert_ == "set_not":
+            ok = not any(e in got_list for e in exp)
+        else:
+            ok, detail = False, f"unknown assert '{assert_}'"
+    if ok:
+        return f"PASS {cid}  {notes}", True
+    return f"FAIL {cid}  {notes}\n     typed: <{line}>  assert: {assert_}  expect: [{expect}]  {detail}", False
+
+
 def main() -> int:
     comp, bash, cases, cwd = parse_args(sys.argv)
     version = bash_version(bash)
     major = int(version.split(".")[0])
     cmd = cmd_name(comp)
-    passed = failed = 0
+    rows = []
     for raw in cases.read_text().splitlines():
         if not raw or raw.startswith("#") or raw.startswith("id\t"):
             continue
         f = (raw.split("\t") + [""] * 7)[:7]
-        cid, shell, line, assert_, expect, bash32, notes = f
-        if shell not in ("bash", "both"):
+        if f[1] not in ("bash", "both") or f[3] in ("msg", "msg_not"):  # msg asserts are zsh-only
             continue
-        if assert_ in ("msg", "msg_not"):
-            continue  # zsh-only asserts
-        line = line.replace("{sp}", " ")
-        expect = expect.replace("{sp}", " ")
-        if major < 4:
-            if bash32 == "skip":
-                print(f"SKIP {cid}  {notes} (bash 3.x)")
-                continue
-            if bash32.startswith("expect:"):
-                expect = bash32[len("expect:"):].replace("{sp}", " ")
-        exp = [] if expect in ("", "-") else expect.split("|")
-        if assert_ in ("buf", "buf_unchanged"):
-            got = buffer_after_tab(bash, comp, cwd, line)
-            want = line if assert_ == "buf_unchanged" else expect
-            ok = got == want
-            detail = f"buf=<{got}>"
-        else:
-            got_list = list_candidates(bash, comp, cmd, line, cwd)
-            detail = f"list=[{'|'.join(sorted(got_list))}]"
-            if assert_ == "set_eq":
-                ok = sorted(got_list) == sorted(exp)
-            elif assert_ == "set_empty":
-                ok = not got_list
-            elif assert_ == "set_has":
-                ok = all(e in got_list for e in exp)
-            elif assert_ == "set_not":
-                ok = not any(e in got_list for e in exp)
-            else:
-                ok, detail = False, f"unknown assert '{assert_}'"
-        if ok:
-            passed += 1
-            print(f"PASS {cid}  {notes}")
-        else:
-            failed += 1
-            print(f"FAIL {cid}  {notes}")
-            print(f"     typed: <{line}>  assert: {assert_}  expect: [{expect}]  {detail}")
+        rows.append(f)
+    jobs = int(os.environ.get("COMPLETION_JOBS", "6"))
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        results = list(pool.map(lambda r: run_case(r, major, bash, comp, cmd, cwd), rows))
+    passed = sum(1 for _, ok in results if ok)
+    failed = sum(1 for _, ok in results if ok is False)
+    for text, _ in results:
+        print(text)
     print(f"bash {version}  PASS {passed} FAIL {failed}")
     return 1 if failed else 0
 

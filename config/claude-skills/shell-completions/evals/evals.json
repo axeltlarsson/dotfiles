@@ -10,7 +10,8 @@
         "evals/files/ferry/flake.nix",
         "evals/files/ferry/fixtures/plain",
         "evals/files/ferry/fixtures/file with space.yaml",
-        "evals/files/ferry/fixtures/dir/.keep"
+        "evals/files/ferry/fixtures/dir/.keep",
+        "evals/files/ferry/fixtures/x:y.txt"
       ],
       "expectations": [
         "check-static.sh passes on the produced _ferry and ferry.bash (exit 0)",
@@ -35,10 +36,11 @@
         "evals/files/ferry-review/flake.nix"
       ],
       "expectations": [
-        "grade-review.py finds at least 9 of the 12 planted defects in review.md (evals/grading/findings.tsv)",
+        "A blind semantic grade finds at least 11 of the 12 planted defects correctly identified, with correct fixes (evals/grading/findings.tsv lists them)",
         "review.md cites file:line for its findings",
         "review.md separates blockers from nits",
-        "review.md does not claim the #compdef header is missing (it is present)"
+        "review.md does not claim the #compdef header is missing (it is present)",
+        "The review gives no harmful advice: no proposed fix reintroduces a planted defect (e.g. mapfile or an unguarded compopt for a file that must run on bash 3.2, a global complete -o filenames)"
       ]
     },
     {
