@@ -88,9 +88,11 @@ row are in `references/testing.md`), then run **unsandboxed** (pty):
 scripts/verify.sh cmd _cmd cmd.bash cases.tsv [--cwd fixture-dir]
 ```
 
-It runs `check-static.sh`, the zsh harness (real compsys in a pty, captured matches/messages/buffer),
-the bash harness under the bash on PATH and under `/bin/bash` 3.2, and two controls that prove the
-assertions bite, then prints the evidence block:
+It takes a few seconds. It runs `check-static.sh`, the zsh harness (real compsys in a pty, captured
+matches/messages/buffer), the bash harness under an interactive bash ≥ 4 (it picks one with
+readline — a nix devShell's `bash` has none) and under `/bin/bash` 3.2, and two controls that prove
+the assertions bite. It prints only FAIL/WARN lines (`--verbose` for all; the full log path is
+printed) and then the evidence block:
 
 ```
 static  PASS n FAIL 0
@@ -100,8 +102,11 @@ bash 3.2.57(1)-release  PASS n FAIL 0
 controls  PASS 2 FAIL 0
 ```
 
-Paste that block verbatim into the PR. If you could not run it (no pty, no `/bin/bash`), say so in
-the PR instead of implying it ran. Then `nix build`/`nix develop` the package, `ls` its `share/`,
+Paste that block verbatim into the PR. `PREFLIGHT FAIL` (exit 2) means the environment cannot run
+it — usually the sandbox denying ptys: rerun unsandboxed, don't debug the completion. Never wait
+out a hang: each harness has a 120 s watchdog, so an unfinished run is a `TIMEOUT` line to read.
+The controls already prove the cases bite; extra mutation suites are optional, not part of the job.
+If you could not run it at all, say so in the PR instead of implying it ran. Then `nix build`/`nix develop` the package, `ls` its `share/`,
 and `nix flake check`.
 
 ### 6. Self-review and PR
@@ -121,6 +126,11 @@ often. Check every fix you propose against the same rules — a fix that uses `m
 unguarded `compopt` reintroduces a bash 3.2 defect.
 
 ## Files
+
+For a typical CLI you need `references/grammar.md`, the two templates, `assets/cases.example.tsv`
+and `scripts/verify.sh` — the templates already encode the zsh/bash/nix rules. Open `zsh.md`,
+`bash.md`, `nix.md` or `testing.md` when you deviate from a template or a case fails, and
+`review-checklist.md` for the self-review.
 
 - `references/grammar.md` — the table, the 15 mapping rules, a filled example
 - `references/zsh.md`, `references/bash.md`, `references/nix.md` — the shell and packaging facts,

@@ -13,6 +13,7 @@ emulate -L zsh
 setopt extendedglob
 zmodload zsh/zpty
 zmodload zsh/parameter
+zmodload zsh/zselect
 
 local dir=${1:?site-functions dir} cases=${2:?cases.tsv}
 shift 2
@@ -43,18 +44,18 @@ complete_once() { # id line
   for i in {1..200}; do
     zpty -r -t z out 2>/dev/null && buf+=$out
     [[ $buf == *${zle_ready}* ]] && break
-    sleep 0.05
+    zselect -t 2
   done
   zpty -w z "cd ${(q)cwd} && source ${(q)here}/harness.zshrc"
   for i in {1..300}; do
     zpty -r -t z out 2>/dev/null && buf+=$out
     [[ $buf == *READY*${zle_ready}* ]] && break
-    sleep 0.05
+    zselect -t 2
   done
   zpty -w -n z "${line}"$'\t'
   for i in {1..200}; do
-    [[ -s $cap ]] && grep -q '^END$' "$cap" && break
-    sleep 0.05
+    [[ -s $cap && $(<$cap) == *$'\nEND'* ]] && break
+    zselect -t 2
   done
   zpty -d z 2>/dev/null
   got_list=() got_msgs=() got_buf=
@@ -104,7 +105,12 @@ while IFS= read -r raw; do
   [[ $f[2] == (zsh|both) ]] || continue
   local line=${f[3]//\{sp\}/ } expect=${f[5]//\{sp\}/ }
   n=$((n + 1))
-  while (( ${#${(M)${(v)jobstates}:#running*}} >= jobs_max )); do sleep 0.05; done
+  # count jobs in an array: ${#${(M)...}} would count the characters of the joined string
+  local -a running=(${(M)${(v)jobstates}:#running*})
+  while (( $#running >= jobs_max )); do
+    zselect -t 2
+    running=(${(M)${(v)jobstates}:#running*})
+  done
   (
     complete_once "$f[1]" "$line"
     check "$f[1]" "$line" "$f[4]" "${expect:--}" "${f[7]-}"

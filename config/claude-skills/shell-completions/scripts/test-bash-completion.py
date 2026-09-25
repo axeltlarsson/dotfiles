@@ -72,7 +72,7 @@ def list_candidates(bash: str, comp: Path, cmd: str, line: str, cwd: Path) -> li
     return [re.sub(r"\\(.)", r"\1", c.rstrip(" ").rstrip("/")) for c in r.stdout.splitlines() if c.strip()]
 
 
-def buffer_after_tab(bash: str, comp: Path, cwd: Path, typed: str) -> str:
+def buffer_after_tab(bash: str, comp: Path, cmd: str, cwd: Path, typed: str) -> str:
     env = {
         "HOME": os.environ.get("HOME", "/"),
         "HISTFILE": "/dev/null",  # an interactive bash would append to (and trim) ~/.bash_history
@@ -91,9 +91,12 @@ def buffer_after_tab(bash: str, comp: Path, cwd: Path, typed: str) -> str:
         encoding="utf-8",
         timeout=10,
     )
+    # a no-op function shadows the real command: if a key ever goes wrong and Enter runs the typed
+    # line, nothing happens (completion is keyed by name, so it still applies)
+    stand_in = f"{cmd}() {{ :; }}; " if re.fullmatch(r"[A-Za-z0-9_.-]+", cmd) else ""
     try:
         # markers are split so the echoed command text can never match them
-        c.sendline(f"source {shlex.quote(str(comp))}; PS1='PR''OMPT> '; echo RE''ADY")
+        c.sendline(f"source {shlex.quote(str(comp))}; {stand_in}PS1='PR''OMPT> '; echo RE''ADY")
         c.expect(r"READY\r?\n")
         c.expect(r"PROMPT> ")
         # readline handles keys in order: the TAB completes before C-a runs, no wait needed
@@ -102,6 +105,8 @@ def buffer_after_tab(bash: str, comp: Path, cwd: Path, typed: str) -> str:
         c.send("\x05>'\r")  # C-e: line end, then run it
         c.expect(r"\r?\nBUF:<(.*)>\r?\n")
         return ESC.sub("", c.match.group(1))
+    except (pexpect.TIMEOUT, pexpect.EOF):
+        return "<no BUF marker within 10 s: readline did not handle the keys>"
     finally:
         c.close(force=True)
 
@@ -117,7 +122,7 @@ def run_case(row: list[str], major: int, bash: str, comp: Path, cmd: str, cwd: P
             expect = bash32[len("expect:"):].replace("{sp}", " ")
     exp = [] if expect in ("", "-") else expect.split("|")
     if assert_ in ("buf", "buf_unchanged"):
-        got = buffer_after_tab(bash, comp, cwd, line)
+        got = buffer_after_tab(bash, comp, cmd, cwd, line)
         want = line if assert_ == "buf_unchanged" else expect
         ok = got == want
         detail = f"buf=<{got}>"
@@ -141,6 +146,10 @@ def run_case(row: list[str], major: int, bash: str, comp: Path, cmd: str, cwd: P
 
 def main() -> int:
     comp, bash, cases, cwd = parse_args(sys.argv)
+    probe = "shopt -q progcomp 2>/dev/null && type bind >/dev/null 2>&1"
+    if subprocess.run([bash, "--noprofile", "--norc", "-c", probe]).returncode != 0:
+        sys.exit(f"{bash} has no line editor / programmable completion (a nix devShell's `bash` is "
+                 "stdenv's minimal build): pass an interactive bash, e.g. /run/current-system/sw/bin/bash")
     version = bash_version(bash)
     major = int(version.split(".")[0])
     cmd = cmd_name(comp)

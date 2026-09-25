@@ -32,8 +32,11 @@ each harness.
 ## Running
 
 Both harnesses run cases in parallel (`COMPLETION_JOBS`, default 6) and `verify.sh` runs the three
-shells concurrently — a full run is ~20–30 s. Output order is stable. If a busy machine makes a
-`buf` row flaky, rerun with `COMPLETION_JOBS=1` before suspecting the completion.
+shells concurrently — a full run takes about 5 s. Output order is stable. `verify.sh` first checks,
+in about a second, that a pty can be opened, that a bash ≥ 4 with readline exists
+(`BASH_INTERACTIVE` overrides the search) and that `uv` can provide pexpect; `PREFLIGHT FAIL`
+names the fix. Each harness then runs under a watchdog (`VERIFY_TIMEOUT`, default 120 s). If a busy
+machine makes a `buf` row flaky, rerun with `COMPLETION_JOBS=1` before suspecting the completion.
 
 ```
 scripts/check-static.sh _cmd cmd.bash
@@ -68,7 +71,8 @@ the file, rebuilds `COMP_WORDS` the way that bash version splits (≥ 4 at `=`/`
 `TERM=dumb`, `INPUTRC=scripts/inputrc`), send the line + `\t` and, without waiting (readline
 handles keys in order, so the completion finishes before C-a runs), read the buffer back with
 C-a `echo 'BU''F:<` C-e `>'` Enter — the marker is split so the echoed command can never match.
-Fresh session per row.
+Fresh session per row, `HISTFILE=/dev/null`, and a no-op shell function named like the command, so
+a stray Enter can never run the real CLI. A bash without readline is refused up front.
 
 ## Things that bit us (all baked into the harnesses)
 
@@ -97,3 +101,9 @@ Fresh session per row.
   keep a `buf` row with an `x:y` fixture. `bash-list.sh` emulates the `=` and `:` split but not
   readline's `@` quirk — `buf` rows (real readline) are authoritative there.
 - A `set -e` in a harness turns a failing assertion into an aborted run: count failures instead.
+- `${#${(M)${(v)jobstates}:#running*}}` counts the *characters* of the joined string, not jobs:
+  assign to an array first. (This silently serialised the parallel zsh harness.)
+- An interactive `bash -i` with the real `HOME` appends to `~/.bash_history` and trims it:
+  `HISTFILE=/dev/null`. zsh `-f` under `env -i` has no `HISTFILE`.
+- Each test zsh runs `compinit`; keeping only zsh's own function dirs plus the one under test on
+  `fpath` halves the per-case start-up.

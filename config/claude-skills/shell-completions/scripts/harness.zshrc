@@ -1,6 +1,7 @@
 # Sourced inside the zsh test child started by test-zsh-completion.zsh (zsh -f -i under zpty).
 # Env: COMPLETION_DIR (dir holding _<cmd>), CAP_FILE (where each <TAB> writes its capture).
-fpath=("$COMPLETION_DIR" $fpath)
+# only zsh's own functions plus the dir under test: compinit then scans ~1k files, not the whole profile
+fpath=("$COMPLETION_DIR" ${fpath:#*(site-functions|vendor-completions)*})
 autoload -Uz compinit
 compinit -D -u
 setopt extendedglob
