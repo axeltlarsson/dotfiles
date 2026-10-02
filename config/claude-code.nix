@@ -38,6 +38,7 @@ in
       attribution = {
         commit = "";
         pr = "";
+        sessionUrl = false;
       };
       hooks = {
         Stop = [
