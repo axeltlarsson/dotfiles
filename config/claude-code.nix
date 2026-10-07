@@ -79,6 +79,7 @@ in
       - Do not use git commit prefixes like fix:, chore:, feat: etc - just use an emoji then an imperative description, e.g. "🐛 Use correct ICD-10-SE format..."
       - Hotfix commit means to use 🚑 emoji in commit message
       - Always write GitHub PRs (and issues) as markdown links to the full URL, labelled `<repo>#<number>` (repo name only, no owner): inline in prose `[workflows#123](https://github.com/<owner>/workflows/pull/123)`; in lists put the title inside the link too: `- [workflows#123 Add new DAG to export coffee](https://github.com/<owner>/workflows/pull/123)`. Never a bare `#123` or unlinked number - get the owner/URL from `gh` if unsure
+      - Stack PRs whenever appropriate: when work splits into dependent, independently reviewable parts (e.g. refactor → feature → cleanup) or a change grows too big for one review, open a stack instead of one large PR. Always use the `gh-stack` skill for creating and managing stacks
     '';
   };
 }

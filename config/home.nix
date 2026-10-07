@@ -16,6 +16,7 @@ in
     ./git.nix
     ./ssh.nix
     ./ghostty.nix
+    ./gh.nix
   ];
 
   nix.registry = {
