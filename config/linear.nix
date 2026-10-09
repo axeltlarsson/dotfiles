@@ -14,6 +14,7 @@ in
 {
   home.packages = [ linear ];
   programs.claude-code.skills.linear = ./claude-skills/linear;
+  programs.claude-code.settings.sandbox.excludedCommands = [ "linear *" ];
 
   # Scoped to the work machine (this module is only imported there). Merges
   # into the shared context via the `lines` type.

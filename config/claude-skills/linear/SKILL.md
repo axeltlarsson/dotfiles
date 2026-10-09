@@ -82,7 +82,7 @@ Auto-unwraps nested response wrappers (`nodes`, single-key dicts, mutation `succ
 
 `linear issues` with no flags returns *your* assigned issues. Any filter flag overrides that default:
 
-`--team KEY` `--state NAME` `--assignee SPEC` `--project NAME` `--label NAME` (repeatable) `--priority P` `--parent ID` `--limit N` `--all` `--include-archived`
+`--team KEY` `--state NAME` `--assignee SPEC` `--project NAME` `--label NAME` (repeatable) `--priority P` `--parent ID` `--updated-since SPEC` (`Nh`/`Nd`/`Nw` ago, or a date) `--limit N` `--all` `--include-archived`
 
 ## `relate` types
 

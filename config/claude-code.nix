@@ -32,6 +32,8 @@ in
           "WebFetch"
         ];
       };
+      # Need macOS TLS trust store / Keychain, which the Bash sandbox blocks
+      sandbox.excludedCommands = [ "gh *" ];
       alwaysThinkingEnabled = true;
       effortLevel = "high";
       verbose = true;

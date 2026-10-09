@@ -25,7 +25,7 @@ return {
 
   -- New day template
   s('day', {
-    t('# '), f(function() return os.date('%F %A') end), t({ '', '', '## TODO', '', '- [ ] <https://mail.google.com/mail/u/0/>', '- [ ] <https://github.com/notifications>', '- ' }), i(0),
+    t('# '), f(function() return os.date('%F %A') end), t({ '', '', '## TODO', '', '- [ ] <https://mail.google.com/mail/u/0/>', '- [ ] <https://github.com/pulls>', '- [ ] `/pulse`', '- ' }), i(0),
   }),
 
   -- Dynamic box that resizes based on content

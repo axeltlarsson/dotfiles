@@ -10,6 +10,7 @@
   imports = [
     ./mbp.nix
     ../config/linear.nix
+    ../config/pulse.nix
     ../config/aikido.nix
     ../config/publish-report.nix
   ];

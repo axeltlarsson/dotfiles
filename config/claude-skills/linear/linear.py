@@ -302,6 +302,21 @@ def parse_when(spec: str) -> str:
         sys.exit(1)
 
 
+def parse_since(spec: str) -> str:
+    """Parse a past time: Nh/Nd/Nw (ago, optional leading '-') or anything parse_when accepts."""
+    m = re.fullmatch(r"-?(\d+)([mhdw])", spec.strip())
+    if m:
+        n, unit = int(m.group(1)), m.group(2)
+        delta = {
+            "m": timedelta(minutes=n),
+            "h": timedelta(hours=n),
+            "d": timedelta(days=n),
+            "w": timedelta(weeks=n),
+        }[unit]
+        return (datetime.now(timezone.utc) - delta).isoformat()
+    return parse_when(spec)
+
+
 def parse_due(spec: str) -> str:
     """Parse a due-date spec into TimelessDate (YYYY-MM-DD)."""
     s = spec.strip()
@@ -467,7 +482,7 @@ def _paginate_issues(filter_obj: dict[str, Any] | None, limit: int, fetch_all: b
         query Issues($first: Int!, $after: String, $filter: IssueFilter, $includeArchived: Boolean) {
           issues(first: $first, after: $after, filter: $filter, includeArchived: $includeArchived, orderBy: updatedAt) {
             nodes {
-              id identifier title
+              id identifier title url
               state { name }
               priority priorityLabel
               assignee { name }
@@ -499,7 +514,7 @@ def cmd_issues(args: argparse.Namespace) -> Any:
 
     has_filter = any([
         args.team, args.state, args.assignee, args.project,
-        args.label, args.priority is not None, args.parent,
+        args.label, args.priority is not None, args.parent, args.updated_since,
     ])
 
     if not has_filter:
@@ -524,6 +539,8 @@ def cmd_issues(args: argparse.Namespace) -> Any:
             filter_parts["priority"] = {"eq": parse_priority(args.priority)}
         if args.parent:
             filter_parts["parent"] = {"id": {"eq": resolve_issue_uuid(args.parent)}}
+        if args.updated_since:
+            filter_parts["updatedAt"] = {"gte": parse_since(args.updated_since)}
 
     filter_obj = filter_parts if filter_parts else None
     return _paginate_issues(filter_obj, args.limit, args.all, args.include_archived)
@@ -1001,6 +1018,7 @@ def main() -> None:
     p_issues.add_argument("--label", action="append", help="Label name (repeatable)")
     p_issues.add_argument("--priority", help="0-4 or urgent|high|medium|low|none")
     p_issues.add_argument("--parent", help="Parent issue identifier (children of)")
+    p_issues.add_argument("--updated-since", help="Only issues updated since: Nh/Nd/Nw ago, YYYY-MM-DD, or ISO-8601")
     p_issues.add_argument("--limit", type=int, default=50, help="Max results (default 50)")
     p_issues.add_argument("--all", action="store_true", help="Paginate through all results")
     p_issues.add_argument("--include-archived", action="store_true", help="Include archived issues")
