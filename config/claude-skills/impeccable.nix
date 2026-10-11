@@ -1,31 +1,31 @@
 { pkgs }:
 let
-  version = "skill-v4.3.1";
-  engineVersion = "0.1.5";
+  version = "skill-v4.5.2";
+  engineVersion = "0.1.14";
 
   src = pkgs.fetchFromGitHub {
     owner = "pbakaus";
     repo = "impeccable";
     rev = version;
-    hash = "sha256-EZ5bRlN38nRQM0a3eQYeOkbT7RjCmY0KMJgktnL14rQ=";
+    hash = "sha256-0QpNzNnSon34/VVPPaitnSTBjpu9qJGXJzCJctS4gM0=";
   };
 
   engines = {
     aarch64-darwin = {
       asset = "darwin-arm64";
-      hash = "sha256-DUi24WqpdmT9vmB9XamuMg44mhhD4P8TKPjCUwUwMg0=";
+      hash = "sha256-q71p1UBTK5HpWZxB06YSffuquuXiS6/XT/fi+xj0+Hw=";
     };
     x86_64-darwin = {
       asset = "darwin-x64";
-      hash = "sha256-FTlxsMAHGd/566wTNwy327vhKDi2lvuvP3qwsbNya1I=";
+      hash = "sha256-36RXAwmTn0lhWkQbqpxz8cLTOb8HSUUXpsbrLrKKoPU=";
     };
     aarch64-linux = {
       asset = "linux-arm64";
-      hash = "sha256-vE+ii8jMuwGHlamaTs6VraiYpvGIXxQoE4nQ5u8qL5g=";
+      hash = "sha256-OWJj7mlHgNuUJIP8gJM6AS7wi/mB9fJrDaXha2IIyUg=";
     };
     x86_64-linux = {
       asset = "linux-x64";
-      hash = "sha256-z1IxpLGuZplshbAzgAsdrQeX5ZDq4vIe8leUMK8Yfxk=";
+      hash = "sha256-PTHsGmZKw1yBXqHXwQq60RVc42TQ9GEVfrg3o0No77Y=";
     };
   };
 
