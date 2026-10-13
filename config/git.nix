@@ -58,6 +58,12 @@
         updateRef = true;
       };
 
+      # Refuse a pull that would merge, rather than doing it quietly. After a
+      # force-push — a restacked PR stack, a rebase, a squash-merged parent —
+      # merging rewritten history onto the old history duplicates every commit.
+      # Reconcile with `git reset --hard origin/<branch>`, once `git diff
+      # <branch> origin/<branch>` confirms there is nothing of your own in it.
+      pull.ff = "only";
       pull.rebase = false;
       merge = {
         tool = "nvim";
