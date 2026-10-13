@@ -34,9 +34,9 @@ in
       };
       # Need macOS TLS trust store / Keychain, which the Bash sandbox blocks
       sandbox.excludedCommands = [ "gh *" ];
+      tui = "default";
       alwaysThinkingEnabled = true;
       effortLevel = "high";
-      verbose = true;
       attribution = {
         commit = "";
         pr = "";
