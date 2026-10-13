@@ -44,12 +44,16 @@ in
 
     clock24 = true;
     escapeTime = 0;
+    historyLimit = 50000;
     extraConfig = /* tmux */ ''
       # https://github.com/tmux/tmux/issues/4240
       set -gu default-command
       set -g default-shell "${pkgs.zsh}/bin/zsh"
 
       set -g default-terminal "tmux-256color"
+      # reset before appending: re-sourcing would otherwise add a copy each time
+      set -su terminal-overrides
+      set -su terminal-features
       set -ga terminal-overrides ",xterm-ghostty:RGB"
       # tmux only forwards OSC 8 hyperlinks outward when the client terminal
       # advertises Hls, and ghostty's terminfo has no such capability.
@@ -123,13 +127,13 @@ in
       bind-key B run-shell -b 'tmux display-popup -E -w 90% -h 85% -T buffers -d "#{pane_current_path}" "${tmuxBufferManager}/bin/tmux-buffer-manager #{pane_id} #{pane_current_path}"'
 
       # Links: prefix + O picks from a list, prefix + L highlights them in
-      # place (n/N to cycle), copy-mode o/O opens the selection or the link
-      # under the cursor and p previews it. o supersedes tmux-open's, which
-      # cannot resolve OSC 8.
+      # place (n/N to cycle), copy-mode o opens the selection or the link
+      # under the cursor, O opens files in a popup instead of a window, and
+      # p previews it. o supersedes tmux-open's, which cannot resolve OSC 8.
       bind-key O run-shell -b "${tmuxLinks}/bin/tmux-links pick '#{pane_id}'"
       bind-key L run-shell -b "${tmuxLinks}/bin/tmux-links jump '#{pane_id}'"
       bind-key -T copy-mode-vi o run-shell -b "${tmuxLinks}/bin/tmux-links open-at '#{pane_id}'"
-      bind-key -T copy-mode-vi O run-shell -b "${tmuxLinks}/bin/tmux-links open-at '#{pane_id}'"
+      bind-key -T copy-mode-vi O run-shell -b "${tmuxLinks}/bin/tmux-links open-at '#{pane_id}' popup"
       bind-key -T copy-mode-vi p run-shell -b "${tmuxLinks}/bin/tmux-links preview-at '#{pane_id}'"
       unbind-key C-u
 

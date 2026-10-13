@@ -8,12 +8,15 @@ keyboard, without leaving tmux.
 |---|---|
 | `prefix O` | fzf picker: links in view in reading order, then history newest first |
 | `prefix L` | in-buffer jump: every link in view highlighted, `n`/`N` cycle |
-| copy-mode `o` / `O` | open the selection, or the link under the cursor |
-| copy-mode `p` | preview the link under the cursor in a popup; Enter opens |
+| copy-mode `o` | open the selection, or the link under the cursor |
+| copy-mode `O` | same, but files and directories open in a popup |
+| copy-mode `p` | preview the link under the cursor in a popup; Enter or `o` opens |
 | picker `Ctrl-Y` | copy the target · `Ctrl-/` toggle preview |
 
 Opening dispatches on kind: URLs to the browser, files and directories to
-`$EDITOR` in a new tmux window, images, PDFs and other binaries to `open`.
+`$EDITOR` in a new tmux window (`O`: a popup), images, PDFs and other
+binaries to `open`. The pane stays in copy-mode, so after a jump `n`/`N`
+still cycle and several links can be opened in a row; `q` leaves.
 
 Options (tmux user options): `@links-history` lines of scrollback to scan
 (2000); `@links-ignore` an ERE dropping matching targets (the Claude Code

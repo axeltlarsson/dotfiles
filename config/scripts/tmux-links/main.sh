@@ -1,13 +1,14 @@
 # tmux-links: OSC 8 hyperlinks, bare URLs and file paths in a tmux pane
 # Usage: tmux-links pick <pane>        fzf picker, links in view first then history
 #        tmux-links jump <pane>        highlight the links in view, cycle with n/N
-#        tmux-links open-at <pane>     open the link under the copy-mode cursor
-#        tmux-links preview-at <pane>  preview it in a popup (Enter opens)
+#        tmux-links open-at <pane> [popup]  open the link under the copy-mode
+#                                      cursor; files in a popup with "popup"
+#        tmux-links preview-at <pane>  preview it in a popup (Enter/o opens)
 #        tmux-links list <pane>        print the picker rows
-#        tmux-links open <target> [cwd]
+#        tmux-links open <target> [cwd] [popup]
 #        tmux-links preview <target> <kind>
-#        show <target> <kind> and open-piped [cwd] are the popup body and
-#        the pipe-and-cancel target used by the above.
+#        show <target> <kind> and open-piped [cwd] [popup] are the popup body
+#        and the pipe target used by the above.
 #
 # Options: @links-history (lines of scrollback to scan, 2000)
 #          @links-ignore  (ERE dropping matching targets, the CC session link)
@@ -96,6 +97,8 @@ url_encode() {
         if (ch ~ /[A-Za-z0-9._~:\/?#\[\]@!$&()*+,;=%-]/) printf "%s", ch; else printf "%%%02X", ord[ch] } }'
 }
 
+# open_target <target> [cwd] [popup]: files and dirs go to $EDITOR in a new
+# window, or in a popup over the current pane with the third argument
 open_target() {
   local t kind dir
   t=$(normalize "$1" "${2:-}")
@@ -104,7 +107,11 @@ open_target() {
     url) opener "$(url_encode "$t")" ;;
     file | dir)
       if [ -d "$t" ]; then dir=$t; else dir=$(dirname "$t"); fi
-      tmux new-window -c "$dir" "$(editor) $(printf '%q' "$t")"
+      if [ "${3:-}" = popup ]; then
+        tmux display-popup -E -w 90% -h 85% -d "$dir" "$(editor) $(printf '%q' "$t")"
+      else
+        tmux new-window -c "$dir" "$(editor) $(printf '%q' "$t")"
+      fi
       ;;
     image | binary) opener "$t" ;;
     *) tmux display-message "tmux-links: ${t//#/##} does not exist" ;;
@@ -286,10 +293,12 @@ target_at() {
       }' || true
 }
 
+# open_at <pane> [popup]: the pane stays in copy-mode, so a jump's highlights
+# and n/N survive opening several links in a row
 open_at() {
-  local pane=$1 target
+  local pane=$1 where=${2:-} target
   if [ "$(pane_fmt "$pane" '#{selection_present}')" = 1 ]; then
-    tmux send-keys -t "$pane" -X pipe-and-cancel "$0 open-piped $(printf '%q' "$(pane_fmt "$pane" '#{pane_current_path}')")"
+    tmux send-keys -t "$pane" -X pipe "$0 open-piped $(printf '%q' "$(pane_fmt "$pane" '#{pane_current_path}')") $where"
     return
   fi
   target=$(target_at "$pane")
@@ -297,8 +306,7 @@ open_at() {
     tmux display-message "tmux-links: no link under cursor"
     return 0
   fi
-  tmux send-keys -t "$pane" -X cancel
-  open_target "$target"
+  open_target "$target" "" "$where"
 }
 
 # Popup size for a preview of <path> of <kind>: as tall as the content up to
@@ -339,25 +347,25 @@ preview_at() {
   tmux display-popup -E -w "$w" -h "$h" -T " ${target//#/##} " "$0 show $(printf '%q' "$t") $kind"
 }
 
-# show <path-or-url> <kind>: runs inside that popup; Enter opens, any other
-# key closes
+# show <path-or-url> <kind>: runs inside that popup; Enter or o opens, any
+# other key closes
 show_target() {
   local t=$1 kind=$2 size key
   size=$(stty size < /dev/tty 2> /dev/null || echo "40 80")
   FZF_PREVIEW_LINES=$((${size% *} - 2)) FZF_PREVIEW_COLUMNS=${size#* } preview "$t" "$kind" || true
-  printf '\n\033[2mEnter: open | any key: close\033[0m'
+  printf '\n\033[2mEnter/o: open | any key: close\033[0m'
   IFS= read -rsn1 key < /dev/tty
-  [ -n "$key" ] || open_target "$t"
+  case "$key" in "" | o) open_target "$t" ;; esac
 }
 
 case "${1:-}" in
   pick) pick "${2:?pane}" ;;
   jump) jump "${2:?pane}" ;;
-  open-at) open_at "${2:?pane}" ;;
+  open-at) open_at "${2:?pane}" "${3:-}" ;;
   preview-at) preview_at "${2:?pane}" ;;
   list) records "${2:?pane}" all | render ;;
   open) open_target "${2:?target}" "${3:-}" ;;
-  open-piped) open_target "$(tr -d '\n' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')" "${2:-}" ;;
+  open-piped) open_target "$(tr -d '\n' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')" "${2:-}" "${3:-}" ;;
   show) show_target "${2:?target}" "${3:?kind}" ;;
   preview) preview "${2:-}" "${3:-}" ;;
   *)
