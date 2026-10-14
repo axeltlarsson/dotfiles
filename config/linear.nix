@@ -20,5 +20,6 @@ in
   # into the shared context via the `lines` type.
   programs.claude-code.context = ''
     - Tickets live in Linear - use the `linear` skill to read/manage them. Never use the Atlassian/Jira MCP unless explicitly asked
+    - Never put Linear ticket IDs in PR titles (not "Split X into a package (DAT-1628)", just "Split X into a package"). The branch name links the PR to the ticket: use Linear's `branchName` (`linear issue DAT-123 --fields branchName`)
   '';
 }
