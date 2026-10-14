@@ -35,6 +35,8 @@ in
       # Need macOS TLS trust store / Keychain, which the Bash sandbox blocks
       sandbox.excludedCommands = [ "gh *" ];
       tui = "default";
+      # follows the terminal background, so ghostty's light:/dark: switch carries over
+      theme = "auto";
       alwaysThinkingEnabled = true;
       effortLevel = "high";
       attribution = {
