@@ -28,6 +28,9 @@ let
       # preview (images also need macOS sips and a kitty-graphics terminal)
       pkgs.bat
       pkgs.file
+      # Linear issue previews (gh and linear come from PATH)
+      pkgs.jq
+      pkgs.glow
     ];
     runtimeEnv.TMUX_LINKS_LIB = "${./scripts/tmux-links}";
     text = builtins.readFile ./scripts/tmux-links/main.sh;

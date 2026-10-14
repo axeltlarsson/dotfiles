@@ -15,6 +15,7 @@
 
 LIB="${TMUX_LINKS_LIB:?}"
 TAB=$'\t'
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-links"
 
 opt() {
   local v
@@ -118,10 +119,136 @@ open_target() {
   esac
 }
 
-# URL breakdown, plus `gh` for GitHub PRs and issues. Deliberately no fetch
-# of arbitrary URLs: hovering must not consume one-time links.
+# remote_ref <url>: "gh pr|issue <owner/repo> <n>" or "linear <ID>" for a
+# GitHub PR or issue, or a Linear issue, whose CLI is installed
+remote_ref() {
+  if [[ $1 =~ ^https?://(www\.)?github\.com/([^/]+/[^/]+)/(pull|issues)/([0-9]+) ]]; then
+    command -v gh > /dev/null || return 0
+    local sub='issue'
+    [ "${BASH_REMATCH[3]}" = pull ] && sub='pr'
+    printf 'gh %s %s %s\n' "$sub" "${BASH_REMATCH[2]}" "${BASH_REMATCH[4]}"
+  elif [[ $1 =~ ^https?://linear\.app/[^/]+/issue/([A-Za-z][A-Za-z0-9]*-[0-9]+) ]]; then
+    command -v linear > /dev/null || return 0
+    printf 'linear %s\n' "${BASH_REMATCH[1]}"
+  fi
+}
+
+# A Linear issue laid out like `gh issue view`
+linear_view() {
+  local id=$1 cols=$2 json
+  if ! json=$(timeout 20 linear issue "$id" --fields identifier,title,state.name,assignee.name,priorityLabel,project.name,labels,description 2> /dev/null) \
+    || ! printf '%s' "$json" | jq -e 'type == "object"' > /dev/null; then
+    echo "linear: cannot fetch $id"; return 1
+  fi
+  printf '%s' "$json" | jq -r --argjson w "$cols" '
+    "\u001b[1m\(.title[:$w - (.identifier | length) - 2])\u001b[0m \(.identifier)",
+    ([(.["state.name"] | select(.) | "\u001b[35m" + . + "\u001b[0m"), (.["assignee.name"] // "unassigned"), .priorityLabel, .["project.name"]]
+      | map(select(. != null and . != "No priority")) | join(" • ")),
+    ((.labels.nodes // []) | map(.name) | select(length > 0) | "\u001b[2m" + join(", ") + "\u001b[0m")'
+  if [ "$(printf '%s' "$json" | jq -r '.description // "" | length')" -gt 0 ]; then
+    printf '%s' "$json" | jq -r '.description' | glow -s dark -w "$cols" -
+  else
+    printf '\n\033[2mNo description\033[0m\n'
+  fi
+}
+
+fetch_remote() {
+  local cols=$1
+  shift
+  case "$1" in
+    gh) GH_FORCE_TTY="$cols" timeout 20 gh "$2" view "$4" -R "$3" ;;
+    linear) linear_view "$2" "$cols" ;;
+  esac
+}
+
+# age <file>: seconds since it was modified, huge if it does not exist
+age() {
+  local m now
+  m=$(stat -c %Y -- "$1" 2> /dev/null) || { echo 999999; return; }
+  printf -v now '%(%s)T' -1
+  echo $((now - m))
+}
+
+# remote_view <cols> <ref...>: the rendered ref, cached for 5 minutes per
+# width; a failure for 1 minute, so a jump over private repos does not
+# refetch them every time. A fetch of the same ref already running (a jump's
+# prefetch) is waited for, not repeated: the lock is a hard link (atomic)
+# holding the fetcher's pid, so a killed fetcher's lock is skipped.
+remote_view() {
+  local cols=$1 key f me=$BASHPID pid
+  shift
+  printf -v key '%s_' "$@" "$cols"
+  f="$CACHE/remote/${key//\//_}"
+  mkdir -p "$CACHE/remote"
+  while [ "$(age "$f")" -ge 300 ] && [ "$(age "$f.err")" -ge 60 ]; do
+    printf '%s\n' "$me" > "$f.$me"
+    if ln "$f.$me" "$f.lock" 2> /dev/null; then
+      if fetch_remote "$cols" "$@" > "$f.$me" 2>&1; then
+        mv -f "$f.$me" "$f"; rm -f "$f.err"
+      else
+        mv -f "$f.$me" "$f.err"
+      fi
+      rm -f "$f.lock"
+      break
+    fi
+    rm -f "$f.$me"
+    for _ in {1..600}; do
+      pid=""
+      { read -r pid < "$f.lock"; } 2> /dev/null || true
+      if [ -z "$pid" ] || ! kill -0 "$pid" 2> /dev/null; then break; fi
+      sleep 0.05
+    done
+    # a dead fetcher's lock, or a hung one after 30s
+    [ -n "$pid" ] && ! kill -0 "$pid" 2> /dev/null && rm -f "$f.lock"
+  done
+  if [ "$(age "$f")" -lt 300 ]; then cat "$f"; else cat "$f.err"; fi
+}
+
+# popup width for a GitHub or Linear item: 70% of the client, at least 100,
+# at most the client (tmux clamps it the same way)
+remote_width() {
+  local c=${1:-0} w
+  w=$((c * 7 / 10))
+  [ "$w" -gt 100 ] || w=100
+  [ "$w" -le "$c" ] || w=$c
+  echo "$w"
+}
+
+# prefetch <records>: warm remote_view's cache in the background for the
+# GitHub and Linear items among them, at the width the p popup renders
+prefetch() {
+  local cols refs u
+  refs=$(printf '%s\n' "$1" | gawk -F "$TAB" '$3 == "url" { print $4 }' | while IFS= read -r u; do remote_ref "$u"; done | sort -u)
+  [ -n "$refs" ] || return 0
+  # the popup border takes two columns
+  cols=$(($(remote_width "$(tmux display-message -p '#{client_width}' 2> /dev/null || echo 0)") - 2))
+  [ "$cols" -gt 0 ] || return 0
+  (
+    mkdir -p "$CACHE/remote"
+    find "$CACHE/remote" -type f -mmin +60 -delete
+    n=0
+    while read -ra ref; do
+      remote_view "$cols" "${ref[@]}" > /dev/null &
+      if [ $((n += 1)) -ge 6 ]; then wait -n || true; fi
+    done <<< "$refs"
+    wait
+  ) < /dev/null > /dev/null 2>&1 &
+}
+
+# URL breakdown, or the GitHub PR or issue, or Linear issue, itself. No
+# fetch of arbitrary URLs: hovering must not consume one-time links.
 preview_url() {
-  local u="$1" lines="$2" cols="$3" rest host path query frag owner repo type num sub out
+  local u="$1" lines="$2" cols="$3" rest host path query frag out
+  local -a ref
+  read -ra ref <<< "$(remote_ref "$u")"
+  if [ ${#ref[@]} -gt 0 ]; then
+    # on a tty (the p popup) show progress; under fzf its own spinner does
+    if [ -t 1 ]; then printf '\033[2mfetching...\033[0m'; fi
+    out=$(remote_view "$cols" "${ref[@]}" | gawk -v n="$lines" 'NR <= n') || true
+    if [ -t 1 ]; then printf '\r\033[K'; fi
+    printf '%s\n' "$out"
+    return 0
+  fi
   rest="${u#*://}"
   path="${rest#"${rest%%[/?#]*}"}"; path="/${path#/}"
   host="${rest%%[/?#]*}"; host="${host##*@}"; host="${host%%:*}"
@@ -130,21 +257,6 @@ preview_url() {
   printf '\033[1m%s\033[0m\n%s\n' "$host" "$path"
   [ -z "$query" ] || printf '%s\n' "$query" | tr '&' '\n' | sed 's/^/  ? /'
   [ -z "$frag" ] || printf '  # %s\n' "$frag"
-  if [ "$host" != github.com ] || ! command -v gh > /dev/null; then return 0; fi
-  IFS=/ read -r _ owner repo type num <<< "$path"
-  num="${num%%[!0-9]*}"
-  case "$type" in
-    pull) sub='pr' ;;
-    issues) sub='issue' ;;
-    *) return 0 ;;
-  esac
-  [ -n "$num" ] || return 0
-  echo
-  # on a tty (the p popup) show progress; under fzf its own spinner does
-  if [ -t 1 ]; then printf '\033[2mfetching from GitHub...\033[0m'; fi
-  out=$(GH_FORCE_TTY="$cols" gh "$sub" view "$num" -R "$owner/$repo" 2>&1 | gawk -v n="$lines" 'NR <= n') || true
-  if [ -t 1 ]; then printf '\r\033[K'; fi
-  printf '%s\n' "$out"
 }
 
 # Kitty graphics (Ghostty; needs allow-passthrough and macOS sips): print the
@@ -170,9 +282,9 @@ preview_image() {
   (
     # x2: Ghostty reports cell sizes in points; assume a retina display
     max=$((c * ${cw:-8} * 2)); [ $((r * ${ch:-17} * 2)) -gt "$max" ] && max=$((r * ${ch:-17} * 2))
-    cache="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-links"; mkdir -p "$cache"
-    find "$cache" -type f -mtime +30 -delete 2> /dev/null
-    png="$cache/$(printf '%s|%s|%s' "$t" "$(stat -L -c %Y_%s -- "$t")" "$max" | md5sum | cut -c1-16).png"
+    mkdir -p "$CACHE"
+    find "$CACHE" -maxdepth 1 -type f -mtime +30 -delete 2> /dev/null
+    png="$CACHE/$(printf '%s|%s|%s' "$t" "$(stat -L -c %Y_%s -- "$t")" "$max" | md5sum | cut -c1-16).png"
     if [ ! -s "$png" ]; then
       if sips -s format png -Z "$max" "$t" --out "$png.$$" > /dev/null 2>&1; then
         mv -f "$png.$$" "$png"
@@ -264,6 +376,7 @@ jump() {
   tmux send-keys -t "$pane" -X bottom-line
   tmux send-keys -t "$pane" -X end-of-line
   tmux send-keys -t "$pane" -X search-backward "$pattern"
+  prefetch "$recs"
 }
 
 # The link under the copy-mode cursor: the hyperlink attribute, else a bare
@@ -318,7 +431,10 @@ popup_size() {
   case "$kind" in
     file) lines=$(($(wc -l < "$t") + 4)); w=70% ;;
     dir) lines=$(($(find "$t" -mindepth 1 -maxdepth 1 | wc -l) + 5)); w=70% ;;
-    url) case "$t" in *github.com/*/*/pull/* | *github.com/*/*/issues/*) lines=$((rows * 6 / 10)) ;; *) lines=10 ;; esac; w=100 ;;
+    url)
+      lines=10; w=100
+      if [ -n "$(remote_ref "$t")" ]; then lines=$((rows * 6 / 10)); w=$(remote_width "$cols"); fi
+      ;;
     image)
       lines=$h
       read -r iw ih <<< "$(sips -g pixelWidth -g pixelHeight "$t" 2> /dev/null | gawk '/pixel/ { printf "%s ", $2 }')"

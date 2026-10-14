@@ -118,12 +118,22 @@ before `open`, which otherwise launches an empty browser on a stray `^` or
 
 Files → `bat --paging=never` (with a real tty, bat would otherwise page and
 eat the first keypress). Directories → `eza`, falling back to `ls`. URLs →
-a structural breakdown (host, path, one line per query parameter, fragment)
-and, for GitHub PRs and issues, `gh pr/issue view` inline. **Nothing ever
-fetches an arbitrary URL:** a scrollback routinely contains one-time links
-(1Password shares, magic logins) and tracking links, and arrowing past one
-in fzf must not consume it. `gh` is the exception because it is an
-authenticated API client, not a fetch of the link.
+a structural breakdown (host, path, one line per query parameter, fragment),
+except GitHub PRs and issues (`gh pr/issue view`) and Linear issues (the
+`linear` CLI, description through `glow`), which show the item itself.
+**Nothing ever fetches an arbitrary URL:** a scrollback routinely contains
+one-time links (1Password shares, magic logins) and tracking links, and
+arrowing past one in fzf must not consume it. `gh` and `linear` are the
+exception because they are authenticated API clients, not fetches of the
+link.
+
+Those API calls take about a second, so their rendered output is cached for
+5 minutes per width under `~/.cache/tmux-links/remote` (a failure for one
+minute, and everything is purged after an hour), and `prefix L`
+prefetches the items in view in the background (6 at a time) at the `p`
+popup's width; by the time the cursor is on one, `p` is a cache read. The
+lock file of a fetch holds its pid, so `p` waits for a prefetch already in
+flight instead of repeating it, and ignores the lock of one that was killed.
 
 ### Images and PDFs
 
