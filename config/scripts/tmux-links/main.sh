@@ -133,6 +133,16 @@ remote_ref() {
   fi
 }
 
+# glamour style (gh, glow) for the macOS appearance; they cannot query the
+# background from a popup
+glamour_style() {
+  if [ -x /usr/bin/defaults ] && [ "$(/usr/bin/defaults read -g AppleInterfaceStyle 2> /dev/null)" != Dark ]; then
+    echo light
+  else
+    echo dark
+  fi
+}
+
 # A Linear issue laid out like `gh issue view`
 linear_view() {
   local id=$1 cols=$2 json
@@ -146,7 +156,7 @@ linear_view() {
       | map(select(. != null and . != "No priority")) | join(" • ")),
     ((.labels.nodes // []) | map(.name) | select(length > 0) | "\u001b[2m" + join(", ") + "\u001b[0m")'
   if [ "$(printf '%s' "$json" | jq -r '.description // "" | length')" -gt 0 ]; then
-    printf '%s' "$json" | jq -r '.description' | glow -s dark -w "$cols" -
+    printf '%s' "$json" | jq -r '.description' | glow -s "$GLAMOUR_STYLE" -w "$cols" -
   else
     printf '\n\033[2mNo description\033[0m\n'
   fi
@@ -155,6 +165,7 @@ linear_view() {
 fetch_remote() {
   local cols=$1
   shift
+  export GLAMOUR_STYLE
   case "$1" in
     gh) GH_FORCE_TTY="$cols" timeout 20 gh "$2" view "$4" -R "$3" ;;
     linear) linear_view "$2" "$cols" ;;
@@ -170,14 +181,15 @@ age() {
 }
 
 # remote_view <cols> <ref...>: the rendered ref, cached for 5 minutes per
-# width; a failure for 1 minute, so a jump over private repos does not
+# width and style; a failure for 1 minute, so a jump over private repos does not
 # refetch them every time. A fetch of the same ref already running (a jump's
 # prefetch) is waited for, not repeated: the lock is a hard link (atomic)
 # holding the fetcher's pid, so a killed fetcher's lock is skipped.
 remote_view() {
   local cols=$1 key f me=$BASHPID pid
   shift
-  printf -v key '%s_' "$@" "$cols"
+  : "${GLAMOUR_STYLE:=$(glamour_style)}"
+  printf -v key '%s_' "$@" "$cols" "$GLAMOUR_STYLE"
   f="$CACHE/remote/${key//\//_}"
   mkdir -p "$CACHE/remote"
   while [ "$(age "$f")" -ge 300 ] && [ "$(age "$f.err")" -ge 60 ]; do
