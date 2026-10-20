@@ -8,6 +8,7 @@ let
   gh-stack-skill = pkgs.runCommand "gh-stack-skill-${pkgs.gh-stack.version}" { } ''
     cp -r ${pkgs.gh-stack}/share/skills/gh-stack/gh-stack $out
   '';
+  tmuxPs = import ./tmux-ps.nix { inherit pkgs; };
 in
 {
   programs.claude-code = {
@@ -44,29 +45,35 @@ in
         pr = "";
         sessionUrl = false;
       };
-      hooks = {
-        Stop = [
-          {
-            hooks = [
-              {
-                type = "command";
-                command = "tmux display-message '🤖 Claude is ready (#{session_name})'";
-              }
-            ];
-          }
-        ];
-        Notification = [
-          {
-            matcher = "permission_prompt";
-            hooks = [
-              {
-                type = "command";
-                command = "echo -n '\a'; tmux display-message '🔐 Claude needs permission (#{session_name})'";
-              }
-            ];
-          }
-        ];
-      };
+      # Pane status in the tmux status line (working/blocked/done/error), see tmux.nix
+      hooks =
+        let
+          ps = {
+            type = "command";
+            command = "${tmuxPs}/bin/tmux-ps hook";
+            timeout = 5;
+          };
+          always = [ { hooks = [ ps ]; } ];
+          on = matcher: [
+            {
+              inherit matcher;
+              hooks = [ ps ];
+            }
+          ];
+        in
+        {
+          SessionStart = always;
+          UserPromptSubmit = always;
+          PreToolUse = on "AskUserQuestion";
+          PostToolUse = always;
+          PostToolUseFailure = always;
+          PermissionDenied = always;
+          PermissionRequest = always;
+          Notification = on "permission_prompt|elicitation_dialog|elicitation_url_dialog|idle_prompt";
+          Stop = always;
+          StopFailure = always;
+          SessionEnd = always;
+        };
     };
     context = /* markdown */ ''
       - To search for software in nipxkgs use `nh search` - it is faster than `nix search`!
