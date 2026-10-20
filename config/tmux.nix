@@ -38,16 +38,17 @@ let
 
   # Claude Code status in the status line; the hooks feeding it are in claude-code.nix
   tmuxPs = import ./tmux-ps.nix { inherit pkgs; };
-  # worst state over a loop of pane states, as an icon; literal commas inside
-  # conditional branches are written #,
+  # worst state over a loop of pane states, as an icon (idle shows a muted dot,
+  # so a window with an agent always has one and nothing shifts when it changes);
+  # literal commas inside conditional branches are written #,
   psIcon =
     states:
-    "#{?#{m:*blocked*,${states}}, #[fg=colour1#,bold]!#[default],#{?#{m:*error*,${states}}, #[fg=colour1]✗#[default],#{?#{m:*working*,${states}}, #[fg=colour3]●#[default],#{?#{m:*done*,${states}}, #[fg=colour2]✓#[default],}}}}";
+    "#{?#{m:*blocked*,${states}},#[fg=colour1#,bold]!#[default],#{?#{m:*error*,${states}},#[fg=colour1]✗#[default],#{?#{m:*working*,${states}},#[fg=colour3]●#[default],#{?#{m:*done*,${states}},#[fg=colour2]✓#[default],#{?#{m:*idle*,${states}},#[fg=colour8]·#[default],}}}}}";
   # tmux's default choose-tree lines with the status added; a pane with a
   # state shows its label and session title instead of the command
   psHasTitle = "#{&&:#{pane_title},#{&&:#{!=:#{pane_title},#{host}},#{!=:#{pane_title},#{host_short}}}}";
   psCmd = "#{?#{==:#{pane_current_command},.claude-wrapped},claude,#{pane_current_command}}";
-  psTree = ''#{?pane_format,#{?#{@ps_state},#{E:@ps_label}#{?#{@ps_title},#{@ps_title},#{?${psHasTitle},#{pane_title},}},#{?pane_marked,#[fg=colour5],}${psCmd}#[fg=colour8]#{pane_flags}#{?${psHasTitle},: "#{pane_title}",}},#{?window_format,#{?window_marked_flag,#[fg=colour5],}#{window_name}#[fg=colour8]#{window_flags}#{E:@ps_window_icon}#{?#{&&:#{==:#{window_panes},1},${psHasTitle}},: "#{pane_title}",},#[fg=colour8]#{session_windows} windows#{E:@ps_session_icon}#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached, (attached),}}}'';
+  psTree = ''#{?pane_format,#{?#{@ps_state},#{E:@ps_label}#{?#{@ps_title},#{@ps_title},#{?${psHasTitle},#{pane_title},}},#{?pane_marked,#[fg=colour5],}${psCmd}#[fg=colour8]#{pane_flags}#{?${psHasTitle},: "#{pane_title}",}},#{?window_format,#{?window_marked_flag,#[fg=colour5],}#{window_name}#[fg=colour8]#{window_flags} #{E:@ps_window_icon}#{?#{&&:#{==:#{window_panes},1},${psHasTitle}},: "#{pane_title}",},#[fg=colour8]#{session_windows} windows #{E:@ps_session_icon}#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached, (attached),}}}'';
 in
 {
   home.packages = [
@@ -114,8 +115,10 @@ in
       set -g status-right '#{E:@ps_label}#[fg=colour4]%Y-%m-%d %H:%M#[fg=colour8]  #[fg=colour8]󰃰 #[fg=colour7]#[fg=colour7]  #[fg=colour8] #[fg=colour6]#{b:pane_current_path}'
 
       setw -g window-status-separator '  '
-      setw -g window-status-format '#I:#W#{?window_flags,#{window_flags}, }#{E:@ps_window_icon}'
-      setw -g window-status-current-format '#I:#W#{?window_flags,#{window_flags}, }#{E:@ps_window_icon}'
+      # the agent marker sits between index and name, so it cannot be read as
+      # belonging to the next window; the space after it only exists with it
+      setw -g window-status-format '#I:#{?#{E:@ps_window_icon},#{E:@ps_window_icon} ,}#W#{?window_flags,#{window_flags}, }'
+      setw -g window-status-current-format '#I:#{?#{E:@ps_window_icon},#{E:@ps_window_icon} ,}#W#{?window_flags,#{window_flags}, }'
       setw -g window-status-style 'fg=colour5,bg=default'
       setw -g window-status-current-style 'fg=colour3,bg=default'
       # reverse rather than a hardcoded fg/bg pair: swapping the terminal's own
