@@ -66,9 +66,8 @@ set_appearance() {
 
 # delta reads git config on every invocation, so an include file is picked up by
 # shells that are already open. Referenced from config/git.nix.
-# Changed words on added lines: delta's default emphasis backgrounds (#006000,
-# #a0efa0) drop pine/love/gold well below readable; these keep the syntax
-# colours legible and let bold carry the emphasis.
+# Changed words on added lines: backgrounds that keep the syntax colours
+# legible, with bold carrying the emphasis.
 sync_delta() {
   local theme=$1 light=false emph='#004400'
   [[ $theme == *dawn ]] && light=true emph='#b8f5b8'
