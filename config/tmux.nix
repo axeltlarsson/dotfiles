@@ -48,7 +48,7 @@ let
   # state shows its label and session title instead of the command
   psHasTitle = "#{&&:#{pane_title},#{&&:#{!=:#{pane_title},#{host}},#{!=:#{pane_title},#{host_short}}}}";
   psCmd = "#{?#{==:#{pane_current_command},.claude-wrapped},claude,#{pane_current_command}}";
-  psTree = ''#{?pane_format,#{?#{@ps_state},#{E:@ps_label}#{?#{@ps_title},#{@ps_title},#{?${psHasTitle},#{pane_title},}},#{?pane_marked,#[fg=colour5],}${psCmd}#[fg=colour8]#{pane_flags}#{?${psHasTitle},: "#{pane_title}",}},#{?window_format,#{?window_marked_flag,#[fg=colour5],}#{window_name}#[fg=colour8]#{window_flags} #{E:@ps_window_icon}#{?#{&&:#{==:#{window_panes},1},${psHasTitle}},: "#{pane_title}",},#[fg=colour8]#{session_windows} windows #{E:@ps_session_icon}#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached, (attached),}}}'';
+  psTree = ''#{?pane_format,#{?#{@ps_state},#{T:@ps_label}#{?#{@ps_title},#{T:@ps_title},#{?${psHasTitle},#{pane_title},}},#{?pane_marked,#[fg=colour5],}${psCmd}#[fg=colour8]#{pane_flags}#{?${psHasTitle},: "#{pane_title}",}},#{?window_format,#{?window_marked_flag,#[fg=colour5],}#{window_name}#[fg=colour8]#{window_flags} #{E:@ps_window_icon}#{?#{&&:#{==:#{window_panes},1},${psHasTitle}},: "#{pane_title}",},#[fg=colour8]#{session_windows} windows #{E:@ps_session_icon}#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached, (attached),}}}'';
 in
 {
   home.packages = [
@@ -112,7 +112,7 @@ in
       set -g status-right-length 200
       set -g status-style 'fg=colour2,bg=default'
       set -g status-left '#[fg=#{?client_prefix,colour1,colour7}] #[fg=colour7]#S#[fg=colour7]    '
-      set -g status-right '#{E:@ps_label}#[fg=colour4]%Y-%m-%d %H:%M#[fg=colour8]  #[fg=colour8]󰃰 #[fg=colour7]#[fg=colour7]  #[fg=colour8] #[fg=colour6]#{b:pane_current_path}'
+      set -g status-right '#{T:@ps_label}#[fg=colour4]%Y-%m-%d %H:%M#[fg=colour8]  #[fg=colour8]󰃰 #[fg=colour7]#[fg=colour7]  #[fg=colour8] #[fg=colour6]#{b:pane_current_path}'
 
       setw -g window-status-separator '  '
       # the agent marker sits between index and name, so it cannot be read as
@@ -142,7 +142,8 @@ in
       # tree filtered to windows that have a pane with a state
       bind-key s choose-tree -Zs -F '${psTree}'
       bind-key w choose-tree -Zw -F '${psTree}'
-      bind-key A choose-tree -Z -f '#{!=:#{@ps_state},}' -F '${psTree}'
+      # with no agent panes choose-tree would drop the filter and list everything
+      bind-key A if -F '#{S:#{W:#{P:#{@ps_state}}}}' { choose-tree -Z -f '#{!=:#{@ps_state},}' -F '${psTree}' } { display-message 'no agent panes' }
       # the nix wrapper execs .claude-wrapped, which is what windows get named
       set -g automatic-rename-format '#{?pane_in_mode,[tmux],#{?#{==:#{pane_current_command},.claude-wrapped},claude,#{pane_current_command}}}#{?pane_dead,[dead],}'
       # selected tree row: Rosé Pine highlight_med, the theme's selection

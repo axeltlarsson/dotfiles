@@ -17,22 +17,26 @@ gopt() { tmux show -gqv "$1"; }
 state_of() { tmux show -pqv -t "$pane" @ps_state; }
 redraw() { tmux refresh-client -S 2>/dev/null || true; }
 
-# one line, no control chars, truncated, then # doubled so that a message
-# can never act as a tmux format once the label goes through #{E:...}
+# one line, no control chars, truncated, then # and % doubled: every view
+# expands these values once more as a format with strftime (#{T:...},
+# display-message), so a message can never act as a format or a date.
+# LC_ALL=C on tr: in UTF-8 locales [:cntrl:] matches UTF-8 continuation bytes
 sanitize() { # text [max]
   local max s
   max=${2:-$(gopt @ps-label-max)}
-  s=$(printf '%s' "$1" | tr '\n' ' ' | tr -d '[:cntrl:]')
+  s=$(printf '%s' "$1" | tr '\n\t\r' '   ' | LC_ALL=C tr -d '[:cntrl:]')
   s=${s:0:${max:-30}}
-  printf '%s' "${s//#/##}"
+  s=${s//#/##}
+  printf '%s' "${s//%/%%}"
 }
 
+# replacements quoted: bash 5.2+ expands & in an unquoted one to the match
 render() { # state kind msg
   local fmt
   fmt=$(gopt "@ps-format-$1")
-  fmt=${fmt//\{app\}/$app}
-  fmt=${fmt//\{kind\}/$2}
-  printf '%s' "${fmt//\{msg\}/$3}"
+  fmt=${fmt//\{app\}/"$app"}
+  fmt=${fmt//\{kind\}/"$2"}
+  printf '%s' "${fmt//\{msg\}/"$3"}"
 }
 
 icon() {
@@ -59,7 +63,7 @@ seen() {
 notify() { # state msg
   local want
   want=$(gopt @ps-notify)
-  case ",${want:-blocked,error,done}," in
+  case ",$want," in
     *",$1,"*) ;;
     *) return 0 ;;
   esac
@@ -102,8 +106,8 @@ hook() { # Claude Code hook JSON on stdin
     [ .hook_event_name, .tool_name, .notification_type,
       ((.tool_input.questions? // [])[0] // {}).question?, .message, .error,
       .is_interrupt, (.prompt // "")[0:1], .session_title,
-      ((.tool_input | objects) // {} | (.command // .file_path // .url // .pattern // "") | tostring | split("\n")[0]) ]
-    | map((. // "") | tostring | gsub("\u001f"; "")) | join("\u001f")') || true
+      ((.tool_input | objects) // {} | (.command // .file_path // .notebook_path // .url // .pattern // "") | tostring | split("\n")[0]) ]
+    | map((. // "") | tostring | gsub("\u0000"; "") | gsub("\u001f"; "")) | join("\u001f")') || true
   case $ev in
     SessionStart) set_state idle ;;
     # a /command may never start a turn; the expansion or tool events will
