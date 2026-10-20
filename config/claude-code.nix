@@ -64,12 +64,13 @@ in
         {
           SessionStart = always;
           UserPromptSubmit = always;
+          UserPromptExpansion = always;
           PreToolUse = on "AskUserQuestion";
           PostToolUse = always;
           PostToolUseFailure = always;
           PermissionDenied = always;
           PermissionRequest = always;
-          Notification = on "permission_prompt|elicitation_dialog|elicitation_url_dialog|idle_prompt";
+          Notification = on "permission_prompt|elicitation_dialog|elicitation_url_dialog|elicitation_complete|elicitation_response|idle_prompt";
           Stop = always;
           StopFailure = always;
           SessionEnd = always;

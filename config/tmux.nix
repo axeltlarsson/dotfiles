@@ -36,6 +36,7 @@ let
     text = builtins.readFile ./scripts/tmux-links/main.sh;
   };
 
+  palette = import ./rose-pine.nix;
   # Claude Code status in the status line; the hooks feeding it are in claude-code.nix
   tmuxPs = import ./tmux-ps.nix { inherit pkgs; };
   # worst state over a loop of pane states, as an icon (idle shows a muted dot,
@@ -126,9 +127,8 @@ in
       setw -g window-status-activity-style 'fg=colour6,reverse'
 
       # === Claude Code status (tmux-ps) ===
-      # Hooks write @ps_state/@ps_kind/@ps_msg/@ps_label on the pane; the
-      # status line shows the current pane's label and, per window, the worst
-      # state over its panes. Commas inside conditional branches are written #,
+      # status-right shows the current pane's @ps_label; windows and sessions
+      # show the worst state over their panes
       set -g @ps-label-max 30
       set -g @ps-notify 'blocked,error,done'
       set -g @ps-format-working '#[fg=colour3]● {app}#[default]  '
@@ -145,22 +145,18 @@ in
       # with no agent panes choose-tree would drop the filter and list everything
       bind-key A if -F '#{S:#{W:#{P:#{@ps_state}}}}' { choose-tree -Z -f '#{!=:#{@ps_state},}' -F '${psTree}' } { display-message 'no agent panes' }
       # the nix wrapper execs .claude-wrapped, which is what windows get named
-      set -g automatic-rename-format '#{?pane_in_mode,[tmux],#{?#{==:#{pane_current_command},.claude-wrapped},claude,#{pane_current_command}}}#{?pane_dead,[dead],}'
-      # selected tree row: Rosé Pine highlight_med, the theme's selection
-      # surface, on which every palette colour stays legible (gold vanished on
-      # the default yellow bg). It is not in the 16-colour palette and overlay,
-      # the only surface there, is too close to base, so the variant comes from
-      # tmux's theme detection; overlay is the fallback before the first report
+      set -g automatic-rename-format '#{?pane_in_mode,[tmux],${psCmd}}#{?pane_dead,[dead],}'
+      # selected tree row: Rosé Pine highlight_med, legible under every palette
+      # colour; it isn't among the 16 ANSI colours, so tmux's theme hooks pick
+      # the variant, with overlay until the terminal reports one
       set -g mode-style 'fg=colour7,bg=colour0,bold'
-      set-hook -g client-dark-theme  { set -g mode-style 'fg=#e0def4,bg=#403d52,bold' }
-      set-hook -g client-light-theme { set -g mode-style 'fg=#575279,bg=#dfdad9,bold' }
+      set-hook -g client-dark-theme  { set -g mode-style 'fg=${palette.main.text},bg=${palette.main.highlightMed},bold' }
+      set-hook -g client-light-theme { set -g mode-style 'fg=${palette.dawn.text},bg=${palette.dawn.highlightMed},bold' }
       # text selection keeps the strong highlight (it would otherwise follow mode-style)
-      set -g copy-mode-selection-style 'fg=colour0,bg=colour3'
-      # looking at a pane clears its done/error mark; the record stays (idle)
-      # so the pane remains in the prefix + A view until Claude exits
-      set-hook -g pane-focus-in       { if -F '#{||:#{==:#{@ps_state},done},#{==:#{@ps_state},error}}' { set -p @ps_state idle ; set -pu @ps_kind ; set -pu @ps_msg ; set -p @ps_label "" } }
-      set-hook -g window-pane-changed { if -F '#{||:#{==:#{@ps_state},done},#{==:#{@ps_state},error}}' { set -p @ps_state idle ; set -pu @ps_kind ; set -pu @ps_msg ; set -p @ps_label "" } }
-      set-hook -g session-window-changed { if -F '#{||:#{==:#{@ps_state},done},#{==:#{@ps_state},error}}' { set -p @ps_state idle ; set -pu @ps_kind ; set -pu @ps_msg ; set -p @ps_label "" } }
+      set -g copy-mode-selection-style 'noattr,fg=colour0,bg=colour3'
+      # a pane gaining focus in a focused client clears its done/error mark;
+      # the record stays (idle) so the pane remains in prefix + A until Claude exits
+      set-hook -g pane-focus-in { if -F '#{||:#{==:#{@ps_state},done},#{==:#{@ps_state},error}}' { run-shell -b '${tmuxPs}/bin/tmux-ps visited #{pane_id}' } }
 
       set -g pane-border-style 'fg=colour8'
       set -g pane-active-border-style 'fg=colour3'
