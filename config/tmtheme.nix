@@ -90,19 +90,16 @@ with palette;
       scope = "support.type, support.class";
       settings.foreground = foam;
     }
+    # foreground only: delta keeps just the foreground, so base-on-love showed as
+    # base on the diff background (invisible), and grammars parsing a lone hunk
+    # often scope ordinary code such as nix's `let` and `=` as invalid
     {
       scope = "invalid";
-      settings = {
-        background = love;
-        foreground = base;
-      };
+      settings.foreground = love;
     }
     {
       scope = "invalid.deprecated";
-      settings = {
-        background = iris;
-        foreground = base;
-      };
+      settings.foreground = iris;
     }
   ];
 }
