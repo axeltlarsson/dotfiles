@@ -1,3 +1,9 @@
----
 prompt:
   zsh_use_rps1: true
+
+# The context/namespace picker (skim) defaults to fixed dark-terminal colours;
+# these are palette slots mirroring config/fzf.nix, so it follows the theme.
+fzf:
+  # mouse defaults to true once this section exists; keep it off as before
+  mouse: false
+  color: "normal:7,bg:-1,hl:5,matched_bg:-1,fg+:7,bg+:0,hl+:5,current_match_bg:0,query:3,spinner:1,info:4,pointer:5,marker:6,prompt:3,header:6,border:8"
