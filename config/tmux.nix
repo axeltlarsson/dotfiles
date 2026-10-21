@@ -107,6 +107,8 @@ in
       # and no plugin. Slots, per rosepinetheme.com, in both variants:
       #   0 overlay  1 love  2 pine  3 gold  4 foam  5 iris  6 rose  7 text  8 muted
       # bg=default means the terminal's own background, so the bar always blends.
+      # theme terminal: tmux's built-in default styles use these slots too
+      set -g theme terminal
       set -g status on
       set -g status-justify left
       set -g status-left-length 200
