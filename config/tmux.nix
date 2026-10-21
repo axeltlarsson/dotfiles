@@ -1,12 +1,23 @@
 { pkgs, ... }:
 
 let
+  # tmux with OSC 7501 program status (pane options @ps_*, hook
+  # pane-status-changed); after refreshing the patch for a new tmux, run
+  # tmux-osc7501-test.sh against the build
+  tmuxPatched = pkgs.tmux.overrideAttrs (old: {
+    patches =
+      assert pkgs.lib.assertMsg (
+        old.version == "3.8"
+      ) "tmux ${old.version}: refresh config/tmux-osc7501.patch";
+      (old.patches or [ ]) ++ [ ./tmux-osc7501.patch ];
+  });
+
   # Buffer manager: list/preview/paste/delete/save/load with fzf
   # Script source is in config/scripts/tmux-buffer-manager.sh
   tmuxBufferManager = pkgs.writeShellApplication {
     name = "tmux-buffer-manager";
     runtimeInputs = [
-      pkgs.tmux
+      tmuxPatched
       pkgs.fzf
       pkgs.bat
       pkgs.fd
@@ -20,7 +31,7 @@ let
   tmuxLinks = pkgs.writeShellApplication {
     name = "tmux-links";
     runtimeInputs = [
-      pkgs.tmux
+      tmuxPatched
       pkgs.fzf
       pkgs.gawk
       pkgs.coreutils
@@ -60,6 +71,7 @@ in
 
   programs.tmux = {
     enable = true;
+    package = tmuxPatched;
 
     clock24 = true;
     escapeTime = 0;

@@ -1,0 +1,505 @@
+From 32c2fae4fc046034900f2c7bbc16219e36a6b4ca Mon Sep 17 00:00:00 2001
+From: axeltlarsson <axel@arthro.ai>
+Date: Wed, 21 Oct 2026 11:43:00 +0200
+Subject: [PATCH] Add OSC 7501 program status.
+
+Answer the OSC 7501 query and keep a pane's root record from program
+status reports (rev 0.4) in the pane user options @ps_state, @ps_kind,
+@ps_app and @ps_msg, so formats and hooks can show what a program such as
+Claude Code is doing. The query reply goes through input_reply like the
+DA1 reply, so it always arrives before the DA1 reply to the request a
+program sends straight after the query.
+
+A report is checked per the spec (pairs, limits, base64, UTF-8 without
+control characters) and replaces the record; child records (with an id)
+are checked and ignored. The pane-status-changed hook runs when the state
+changes, with old_state and new_state. An OSC 133 prompt, a respawn or the
+pane's process exiting drops an idle, working or blocked record, and RIS
+drops any record.
+
+The base64 and ASCII helpers follow autonomous-low-noise/tmux@4a77824.
+---
+ input.c         | 330 ++++++++++++++++++++++++++++++++++++++++++++++++
+ options-table.c |   2 +
+ server-fn.c     |   1 +
+ spawn.c         |   1 +
+ tmux.1          |  37 ++++++
+ tmux.h          |   1 +
+ 6 files changed, 372 insertions(+)
+
+diff --git a/input.c b/input.c
+index 2fef558..9c567fc 100644
+--- a/input.c
++++ b/input.c
+@@ -174,6 +174,7 @@ static void	input_osc_110(struct input_ctx *, const char *);
+ static void	input_osc_111(struct input_ctx *, const char *);
+ static void	input_osc_112(struct input_ctx *, const char *);
+ static void	input_osc_133(struct input_ctx *, const char *);
++static void	input_osc_7501(struct input_ctx *, const char *);
+ 
+ /* Transition entry/exit handlers. */
+ static void	input_clear(struct input_ctx *);
+@@ -1409,6 +1410,8 @@ input_esc_dispatch(struct input_ctx *ictx)
+ 		input_reset_cell(ictx);
+ 		screen_write_reset(sctx);
+ 		screen_write_fullredraw(sctx);
++		if (ictx->wp != NULL)
++			input_osc_7501_clear(ictx->wp, 0);
+ 		break;
+ 	case INPUT_ESC_IND:
+ 		screen_write_linefeed(sctx, 0, ictx->cell.cell.bg);
+@@ -2772,6 +2775,9 @@ input_exit_osc(struct input_ctx *ictx)
+ 	case 133:
+ 		input_osc_133(ictx, p);
+ 		break;
++	case 7501:
++		input_osc_7501(ictx, p);
++		break;
+ 	default:
+ 		log_debug("%s: unknown '%u'", __func__, option);
+ 		break;
+@@ -3287,6 +3293,7 @@ input_osc_133(struct input_ctx *ictx, const char *p)
+ 		if (wp != NULL) {
+ 			wp->last_prompt_time = time(NULL);
+ 			events_fire_pane("pane-shell-prompt", wp);
++			input_osc_7501_clear(wp, 1);
+ 		}
+ 		break;
+ 	case 'P':
+@@ -3336,6 +3343,329 @@ input_osc_133(struct input_ctx *ictx, const char *p)
+ 	}
+ }
+ 
++/* OSC 7501 program status states and kinds. */
++static const char *input_osc_7501_states[] = {
++	"idle", "working", "done", "blocked", "error", NULL
++};
++static const char *input_osc_7501_kinds[] = {
++	"permission", "question", "auth", NULL
++};
++
++/* Characters allowed in an OSC 7501 value. */
++#define INPUT_OSC_7501_VALUE \
++	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.,+/=-"
++
++/* Find a word in a list, returning the list's own copy. */
++static const char *
++input_osc_7501_find(const char **list, const char *word)
++{
++	u_int	i;
++
++	for (i = 0; list[i] != NULL; i++) {
++		if (strcmp(list[i], word) == 0)
++			return (list[i]);
++	}
++	return (NULL);
++}
++
++/* Strip spaces from both ends of a string in place. */
++static char *
++input_osc_7501_trim(char *s)
++{
++	size_t	len;
++
++	while (*s == ' ')
++		s++;
++	len = strlen(s);
++	while (len > 0 && s[len - 1] == ' ')
++		s[--len] = '\0';
++	return (s);
++}
++
++/* Is this an ASCII letter or digit? isalnum(3) follows the locale. */
++static int
++input_osc_7501_alnum(u_char c)
++{
++	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
++	    (c >= '0' && c <= '9'));
++}
++
++/* Is this a valid app or id segment: 1 to 32 of [A-Za-z0-9_.+-]? */
++static int
++input_osc_7501_name(const char *cp, size_t len)
++{
++	size_t	i;
++
++	if (len == 0 || len > 32)
++		return (0);
++	for (i = 0; i < len; i++) {
++		if (!input_osc_7501_alnum(cp[i]) && strchr("_.+-", cp[i]) == NULL)
++			return (0);
++	}
++	return (1);
++}
++
++/* Is this a valid id: 1 to 8 segments joined by /, at most 128 bytes? */
++static int
++input_osc_7501_id(const char *id)
++{
++	const char	*cp, *end;
++	u_int		 n = 0;
++
++	if (strlen(id) > 128)
++		return (0);
++	for (cp = id;; cp = end + 1) {
++		if ((end = strchr(cp, '/')) == NULL)
++			end = cp + strlen(cp);
++		if (!input_osc_7501_name(cp, end - cp) || ++n > 8)
++			return (0);
++		if (*end == '\0')
++			return (1);
++	}
++}
++
++/*
++ * Decode a base64 text value of at most limit bytes into *out, which is NULL
++ * for an empty value. Returns 0 if the value does not decode, is too long, is
++ * not UTF-8 or contains a control character.
++ */
++static int
++input_osc_7501_text(const char *value, size_t limit, char **out)
++{
++	u_char	*buf;
++	char	*padded;
++	size_t	 len;
++	int	 n, i;
++
++	*out = NULL;
++	if (*value == '\0')
++		return (1);
++
++	/* Padding is optional, so complete a short final quantum. */
++	len = strlen(value);
++	if (len % 4 == 1 || (len % 4 != 0 && strchr(value, '=') != NULL))
++		return (0);
++	padded = xmalloc(len + 3);
++	memcpy(padded, value, len + 1);
++	if (len % 4 != 0)
++		strlcat(padded, len % 4 == 2 ? "==" : "=", len + 3);
++
++	/* glibc's b64_pton needs a spare byte for a short final quantum. */
++	buf = xmalloc(limit + 4);
++	n = b64_pton(padded, buf, limit + 3);
++	free(padded);
++	if (n == -1 || (size_t)n > limit)
++		goto bad;
++	buf[n] = '\0';
++	for (i = 0; i < n; i++) {
++		if (buf[i] < 0x20 || buf[i] == 0x7f)
++			goto bad;
++		if (buf[i] == 0xc2 && i + 1 < n && buf[i + 1] >= 0x80 &&
++		    buf[i + 1] <= 0x9f)
++			goto bad;
++	}
++	if (!utf8_isvalid((char *)buf))
++		goto bad;
++	*out = (char *)buf;
++	return (1);
++
++bad:
++	free(buf);
++	return (0);
++}
++
++/* Return the pane's program status state, or "" if it has none. */
++static const char *
++input_osc_7501_state(struct window_pane *wp)
++{
++	const char	*state;
++
++	if (options_get_only(wp->options, "@ps_state") == NULL)
++		return ("");
++	state = input_osc_7501_find(input_osc_7501_states,
++	    options_get_string(wp->options, "@ps_state"));
++	if (state == NULL)
++		return ("");
++	return (state);
++}
++
++/* Set a pane user option, or remove it if value is NULL. */
++static void
++input_osc_7501_put(struct window_pane *wp, const char *name,
++    const char *value)
++{
++	struct options_entry	*o;
++
++	if (value != NULL)
++		options_set_string(wp->options, name, 0, "%s", value);
++	else if ((o = options_get_only(wp->options, name)) != NULL)
++		options_remove_or_default(o, NULL, NULL);
++}
++
++/* Fire an event when a pane's program status state changes. */
++static void
++input_fire_pane_status_changed(struct window_pane *wp, const char *old,
++    const char *new)
++{
++	struct event_payload	*ep;
++	struct cmd_find_state	 fs;
++
++	ep = event_payload_create();
++	cmd_find_from_pane(&fs, wp, 0);
++	event_payload_set_target(ep, &fs);
++	event_payload_set_pane(ep, "pane", wp);
++	event_payload_set_window(ep, "window", wp->window);
++	event_payload_set_string(ep, "old_state", "%s", old);
++	event_payload_set_string(ep, "new_state", "%s", new);
++	events_fire("pane-status-changed", ep);
++}
++
++/*
++ * Replace a pane's program status record, or remove it if state is NULL. The
++ * record lives in pane user options so formats and hooks can use it. The
++ * state must be one of input_osc_7501_states, which outlive the options.
++ */
++static void
++input_osc_7501_set(struct window_pane *wp, const char *state,
++    const char *kind, const char *app, const char *msg)
++{
++	const char	*old = input_osc_7501_state(wp);
++	const char	*new = (state == NULL) ? "" : state;
++
++	input_osc_7501_put(wp, "@ps_state", state);
++	input_osc_7501_put(wp, "@ps_kind", kind);
++	input_osc_7501_put(wp, "@ps_app", app);
++	input_osc_7501_put(wp, "@ps_msg", msg);
++
++	server_redraw_window_borders(wp->window);
++	server_status_window(wp->window);
++	if (strcmp(old, new) != 0)
++		input_fire_pane_status_changed(wp, old, new);
++}
++
++/*
++ * Drop a pane's program status record, unless keep_done is set and it is done
++ * or error: those last until the user has seen them.
++ */
++void
++input_osc_7501_clear(struct window_pane *wp, int keep_done)
++{
++	const char	*state = input_osc_7501_state(wp);
++
++	if (*state == '\0')
++		return;
++	if (keep_done &&
++	    (strcmp(state, "done") == 0 || strcmp(state, "error") == 0))
++		return;
++	input_osc_7501_set(wp, NULL, NULL, NULL, NULL);
++}
++
++/*
++ * Handle the OSC 7501 program status sequence: answer the query, or replace
++ * the pane's record. Only the root record is kept; reports with an id are
++ * checked and ignored.
++ */
++static void
++input_osc_7501(struct input_ctx *ictx, const char *p)
++{
++	struct window_pane	*wp = ictx->wp;
++	const char		*end, *state = NULL, *kind = NULL, *app = NULL;
++	const char		*id = NULL, *title = NULL, *msg = NULL;
++	char			*copy, *next, *key, *value, *text = NULL, *tmp;
++	size_t			 len;
++	int			 clear;
++
++	if (wp == NULL)
++		return;
++	if (ictx->input_end == INPUT_END_BEL)
++		end = "\007";
++	else
++		end = "\033\\";
++
++	if (strcmp(p, "?") == 0) {
++		input_reply(ictx, 1, "\033]7501;?:states=idle,working,done,"
++		    "blocked,error:kinds=permission,question,auth%s", end);
++		return;
++	}
++	if (2 + ictx->input_len + strlen(end) > 4096) {
++		log_debug("%s: too long", __func__);
++		return;
++	}
++
++	copy = next = xstrdup(p);
++	while ((key = strsep(&next, ":")) != NULL) {
++		if ((value = strchr(key, '=')) == NULL)
++			continue;
++		*value++ = '\0';
++		key = input_osc_7501_trim(key);
++		value = input_osc_7501_trim(value);
++
++		len = strlen(key);
++		if (len > 16)
++			goto out;
++		if (len == 0 || strspn(key, "abcdefghijklmnopqrstuvwxyz") != len)
++			continue;
++		if (strcmp(key, "id") == 0) {
++			if (!input_osc_7501_id(value))
++				goto out;
++			id = value;
++			continue;
++		}
++		len = strlen(value);
++		if ((strcmp(key, "app") == 0 && len > 32) ||
++		    (strcmp(key, "title") == 0 && len > 256) ||
++		    (strcmp(key, "msg") == 0 && len > 2732))
++			goto out;
++		if (strspn(value, INPUT_OSC_7501_VALUE) != len)
++			continue;
++
++		if (strcmp(key, "state") == 0)
++			state = value;
++		else if (strcmp(key, "kind") == 0)
++			kind = value;
++		else if (strcmp(key, "app") == 0)
++			app = value;
++		else if (strcmp(key, "title") == 0)
++			title = value;
++		else if (strcmp(key, "msg") == 0)
++			msg = value;
++	}
++
++	if (state == NULL)
++		goto out;
++	clear = (strcmp(state, "clear") == 0);
++	if (!clear &&
++	    (state = input_osc_7501_find(input_osc_7501_states, state)) == NULL)
++		goto out;
++	if (title != NULL) {
++		if (!input_osc_7501_text(title, 192, &tmp))
++			goto out;
++		free(tmp);
++	}
++	if (msg != NULL && !input_osc_7501_text(msg, 2048, &text))
++		goto out;
++	if (id != NULL) {
++		log_debug("%s: ignoring record %s", __func__, id);
++		goto out;
++	}
++
++	if (clear)
++		input_osc_7501_set(wp, NULL, NULL, NULL, NULL);
++	else {
++		if (kind != NULL && strcmp(state, "blocked") == 0)
++			kind = input_osc_7501_find(input_osc_7501_kinds, kind);
++		else
++			kind = NULL;
++		if (app != NULL && !input_osc_7501_name(app, strlen(app)))
++			app = NULL;
++		input_osc_7501_set(wp, state, kind, app, text);
++	}
++
++out:
++	free(text);
++	free(copy);
++}
++
+ /* Handle OSC 52 reply. */
+ static void
+ input_osc_52_reply(struct input_ctx *ictx, char clip)
+diff --git a/options-table.c b/options-table.c
+index c7b1671..99a675e 100644
+--- a/options-table.c
++++ b/options-table.c
+@@ -2035,6 +2035,8 @@ const struct options_table_entry options_table[] = {
+ 	    "sequence."),
+ 	OPTIONS_TABLE_PANE_HOOK("pane-shell-prompt", "",
+ 	    "Run when an OSC 133 shell prompt starts in a pane."),
++	OPTIONS_TABLE_PANE_HOOK("pane-status-changed", "",
++	    "Run when a program reports a new state with OSC 7501."),
+ 	OPTIONS_TABLE_PANE_HOOK("pane-title-changed", "",
+ 	    "Run when a pane title is changed."),
+ 	OPTIONS_TABLE_HOOK("session-closed", "",
+diff --git a/server-fn.c b/server-fn.c
+index e9db5a8..9d61a1f 100644
+--- a/server-fn.c
++++ b/server-fn.c
+@@ -397,6 +397,7 @@ server_destroy_pane(struct window_pane *wp, int notify)
+ 		wp->flags |= PANE_STATUSDRAWN;
+ 
+ 		gettimeofday(&wp->dead_time, NULL);
++		input_osc_7501_clear(wp, 1);
+ 		if (notify)
+ 			server_fire_pane_exit("pane-died", wp);
+ 
+diff --git a/spawn.c b/spawn.c
+index 801288a..0389a9c 100644
+--- a/spawn.c
++++ b/spawn.c
+@@ -327,6 +327,7 @@ spawn_pane(struct spawn_context *sc, char **cause)
+ 		}
+ 		window_pane_reset_mode_all(sc->wp0);
+ 		screen_reinit(&sc->wp0->base, 0);
++		input_osc_7501_clear(sc->wp0, 1);
+ 		if (sc->wp0->ictx != NULL) {
+ 			input_free(sc->wp0->ictx);
+ 			sc->wp0->ictx = NULL;
+diff --git a/tmux.1 b/tmux.1
+index b307484..40aa4af 100644
+--- a/tmux.1
++++ b/tmux.1
+@@ -6555,6 +6555,14 @@ Run when the terminal clipboard is set using the
+ escape sequence.
+ .It pane\-shell\-prompt
+ Run when an OSC 133 shell prompt starts in a pane.
++.It pane\-status\-changed
++Run when a program reports a new state with OSC 7501.
++The old and new states are in the
++.Ql hook_old_state
++and
++.Ql hook_new_state
++formats; see
++.Sx PROGRAM STATUS .
+ .It pane\-title\-changed
+ Run when a pane title is changed.
+ .It session\-closed
+@@ -7858,6 +7866,35 @@ It can also be modified with the
+ .Ic select\-pane
+ .Fl T
+ command.
++.Sh PROGRAM STATUS
++A program may report its state with the OSC 7501 program status escape
++sequence, and may first check for support by sending
++.Ql \e]7501\&;\&?
++followed by a primary device attributes request.
++.Nm
++answers the query and keeps the report without an id, the root record, in
++pane user options:
++.Bl -column "@ps_state" "Contents" -offset indent
++.It Sy "Option" Ta Sy "Contents"
++.It Li "@ps_state" Ta "idle, working, done, blocked or error"
++.It Li "@ps_kind" Ta "permission, question or auth when blocked"
++.It Li "@ps_app" Ta "the program's name"
++.It Li "@ps_msg" Ta "the program's message"
++.El
++.Pp
++Each report replaces the record and a report with state clear removes it.
++An OSC 133 shell prompt, a respawn or the pane's process exiting drops an
++idle, working or blocked record; a full reset drops any record.
++The
++.Ic pane-status-changed
++hook runs when the state changes.
++.Li @ps_msg
++is text from the program: formats should show it as a variable, for example
++.Ql #{q/h:@ps_msg} ,
++and never expand it again with
++.Ql E:\&
++or
++.Ql T:\& .
+ .Sh GLOBAL AND SESSION ENVIRONMENT
+ When the server is started,
+ .Nm
+diff --git a/tmux.h b/tmux.h
+index b53dae8..95760fd 100644
+--- a/tmux.h
++++ b/tmux.h
+@@ -3451,6 +3451,7 @@ void	 input_reply_clipboard(struct bufferevent *, const char *, size_t,
+ void	 input_set_buffer_size(size_t);
+ void	 input_request_reply(struct client *, enum input_request_type, void *);
+ void	 input_cancel_requests(struct client *);
++void	 input_osc_7501_clear(struct window_pane *, int);
+ 
+ /* input-key.c */
+ void	 input_key_build(void);
+-- 
+2.55.0
+
