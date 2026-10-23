@@ -284,6 +284,10 @@ in
       # standalone
       autoload -Uz prompt_pure_setup
       prompt_pure_setup
+      # OSC 133 A marks each prompt: tmux drops the program status of a program
+      # that died without clearing it, and copy mode can jump between prompts
+      _prompt_mark() { print -n '\e]133;A\e\\' }
+      precmd_functions+=(_prompt_mark)
 
       # === Tmux autostart ===
       # $ZSH_NO_TMUX escape hatch is for benchmarking (zsh-bench unsets TMUX)
