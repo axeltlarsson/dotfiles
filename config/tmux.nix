@@ -48,25 +48,65 @@ let
   };
 
   palette = import ./rose-pine.nix;
-  # Claude Code status in the status line; the hooks feeding it are in claude-code.nix
-  tmuxPs = import ./tmux-ps.nix { inherit pkgs; };
-  # worst state over a loop of pane states, as an icon (idle shows a muted dot,
-  # so a window with an agent always has one and nothing shifts when it changes);
-  # literal commas inside conditional branches are written #,
-  psIcon =
-    states:
-    "#{?#{m:*blocked*,${states}},#[fg=colour1#,bold]!#[default],#{?#{m:*error*,${states}},#[fg=colour1]✗#[default],#{?#{m:*working*,${states}},#[fg=colour3]●#[default],#{?#{m:*done*,${states}},#[fg=colour2]✓#[default],#{?#{m:*idle*,${states}},#[fg=colour8]·#[default],}}}}}";
+
+  # Program status (OSC 7501) per pane, worst first. @ps_msg is program text:
+  # show it only as #{=N;q/h:@ps_msg}, never through E:/T: or in a shell
+  # command. Literal commas inside conditional branches are written #,
+  psStates = [
+    {
+      name = "blocked";
+      style = "fg=colour1#,bold";
+      icon = "!";
+      msg = true;
+    }
+    {
+      name = "error";
+      style = "fg=colour1";
+      icon = "✗";
+      msg = true;
+    }
+    {
+      name = "working";
+      style = "fg=colour3";
+      icon = "●";
+      msg = false;
+    }
+    {
+      name = "done";
+      style = "fg=colour2";
+      icon = "✓";
+      msg = false;
+    }
+    {
+      name = "idle";
+      style = "fg=colour8";
+      icon = "·";
+      msg = false;
+    }
+  ];
+  # #{?test1,render1,#{?test2,render2,…}} over psStates
+  psChain = test: render: pkgs.lib.foldr (s: rest: "#{?${test s},${render s},${rest}}") "" psStates;
+  psCmd = "#{?#{==:#{pane_current_command},.claude-wrapped},claude,#{pane_current_command}}";
+  psApp = "#{?@ps_app,#{s/^claude-code$/claude/:@ps_app},${psCmd}}";
+  psLabel = psChain (s: "#{==:#{@ps_state},${s.name}}") (
+    s:
+    "#[${s.style}]${s.icon} ${psApp}${pkgs.lib.optionalString s.msg " #{=30;q/h:@ps_msg}"}#[default]  "
+  );
+  # worst state over a loop of pane states, as an icon; idle is a muted dot so
+  # a window with an agent always has one and nothing shifts when it changes
+  psIcon = states: psChain (s: "#{m:*${s.name}*,${states}}") (s: "#[${s.style}]${s.icon}#[default]");
+  # the pane is on screen and a focused client shows its session
+  psSeen = "#{&&:#{window_active},#{&&:#{||:#{pane_active},#{!:#{window_zoomed_flag}}},#{L:#{?#{&&:#{==:#{client_session},#{session_name}},#{m:*focused*,#{client_flags}}},1,}}}}";
+  psToIdle = "set -p @ps_state idle ; set -pu @ps_kind ; set -pu @ps_msg";
   # tmux's default choose-tree lines with the status added; a pane with a
   # state shows its label and session title instead of the command
   psHasTitle = "#{&&:#{pane_title},#{&&:#{!=:#{pane_title},#{host}},#{!=:#{pane_title},#{host_short}}}}";
-  psCmd = "#{?#{==:#{pane_current_command},.claude-wrapped},claude,#{pane_current_command}}";
-  psTree = ''#{?pane_format,#{?#{@ps_state},#{T:@ps_label}#{?#{@ps_title},#{T:@ps_title},#{?${psHasTitle},#{pane_title},}},#{?pane_marked,#[fg=colour5],}${psCmd}#[fg=colour8]#{pane_flags}#{?${psHasTitle},: "#{pane_title}",}},#{?window_format,#{?window_marked_flag,#[fg=colour5],}#{window_name}#[fg=colour8]#{window_flags} #{E:@ps_window_icon}#{?#{&&:#{==:#{window_panes},1},${psHasTitle}},: "#{pane_title}",},#[fg=colour8]#{session_windows} windows #{E:@ps_session_icon}#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached, (attached),}}}'';
+  psTree = ''#{?pane_format,#{?#{@ps_state},${psLabel}#{?${psHasTitle},#{pane_title},},#{?pane_marked,#[fg=colour5],}${psCmd}#[fg=colour8]#{pane_flags}#{?${psHasTitle},: "#{pane_title}",}},#{?window_format,#{?window_marked_flag,#[fg=colour5],}#{window_name}#[fg=colour8]#{window_flags} #{E:@ps_window_icon}#{?#{&&:#{==:#{window_panes},1},${psHasTitle}},: "#{pane_title}",},#[fg=colour8]#{session_windows} windows #{E:@ps_session_icon}#{?session_grouped, (group #{session_group}: #{session_group_list}),}#{?session_attached, (attached),}}}'';
 in
 {
   home.packages = [
     tmuxBufferManager
     tmuxLinks
-    tmuxPs
   ];
 
   programs.tmux = {
@@ -127,7 +167,7 @@ in
       set -g status-right-length 200
       set -g status-style 'fg=colour2,bg=default'
       set -g status-left '#[fg=#{?client_prefix,colour1,colour7}] #[fg=colour7]#S#[fg=colour7]    '
-      set -g status-right '#{T:@ps_label}#[fg=colour4]%Y-%m-%d %H:%M#[fg=colour8]  #[fg=colour8]󰃰 #[fg=colour7]#[fg=colour7]  #[fg=colour8] #[fg=colour6]#{b:pane_current_path}'
+      set -g status-right '${psLabel}#[fg=colour4]%Y-%m-%d %H:%M#[fg=colour8]  #[fg=colour8]󰃰 #[fg=colour7]#[fg=colour7]  #[fg=colour8] #[fg=colour6]#{b:pane_current_path}'
 
       setw -g window-status-separator '  '
       # the agent marker sits between index and name, so it cannot be read as
@@ -140,16 +180,10 @@ in
       # colours is the only inversion that stays legible in both variants
       setw -g window-status-activity-style 'fg=colour6,reverse'
 
-      # === Claude Code status (tmux-ps) ===
-      # status-right shows the current pane's @ps_label; windows and sessions
+      # === Program status (OSC 7501, see tmux-osc7501.patch) ===
+      # status-right shows the current pane's label; windows and sessions
       # show the worst state over their panes
-      set -g @ps-label-max 30
       set -g @ps-notify 'blocked,error,done'
-      set -g @ps-format-working '#[fg=colour3]● {app}#[default]  '
-      set -g @ps-format-blocked '#[fg=colour1,bold]! {app} {msg}#[default]  '
-      set -g @ps-format-error   '#[fg=colour1]✗ {app} {msg}#[default]  '
-      set -g @ps-format-done    '#[fg=colour2]✓ {app}#[default]  '
-      set -g @ps-format-idle    '#[fg=colour8]· {app}#[default]  '
       set -g @ps_window_icon '${psIcon "#{P:#{@ps_state} }"}'
       set -g @ps_session_icon '${psIcon "#{W:#{P:#{@ps_state} }}"}'
       # prefix + s/w: the usual trees with the icons; prefix + A: the same
@@ -168,9 +202,14 @@ in
       set-hook -g client-light-theme { set -g mode-style 'fg=${palette.dawn.text},bg=${palette.dawn.highlightMed},bold' }
       # text selection keeps the strong highlight (it would otherwise follow mode-style)
       set -g copy-mode-selection-style 'noattr,fg=colour0,bg=colour3'
-      # a pane gaining focus in a focused client clears its done/error mark;
-      # the record stays (idle) so the pane remains in prefix + A until Claude exits
-      set-hook -g pane-focus-in { if -F '#{||:#{==:#{@ps_state},done},#{==:#{@ps_state},error}}' { run-shell -b '${tmuxPs}/bin/tmux-ps visited #{pane_id}' } }
+      # done/error mark panes nobody has looked at: a report seen as it lands
+      # goes straight to idle, otherwise it toasts; focusing the pane clears it.
+      # The record stays (idle), so the pane remains in prefix + A
+      set-hook -g pane-status-changed {
+        if -F '#{&&:#{||:#{==:#{hook_new_state},done},#{==:#{hook_new_state},error}},${psSeen}}' { ${psToIdle} }
+        if -F '#{&&:#{hook_new_state},#{&&:#{m:*#{hook_new_state}*,#{@ps-notify}},#{!:${psSeen}}}}' { display-message -C -d 5000 '${psLabel}(#{session_name}:#{window_index})' }
+      }
+      set-hook -g pane-focus-in { if -F '#{||:#{==:#{@ps_state},done},#{==:#{@ps_state},error}}' { ${psToIdle} } }
 
       set -g pane-border-style 'fg=colour8'
       set -g pane-active-border-style 'fg=colour3'
