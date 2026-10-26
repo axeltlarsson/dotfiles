@@ -59,6 +59,7 @@ in
     nixfmt
     ripgrep
     jq
+    curl
     fd
     nh
     shellcheck
