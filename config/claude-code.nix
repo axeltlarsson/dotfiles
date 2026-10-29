@@ -39,6 +39,10 @@ in
       theme = "auto";
       alwaysThinkingEnabled = true;
       effortLevel = "high";
+      voice = {
+        enabled = true;
+        mode = "tap";
+      };
       attribution = {
         commit = "";
         pr = "";
