@@ -46,3 +46,4 @@ lazy-lock.json
 
 # skill-creator eval workspaces
 config/claude-skills/*-workspace/
+__pycache__/

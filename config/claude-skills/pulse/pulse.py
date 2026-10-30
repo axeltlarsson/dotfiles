@@ -1,9 +1,10 @@
-"""Gather GitHub notifications, PR activity and Linear updates into a markdown digest for /pulse."""
+"""Gather GitHub notifications, PR activity, Linear updates and MWAA DAG health into a markdown digest for /pulse."""
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -12,9 +13,22 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
+
+import boto3
 
 ORG = "Jojnts"
 LINEAR_TEAMS = {"DAT": "Data", "PROD": "Product", "INF": "Infrastructure"}
+# profile:region pairs; every MWAA environment found in each is checked
+MWAA_ACCOUNTS = [
+    tuple(a.split(":", 1))
+    for a in os.environ.get(
+        "PULSE_MWAA_ACCOUNTS", "legacy:eu-central-1,shared_admin:eu-west-1"
+    ).split(",")
+]
+LONG_RUNNING = timedelta(hours=6)
+LOG_DAG_CAP = 10
+LOG_LINE = re.compile(r"error|exception|traceback|failed|killed|timeout", re.IGNORECASE)
 REASON_ORDER = [
     "review_requested",
     "mention",
@@ -242,6 +256,158 @@ def linear_team(team: str, since: str) -> list[dict[str, Any]] | str:
     return json.loads(res.stdout) if res.returncode == 0 else res.stderr.strip()[-300:]
 
 
+def parse_ts(ts: str | None) -> datetime | None:
+    return datetime.fromisoformat(ts) if ts else None
+
+
+class Airflow:
+    """Airflow REST API (v1) through MWAA invoke_rest_api."""
+
+    def __init__(self, client: Any, name: str) -> None:
+        self.client = client
+        self.name = name
+        env = client.get_environment(Name=name)["Environment"]
+        self.ui = f"https://{env['WebserverUrl']}"
+
+    def get(self, path: str, **params: Any) -> Any:
+        res = self.client.invoke_rest_api(
+            Name=self.name, Path=path, Method="GET", QueryParameters=params
+        )
+        return res["RestApiResponse"]
+
+    def paginate(self, path: str, key: str, **params: Any) -> list[dict[str, Any]]:
+        items: list[dict[str, Any]] = []
+        while True:
+            page = self.get(path, limit=100, offset=len(items), **params)
+            items += page[key]
+            if not page[key] or len(items) >= page["total_entries"]:
+                return items
+
+    def failed_tasks(self, run: dict[str, Any]) -> list[str]:
+        base = f"/dags/{run['dag_id']}/dagRuns/{quote(run['dag_run_id'], safe='')}/taskInstances"
+        lines = []
+        for ti in self.get(base, state="failed")["task_instances"]:
+            mapped = ti.get("map_index", -1)
+            label = ti["task_id"] + (f"[{mapped}]" if mapped >= 0 else "")
+            lines.append(f"  - task {label} (try {ti['try_number']})")
+            try:
+                log = self.get(
+                    f"{base}/{ti['task_id']}/logs/{max(ti['try_number'], 1)}",
+                    full_content=True,
+                    **({"map_index": mapped} if mapped >= 0 else {}),
+                )
+                content = log.get("content", "") if isinstance(log, dict) else str(log)
+                hits = [
+                    ln.strip() for ln in content.splitlines() if LOG_LINE.search(ln)
+                ]
+                lines += [f"    > {ln[:200]}" for ln in hits[-6:]]
+            except Exception as e:  # noqa: BLE001
+                lines.append(f"    > log unavailable: {str(e)[:150]}")
+        return lines
+
+
+def dag_issues(
+    dag: dict[str, Any], runs: list[dict[str, Any]], now: datetime
+) -> list[str]:
+    issues = []
+    failed = [r for r in runs if r["state"] == "failed"]
+    if failed:
+        issues.append(f"{len(failed)}/{len(runs)} runs failed")
+    for r in runs:
+        start = parse_ts(r.get("start_date"))
+        if r["state"] == "running" and start and now - start > LONG_RUNNING:
+            issues.append(f"running for {(now - start).total_seconds() / 3600:.0f}h")
+    due = parse_ts(dag.get("next_dagrun_create_after"))
+    if not dag["is_paused"] and due and now - due > timedelta(hours=1):
+        issues.append(f"overdue: next run was due {iso(due)}")
+    return issues
+
+
+def mwaa_section(since: str, now: datetime) -> list[str]:
+    lines: list[str] = []
+    for profile, region in MWAA_ACCOUNTS:
+        try:
+            session = boto3.Session(profile_name=profile, region_name=region)
+            client = session.client("mwaa")
+            names = client.list_environments()["Environments"]
+        except Exception as e:  # noqa: BLE001
+            lines += [
+                f"## Airflow ({profile} {region}): FETCH FAILED: {str(e)[-300:]}",
+                f"(if the SSO token expired: `aws sso login --profile {profile}`, then rerun `pulse gather`)",
+                "",
+            ]
+            continue
+        for name in names:
+            lines += env_section(client, name, f"{profile} {region}", since, now)
+    return lines
+
+
+def env_section(
+    client: Any, name: str, where: str, since: str, now: datetime
+) -> list[str]:
+    head = f"## Airflow DAGs: {name} ({where})"
+    try:
+        af = Airflow(client, name)
+        dags = af.paginate("/dags", "dags", only_active=True)
+        runs = af.paginate("/dags/~/dagRuns", "dag_runs", start_date_gte=since)
+        runs += af.paginate("/dags/~/dagRuns", "dag_runs", state="running")
+        import_errors = af.paginate("/importErrors", "import_errors")
+    except Exception as e:  # noqa: BLE001
+        return [f"{head}: FETCH FAILED: {str(e)[-300:]}", ""]
+
+    by_dag: dict[str, dict[str, dict[str, Any]]] = {}
+    for r in runs:
+        by_dag.setdefault(r["dag_id"], {})[r["dag_run_id"]] = r
+    lines = [f"{head} since {since}", ""]
+    if import_errors:
+        lines.append(f"### Import errors ({len(import_errors)})")
+        for ie in import_errors:
+            first = (ie.get("stack_trace") or "").strip().splitlines()[-1:] or [""]
+            lines.append(f"- {ie['filename']}: {first[0][:200]}")
+        lines.append("")
+
+    broken, recovered, healthy = [], [], []
+    logged = 0
+    for dag in sorted(dags, key=lambda d: d["dag_id"]):
+        if dag["is_paused"]:
+            continue
+        dag_runs = sorted(
+            by_dag.get(dag["dag_id"], {}).values(),
+            key=lambda r: r.get("start_date") or r.get("execution_date") or "",
+        )
+        issues = dag_issues(dag, dag_runs, now)
+        done = [r for r in dag_runs if r["state"] in ("success", "failed")]
+        latest = done[-1]["state"] if done else "no finished runs in window"
+        if not issues:
+            healthy.append(dag["dag_id"])
+            continue
+        line = (
+            f"- [{dag['dag_id']}]({af.ui}/dags/{dag['dag_id']}/grid) | latest {latest}"
+            f" | {dag.get('timetable_description') or '-'} | " + "; ".join(issues)
+        )
+        if latest == "success" and all(i.endswith("runs failed") for i in issues):
+            recovered.append(line)
+            continue
+        broken.append(line)
+        if latest == "failed" and logged < LOG_DAG_CAP:
+            logged += 1
+            broken += af.failed_tasks(done[-1])
+
+    paused = sum(d["is_paused"] for d in dags)
+    lines += [
+        "### Need a glance (latest run failed/running long, or overdue)",
+        *(broken or ["- none"]),
+        "",
+        "### Recovered (failed in window, latest run succeeded)",
+        *(recovered or ["- none"]),
+        "",
+        f"### Healthy ({len(healthy)}): " + ", ".join(healthy),
+        f"### Paused: {paused}",
+        "",
+    ]
+    return lines
+
+
 def notification_section(
     notifs: list[dict[str, Any]], prs: dict[tuple[str, int], Any], me: str, since: str
 ) -> list[str]:
@@ -305,6 +471,7 @@ def cmd_gather(args: argparse.Namespace) -> None:
         f_mine = pool.submit(search_prs, f"{pr_detail_q} author:@me", PR_DETAIL)
         f_org = pool.submit(search_prs, f"org:{ORG} is:pr updated:>={since}", PR_BASE)
         f_lin = {t: pool.submit(linear_team, t, since) for t in LINEAR_TEAMS}
+        f_mwaa = pool.submit(mwaa_section, since, now)
         notifs = f_notifs.result()
         refs = {
             (n["repo"].split("/")[0], n["repo"].split("/")[1], int(m.group(1)))
@@ -361,6 +528,7 @@ def cmd_gather(args: argparse.Namespace) -> None:
                 f"- [{i['identifier']} {i['title']}]({i['url']}) | {i.get('state.name')} | {i.get('assignee.name') or 'unassigned'}"
             )
         lines.append("")
+    lines += f_mwaa.result()
 
     path = Path(tempfile.gettempdir()) / f"pulse-{now.strftime('%Y%m%dT%H%M%S')}.md"
     path.write_text("\n".join(lines))
