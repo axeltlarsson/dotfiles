@@ -20,7 +20,10 @@ let
         tmux new-session -d -s local \; set-option -t local destroy-unattached off
       fi
       tmux kill-window -t local:pulse 2>/dev/null || true
-      # login shell: launchd's env lacks the PATH and secrets zsh sets up
+      # panes take PATH from a client outside tmux (even over -e), and the
+      # nix-darwin/hm guard vars in tmux's env stop zsh from fixing launchd's bare one
+      server_path=$(tmux show-environment -g PATH)
+      export "''${server_path:?}"
       tmux new-window -d -t local: -n pulse -c "$HOME/work" \
         "zsh -lic 'claude /pulse; exec zsh -l'"
     '';
