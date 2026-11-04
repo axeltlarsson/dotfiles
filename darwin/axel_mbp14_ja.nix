@@ -12,6 +12,7 @@
     ../config/linear.nix
     ../config/pulse.nix
     ../config/aikido.nix
+    ../config/kleer.nix
     ../config/publish-report.nix
   ];
 
