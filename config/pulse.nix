@@ -24,8 +24,9 @@ let
       # nix-darwin/hm guard vars in tmux's env stop zsh from fixing launchd's bare one
       server_path=$(tmux show-environment -g PATH)
       export "''${server_path:?}"
+      # classic renderer drops OSC 8 links from lines that scroll off an unviewed window
       tmux new-window -d -t local: -n pulse -c "$HOME/work" \
-        "zsh -lic 'claude /pulse; exec zsh -l'"
+        "zsh -lic 'CLAUDE_CODE_NO_FLICKER=1 claude /pulse; exec zsh -l'"
     '';
   };
 in
