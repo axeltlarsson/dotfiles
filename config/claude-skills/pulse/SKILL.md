@@ -1,6 +1,6 @@
 ---
 name: pulse
-description: Morning org pulse - summarise all unread GitHub notifications, org-wide PR activity (Jojnts), Linear activity for the Data, Product and Infrastructure teams and Airflow (MWAA) DAG health, then mark the notifications read. Use when the user runs /pulse or asks what is going on in the org / for their morning PR and Linear summary.
+description: Morning org pulse - summarise all unread GitHub notifications, org-wide PR activity (Jojnts), Linear activity for the Data, Product and Infrastructure teams, Airflow (MWAA) DAG health and Aikido security findings, then mark the notifications read. Use when the user runs /pulse or asks what is going on in the org / for their morning PR and Linear summary.
 allowed-tools: Bash(pulse *), Read
 ---
 
@@ -27,8 +27,9 @@ Keep it terse and scannable. Use `##` headings and skip any empty section.
 3. **Shipped**: merged PRs grouped by repo, each with the author and a few-word gist. Collapse bot PRs into a count.
 4. **In flight**: opened and still-active PRs from others (yours are under My pipeline). Group them by theme or author where a series belongs together (e.g. a run of PRs for the same Linear issue). Collapse drafts and bots. Mention closed-unmerged PRs only when they mean something, e.g. a series that was folded into a new PR.
 5. **Airflow**: DAGs that need a glance first (latest run failed, running long or overdue), each with a DAG link, the failing task(s) and a few-word guess at the cause from the log lines; then import errors; then recovered DAGs on one line; then a one-line healthy/paused count. Describe errors by type only (e.g. "S3 AccessDenied", "OOM-killed"). Never quote data values from the logs. If the fetch failed, give the one-line fix from the digest.
-6. **Linear**: per team (Data, Product, Infrastructure): done, started or in review, and new or triage items worth knowing about. Give a quiet team one line.
-7. **Themes**: 2–3 bullets on what the org is working on, tying PRs to Linear issues where the IDs match.
+6. **Security (Aikido)**: one line with open group counts by severity and critical/high issues past SLA. Then new critical/high groups (package, gist, affected repos, group id), notable spread of existing critical/high groups into new repos, and anything newly past SLA. Collapse new medium/low groups into a count unless one stands out. End with one line on what was closed in the window. Refer to groups as `group <id>` so the user can follow up with the aikido skill. If the fetch failed, give the one-line fix from the digest.
+7. **Linear**: per team (Data, Product, Infrastructure): done, started or in review, and new or triage items worth knowing about. Give a quiet team one line.
+8. **Themes**: 2–3 bullets on what the org is working on, tying PRs to Linear issues where the IDs match.
 
 Never include PHI.
 

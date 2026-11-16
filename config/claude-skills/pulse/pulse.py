@@ -1,4 +1,4 @@
-"""Gather GitHub notifications, PR activity, Linear updates and MWAA DAG health into a markdown digest for /pulse."""
+"""Gather GitHub notifications, PR activity, Linear updates, MWAA DAG health and Aikido findings into a markdown digest for /pulse."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -98,7 +98,7 @@ def default_since(now: datetime) -> datetime:
     start = (local - timedelta(days=days_back)).replace(
         hour=0, minute=0, second=0, microsecond=0
     )
-    return start.astimezone(timezone.utc)
+    return start.astimezone(UTC)
 
 
 def parse_since(spec: str, now: datetime) -> datetime:
@@ -113,8 +113,8 @@ def parse_since(spec: str, now: datetime) -> datetime:
                 "w": timedelta(weeks=n),
             }[unit]
         )
-    dt = datetime.fromisoformat(spec.replace("Z", "+00:00"))
-    return (dt if dt.tzinfo else dt.astimezone()).astimezone(timezone.utc)
+    dt = datetime.fromisoformat(spec)
+    return (dt if dt.tzinfo else dt.astimezone()).astimezone(UTC)
 
 
 def iso(dt: datetime) -> str:
@@ -254,6 +254,172 @@ def linear_team(team: str, since: str) -> list[dict[str, Any]] | str:
     ]
     res = subprocess.run(cmd, capture_output=True, text=True, check=False)
     return json.loads(res.stdout) if res.returncode == 0 else res.stderr.strip()[-300:]
+
+
+AIKIDO_ISSUE_FIELDS = (
+    "group_id,severity,type,affected_package,first_detected_at,closed_at,"
+    "sla_remediate_by,code_repo_name,container_repo_name,"
+    "domain_name,cloud_name"
+)
+
+
+def aikido(*args: str) -> Any:
+    res = subprocess.run(["aikido", *args], capture_output=True, text=True, check=False)
+    if res.returncode != 0:
+        raise RuntimeError(res.stderr.strip()[-300:] or f"exit {res.returncode}")
+    return json.loads(res.stdout)
+
+
+def aikido_open_groups() -> list[dict[str, Any]]:
+    groups: list[dict[str, Any]] = []
+    for page in range(50):
+        batch = aikido(
+            "raw",
+            "GET",
+            "/open-issue-groups",
+            "-q",
+            "per_page=100",
+            "-q",
+            f"page={page}",
+        )
+        groups += batch
+        if len(batch) < 100:
+            break
+    return groups
+
+
+def aikido_issues(status: str) -> list[dict[str, Any]]:
+    return aikido(
+        "issues",
+        "--status",
+        status,
+        "--severity",
+        "critical,high",
+        "--fields",
+        AIKIDO_ISSUE_FIELDS,
+    )
+
+
+def aikido_where(i: dict[str, Any]) -> str:
+    return (
+        i.get("code_repo_name")
+        or i.get("container_repo_name")
+        or i.get("domain_name")
+        or i.get("cloud_name")
+        or "?"
+    )
+
+
+def aikido_section(since: str, now: datetime) -> list[str]:
+    head = "## Aikido (https://app.aikido.dev; drill in with `aikido group <id>`)"
+    try:
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            f_groups = pool.submit(aikido_open_groups)
+            f_open = pool.submit(aikido_issues, "open")
+            f_closed = pool.submit(aikido_issues, "closed")
+            groups, open_issues, closed = (
+                f_groups.result(),
+                f_open.result(),
+                f_closed.result(),
+            )
+    except Exception as e:  # noqa: BLE001
+        return [
+            f"{head}: FETCH FAILED: {str(e)[-300:]}",
+            "(check `aikido counts`; credentials come from the aikido-client/aikido-secret keychain items)",
+            "",
+        ]
+
+    since_ts = datetime.fromisoformat(since).timestamp()
+    now_ts = now.timestamp()
+    titles = {g["id"]: g for g in groups}
+    sev_rank = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+
+    def group_label(gid: int, fallback: str) -> str:
+        g = titles.get(gid)
+        name = g["title"] if g else fallback
+        return f"group {gid} {name}"
+
+    lines = [f"{head} since {since}", ""]
+    by_sev: dict[str, int] = {}
+    for g in groups:
+        by_sev[g["severity"]] = by_sev.get(g["severity"], 0) + 1
+    lines.append(
+        f"Open issue groups: {len(groups)} ("
+        + ", ".join(f"{s} {by_sev.get(s, 0)}" for s in sev_rank)
+        + ")"
+    )
+    overdue = [
+        i
+        for i in open_issues
+        if i["sla_remediate_by"] and i["sla_remediate_by"] < now_ts
+    ]
+    breached = [i for i in overdue if i["sla_remediate_by"] >= since_ts]
+    lines += [
+        (
+            f"Open critical/high issues: {len(open_issues)}; past SLA: {len(overdue)}"
+            f" (newly breached in window: {len(breached)})"
+        ),
+        "",
+    ]
+
+    new_groups = sorted(
+        (g for g in groups if g["first_detected_at"] >= since_ts),
+        key=lambda g: (sev_rank.get(g["severity"], 9), -g["severity_score"]),
+    )
+    lines.append(f"### New issue groups ({len(new_groups)})")
+    for g in new_groups:
+        where = ", ".join(loc["name"] for loc in g["locations"][:5])
+        extra = len(g["locations"]) - 5
+        where += f" +{extra} more" if extra > 0 else ""
+        lines.append(
+            f"- {g['severity']} {g['severity_score']} | {group_label(g['id'], '')} | "
+            f"{g['type']} | {g.get('description') or '-'} | {where} | fix ~{g['time_to_fix_minutes']}min"
+        )
+    lines.append("")
+
+    new_group_ids = {g["id"] for g in new_groups}
+    spread: dict[int, list[dict[str, Any]]] = {}
+    for i in open_issues:
+        if i["first_detected_at"] >= since_ts and i["group_id"] not in new_group_ids:
+            spread.setdefault(i["group_id"], []).append(i)
+    lines.append(
+        f"### Existing critical/high groups with new issues ({len(spread)} groups)"
+    )
+    for gid, items in sorted(spread.items(), key=lambda kv: -len(kv[1])):
+        where = sorted({aikido_where(i) for i in items})
+        lines.append(
+            f"- {group_label(gid, items[0]['affected_package'] or items[0]['type'])} | "
+            f"{len(items)} new | {', '.join(where[:5])}"
+        )
+    lines.append("")
+
+    if breached:
+        lines.append(f"### Newly past SLA ({len(breached)} issues)")
+        per_group: dict[int, list[dict[str, Any]]] = {}
+        for i in breached:
+            per_group.setdefault(i["group_id"], []).append(i)
+        for gid, items in sorted(per_group.items(), key=lambda kv: -len(kv[1])):
+            lines.append(
+                f"- {group_label(gid, items[0]['affected_package'] or items[0]['type'])} | "
+                f"{items[0]['severity']} | {len(items)} issues | "
+                + ", ".join(sorted({aikido_where(i) for i in items})[:5])
+            )
+        lines.append("")
+
+    fixed = [i for i in closed if (i["closed_at"] or 0) >= since_ts]
+    per_fixed: dict[int, list[dict[str, Any]]] = {}
+    for i in fixed:
+        per_fixed.setdefault(i["group_id"], []).append(i)
+    lines.append(
+        f"### Closed critical/high in window ({len(fixed)} issues, {len(per_fixed)} groups)"
+    )
+    for gid, items in sorted(per_fixed.items(), key=lambda kv: -len(kv[1]))[:20]:
+        lines.append(
+            f"- {items[0]['affected_package'] or items[0]['type']} (group {gid}) | "
+            f"{len(items)} | " + ", ".join(sorted({aikido_where(i) for i in items})[:5])
+        )
+    lines.append("")
+    return lines
 
 
 def parse_ts(ts: str | None) -> datetime | None:
@@ -461,7 +627,7 @@ def org_section(prs: list[dict[str, Any]], since: str, me: str) -> list[str]:
 
 
 def cmd_gather(args: argparse.Namespace) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     since = iso(parse_since(args.since, now) if args.since else default_since(now))
     pr_detail_q = f"is:pr is:open archived:false org:{ORG}"
     with ThreadPoolExecutor(max_workers=8) as pool:
@@ -472,6 +638,7 @@ def cmd_gather(args: argparse.Namespace) -> None:
         f_org = pool.submit(search_prs, f"org:{ORG} is:pr updated:>={since}", PR_BASE)
         f_lin = {t: pool.submit(linear_team, t, since) for t in LINEAR_TEAMS}
         f_mwaa = pool.submit(mwaa_section, since, now)
+        f_aikido = pool.submit(aikido_section, since, now)
         notifs = f_notifs.result()
         refs = {
             (n["repo"].split("/")[0], n["repo"].split("/")[1], int(m.group(1)))
@@ -529,6 +696,7 @@ def cmd_gather(args: argparse.Namespace) -> None:
             )
         lines.append("")
     lines += f_mwaa.result()
+    lines += f_aikido.result()
 
     path = Path(tempfile.gettempdir()) / f"pulse-{now.strftime('%Y%m%dT%H%M%S')}.md"
     path.write_text("\n".join(lines))
