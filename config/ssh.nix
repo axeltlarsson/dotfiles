@@ -48,8 +48,8 @@
         IdentityFile ~/.ssh/id_ed25519
 
       HOST unlock_leif
-        HostName 192.168.128.94
         HostName leif.arthro.ai
+        HostName 192.168.128.94
         User root
         HostKeyAlias unlock_leif
         IdentityFile ~/.ssh/leif_dropbear
