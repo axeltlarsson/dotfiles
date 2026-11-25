@@ -10,7 +10,8 @@ let
   } (builtins.readFile ./claude-skills/pulse/pulse.py);
 
   # Opens a fresh "pulse" window in tmux session "local" running `claude /pulse`,
-  # so the report is waiting there with a live session for follow-ups.
+  # so the report is waiting there with a live session for follow-ups. Reviews are
+  # drafted alongside in a "pulse-reviews" window that closes when they are done.
   pulse-morning = pkgs.writeShellApplication {
     name = "pulse-morning";
     runtimeInputs = [ pkgs.tmux ];
@@ -24,6 +25,9 @@ let
       # nix-darwin/hm guard vars in tmux's env stop zsh from fixing launchd's bare one
       server_path=$(tmux show-environment -g PATH)
       export "''${server_path:?}"
+      tmux kill-window -t local:pulse-reviews 2>/dev/null || true
+      tmux new-window -d -t local: -n pulse-reviews -c "$HOME/work" \
+        "zsh -lic 'pulse reviews draft 2>&1 | tee -a ~/Library/Logs/pulse-reviews.log'"
       # classic renderer drops OSC 8 links from lines that scroll off an unviewed window
       tmux new-window -d -t local: -n pulse -c "$HOME/work" \
         "zsh -lic 'CLAUDE_CODE_NO_FLICKER=1 claude /pulse; exec zsh -l'"

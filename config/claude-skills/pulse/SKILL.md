@@ -1,6 +1,6 @@
 ---
 name: pulse
-description: Morning org pulse - summarise all unread GitHub notifications, org-wide PR activity (Jojnts), Linear activity for the Data, Product and Infrastructure teams, Airflow (MWAA) DAG health and Aikido security findings, then mark the notifications read. Use when the user runs /pulse or asks what is going on in the org / for their morning PR and Linear summary.
+description: Morning org pulse - summarise all unread GitHub notifications, org-wide PR activity (Jojnts), Linear activity for the Data, Product and Infrastructure teams, Airflow (MWAA) DAG health and Aikido security findings, mark the notifications read, and present the pre-drafted reviews of PRs awaiting the user's review for approval. Use when the user runs /pulse or asks what is going on in the org / for their morning PR and Linear summary.
 allowed-tools: Bash(pulse *), Read
 ---
 
@@ -8,13 +8,15 @@ allowed-tools: Bash(pulse *), Read
 
 A read-through summary of what is happening in the org, replacing a manual pass over github.com/notifications. Output goes to the terminal only. It is for reading, not pasting.
 
-## Steps (exactly three tool calls)
+## Steps (exactly four tool calls)
 
 1. Run `pulse gather` as a **bare command**. Add `--since <arg>` only if the user passed an argument (e.g. `3d`, `12h`, `2026-10-01`). No redirects, pipes, `;`, `&&` or `echo`: `pulse` is excluded from the sandbox only when it is the whole command. It prints the path of a markdown digest and `fetched_at`.
 2. `Read` the digest file. It already holds everything: links, PR state, review decision, checks, your own review, and human (non-bot) activity in the window. **Don't run `jq`, `gh` or `linear` to explore further.**
 3. Run `pulse mark-read --before <fetched_at>` as a bare command, then write the report. Don't ask first; the user wants this. Skip it only if `gather` failed.
 
-Finish with one line saying how many notifications were marked read.
+4. After the report, run `pulse reviews list --wait 540` as a bare command with a 10 minute timeout. Reviews of the PRs awaiting the user's review are drafted in the background by the morning job; this waits for them and prints the drafts. Then write the **Reviews** section.
+
+End the report (before step 4) with one line saying how many notifications were marked read.
 
 ## Report layout
 
@@ -30,6 +32,19 @@ Keep it terse and scannable. Use `##` headings and skip any empty section.
 6. **Security (Aikido)**: one line with open group counts by severity and critical/high issues past SLA. Then new critical/high groups (package, gist, affected repos, group id), notable spread of existing critical/high groups into new repos, and anything newly past SLA. Collapse new medium/low groups into a count unless one stands out. End with one line on what was closed in the window. Refer to groups as `group <id>` so the user can follow up with the aikido skill. If the fetch failed, give the one-line fix from the digest.
 7. **Linear**: per team (Data, Product, Infrastructure): done, started or in review, and new or triage items worth knowing about. Give a quiet team one line.
 8. **Themes**: 2–3 bullets on what the org is working on, tying PRs to Linear issues where the IDs match.
+
+## Reviews
+
+Written after step 4, below the report. One block per draft: the PR link, author, size, the suggested verdict, a one or two sentence gist of the summary, and the inline comments as `path:line` plus a few words each. Flag `STALE` drafts (the PR got new commits) and failed ones. If drafting is still running, say so and offer to check again. If there are no drafts, say so in one line. Close with one line listing what the user can say: post, discard, revise, open.
+
+Drafts are proposals. **Never post one unless the user says so in this conversation**, naming the PRs or saying "all". Follow-ups, each a bare `pulse` command:
+
+- Post: `pulse reviews post <repo#N>...` or `--all`. It posts a plain comment review; add `--event approve` or `--event request-changes` only when the user asks for that outcome in so many words. The suggested verdict is not such a request. Posting removes the draft and its worktree. Report the link it prints.
+- Discard: `pulse reviews discard <repo#N>...` or `--all`.
+- Revise: `pulse reviews redo <repo#N> "<the user's guidance>"` resumes that review's session and rewrites the draft (use a 10 minute timeout); without guidance it redrafts from scratch on the current head, which is the fix for `STALE` and failed drafts. Show the new draft with `pulse reviews list <repo#N>` before posting, unless the user said to post it straight away.
+- Full text: `pulse reviews list <repo#N>` prints untruncated comments.
+- Dig in: `pulse reviews open <repo#N>` opens that review's Claude session in a tmux split next to this pane.
+- Draft another PR: `pulse reviews draft <PR URL>`.
 
 Never include PHI.
 
